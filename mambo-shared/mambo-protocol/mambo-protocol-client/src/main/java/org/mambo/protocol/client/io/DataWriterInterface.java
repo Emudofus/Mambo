@@ -29,6 +29,7 @@ public interface DataWriterInterface {
     void writeUnsignedLong(BigInteger value);
 
     void writeDouble(double value);
+    void writeFloat(float value);
 
     void writeChar(char value);
 

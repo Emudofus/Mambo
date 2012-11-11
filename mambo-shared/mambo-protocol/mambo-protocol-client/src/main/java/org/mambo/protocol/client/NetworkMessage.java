@@ -7,15 +7,15 @@ package org.mambo.protocol.client;
  * Time: 22:49
  */
 public abstract class NetworkMessage implements SerializerInterface, DeserializerInterface {
-    public abstract NetworkMessageType getNetworkMessageType();
+    public abstract int getNetworkMessageId();
 
     @Override
     public String toString() {
-        return String.format("{%d %s}", getNetworkMessageType().value(), getClass().getSimpleName());
+        return String.format("{%d %s}", getNetworkMessageId(), getClass().getSimpleName());
     }
 
     @Override
     public int hashCode() {
-        return getNetworkMessageType().value();
+        return getNetworkMessageId();
     }
 }

@@ -89,6 +89,11 @@ public class BigEndianDataReader implements DataReaderInterface {
     }
 
     @Override
+    public float readFloat() {
+        return Float.intBitsToFloat(readInt());
+    }
+
+    @Override
     public char readChar() {
         return CHARSET.decode(ByteBuffer.wrap(data, offset++, 1)).charAt(0);
     }

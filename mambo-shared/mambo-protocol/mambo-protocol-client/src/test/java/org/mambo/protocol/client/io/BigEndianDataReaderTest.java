@@ -108,6 +108,14 @@ public class BigEndianDataReaderTest {
     }
 
     @Test
+    public void readFloat() {
+        byte[] bytes = ByteBuffer.allocate(4).putFloat(3.14F).array();
+        DataReaderInterface reader = new BigEndianDataReader(bytes);
+
+        assertEquals(3.14F, reader.readFloat());
+    }
+
+    @Test
     public void readChar() {
         DataReaderInterface reader = new BigEndianDataReader(new byte[] { 97 });
         assertEquals('a', reader.readChar());

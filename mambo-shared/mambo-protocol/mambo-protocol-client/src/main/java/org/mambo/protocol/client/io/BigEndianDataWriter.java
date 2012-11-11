@@ -151,6 +151,11 @@ public class BigEndianDataWriter implements DataWriterInterface {
     }
 
     @Override
+    public void writeFloat(float value) {
+        writeInt(Float.floatToIntBits(value));
+    }
+
+    @Override
     public void writeChar(char value) {
         ensureEnoughBytes(1);
         data[offset++] = CHARSET.encode(CharBuffer.wrap(new char[] { value })).get();

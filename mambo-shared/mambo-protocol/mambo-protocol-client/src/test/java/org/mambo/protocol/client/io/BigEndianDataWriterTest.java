@@ -101,6 +101,15 @@ public class BigEndianDataWriterTest {
     }
 
     @Test
+    public void writeFloat() {
+        DataWriterInterface writer = new BigEndianDataWriter(4);
+        writer.writeFloat(3.14F);
+
+        assertEquals(4, writer.getLength());
+        assertEquals(3.14F, new BigEndianDataReader(writer.getData()).readFloat());
+    }
+
+    @Test
     public void writeChar() {
         DataWriterInterface writer = new BigEndianDataWriter(1);
         writer.writeChar('a');

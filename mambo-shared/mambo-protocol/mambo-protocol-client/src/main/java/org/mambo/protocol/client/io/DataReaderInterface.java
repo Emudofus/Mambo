@@ -27,6 +27,7 @@ public interface DataReaderInterface {
     BigInteger readUnsignedLong();
 
     double readDouble();
+    float readFloat();
 
     char readChar();
 
