@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 18:18:42
+// Generated on 11/11/2012 20:41:44
 package org.mambo.protocol.client.enums;
 
 public enum SocialContactCategoryEnum {
@@ -8,7 +8,8 @@ public enum SocialContactCategoryEnum {
     SOCIAL_CONTACT_SPOUSE(1),
     SOCIAL_CONTACT_PARTY(2),
     SOCIAL_CONTACT_GUILD(3),
-    SOCIAL_CONTACT_CRAFTER(4);
+    SOCIAL_CONTACT_CRAFTER(4),
+    SOCIAL_CONTACT_INTERLOCUTOR(5);
     
     private int value;
     SocialContactCategoryEnum(int value) { this.value = value; }

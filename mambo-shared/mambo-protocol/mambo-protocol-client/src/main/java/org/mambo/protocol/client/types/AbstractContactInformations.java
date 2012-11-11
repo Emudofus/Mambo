@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:13
+// Generated on 11/11/2012 20:41:40
 package org.mambo.protocol.client.types;
 
 import org.mambo.protocol.client.DeserializerInterface;

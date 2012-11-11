@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 18:18:42
+// Generated on 11/11/2012 20:41:41
 package org.mambo.protocol.client.enums;
 
 public enum BreedEnum {
@@ -19,7 +19,7 @@ public enum BreedEnum {
     Pandawa(12),
     Roublard(13),
     Zobal(14),
-    XV(15),
+    Steamer(15),
     SUMMONED(-1),
     MONSTER(-2),
     MONSTER_GROUP(-3),

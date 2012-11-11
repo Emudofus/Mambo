@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:12
+// Generated on 11/11/2012 20:41:39
 package org.mambo.protocol.client.types;
 
 import java.util.*;
@@ -32,11 +32,11 @@ public class GameFightMinimalStats implements SerializerInterface, DeserializerI
     public short waterElementResistPercent;
     public short airElementResistPercent;
     public short fireElementResistPercent;
-    public short neutralElementFixedResist;
-    public short earthElementFixedResist;
-    public short waterElementFixedResist;
-    public short airElementFixedResist;
-    public short fireElementFixedResist;
+    public short neutralElementReduction;
+    public short earthElementReduction;
+    public short waterElementReduction;
+    public short airElementReduction;
+    public short fireElementReduction;
     public short criticalDamageFixedResist;
     public short pushDamageFixedResist;
     public short dodgePALostProbability;
@@ -47,7 +47,7 @@ public class GameFightMinimalStats implements SerializerInterface, DeserializerI
     
     public GameFightMinimalStats() { }
     
-    public GameFightMinimalStats(int lifePoints, int maxLifePoints, int baseMaxLifePoints, int permanentDamagePercent, int shieldPoints, short actionPoints, short maxActionPoints, short movementPoints, short maxMovementPoints, int summoner, boolean summoned, short neutralElementResistPercent, short earthElementResistPercent, short waterElementResistPercent, short airElementResistPercent, short fireElementResistPercent, short neutralElementFixedResist, short earthElementFixedResist, short waterElementFixedResist, short airElementFixedResist, short fireElementFixedResist, short criticalDamageFixedResist, short pushDamageFixedResist, short dodgePALostProbability, short dodgePMLostProbability, short tackleBlock, short tackleEvade, byte invisibilityState) {
+    public GameFightMinimalStats(int lifePoints, int maxLifePoints, int baseMaxLifePoints, int permanentDamagePercent, int shieldPoints, short actionPoints, short maxActionPoints, short movementPoints, short maxMovementPoints, int summoner, boolean summoned, short neutralElementResistPercent, short earthElementResistPercent, short waterElementResistPercent, short airElementResistPercent, short fireElementResistPercent, short neutralElementReduction, short earthElementReduction, short waterElementReduction, short airElementReduction, short fireElementReduction, short criticalDamageFixedResist, short pushDamageFixedResist, short dodgePALostProbability, short dodgePMLostProbability, short tackleBlock, short tackleEvade, byte invisibilityState) {
         this.lifePoints = lifePoints;
         this.maxLifePoints = maxLifePoints;
         this.baseMaxLifePoints = baseMaxLifePoints;
@@ -64,11 +64,11 @@ public class GameFightMinimalStats implements SerializerInterface, DeserializerI
         this.waterElementResistPercent = waterElementResistPercent;
         this.airElementResistPercent = airElementResistPercent;
         this.fireElementResistPercent = fireElementResistPercent;
-        this.neutralElementFixedResist = neutralElementFixedResist;
-        this.earthElementFixedResist = earthElementFixedResist;
-        this.waterElementFixedResist = waterElementFixedResist;
-        this.airElementFixedResist = airElementFixedResist;
-        this.fireElementFixedResist = fireElementFixedResist;
+        this.neutralElementReduction = neutralElementReduction;
+        this.earthElementReduction = earthElementReduction;
+        this.waterElementReduction = waterElementReduction;
+        this.airElementReduction = airElementReduction;
+        this.fireElementReduction = fireElementReduction;
         this.criticalDamageFixedResist = criticalDamageFixedResist;
         this.pushDamageFixedResist = pushDamageFixedResist;
         this.dodgePALostProbability = dodgePALostProbability;
@@ -96,11 +96,11 @@ public class GameFightMinimalStats implements SerializerInterface, DeserializerI
         writer.writeShort(waterElementResistPercent);
         writer.writeShort(airElementResistPercent);
         writer.writeShort(fireElementResistPercent);
-        writer.writeShort(neutralElementFixedResist);
-        writer.writeShort(earthElementFixedResist);
-        writer.writeShort(waterElementFixedResist);
-        writer.writeShort(airElementFixedResist);
-        writer.writeShort(fireElementFixedResist);
+        writer.writeShort(neutralElementReduction);
+        writer.writeShort(earthElementReduction);
+        writer.writeShort(waterElementReduction);
+        writer.writeShort(airElementReduction);
+        writer.writeShort(fireElementReduction);
         writer.writeShort(criticalDamageFixedResist);
         writer.writeShort(pushDamageFixedResist);
         writer.writeShort(dodgePALostProbability);
@@ -138,11 +138,11 @@ public class GameFightMinimalStats implements SerializerInterface, DeserializerI
         waterElementResistPercent = reader.readShort();
         airElementResistPercent = reader.readShort();
         fireElementResistPercent = reader.readShort();
-        neutralElementFixedResist = reader.readShort();
-        earthElementFixedResist = reader.readShort();
-        waterElementFixedResist = reader.readShort();
-        airElementFixedResist = reader.readShort();
-        fireElementFixedResist = reader.readShort();
+        neutralElementReduction = reader.readShort();
+        earthElementReduction = reader.readShort();
+        waterElementReduction = reader.readShort();
+        airElementReduction = reader.readShort();
+        fireElementReduction = reader.readShort();
         criticalDamageFixedResist = reader.readShort();
         pushDamageFixedResist = reader.readShort();
         dodgePALostProbability = reader.readShort();
@@ -152,11 +152,7 @@ public class GameFightMinimalStats implements SerializerInterface, DeserializerI
         if (dodgePMLostProbability < 0)
             throw new RuntimeException("Forbidden value on dodgePMLostProbability = " + dodgePMLostProbability + ", it doesn't respect the following condition : dodgePMLostProbability < 0");
         tackleBlock = reader.readShort();
-        if (tackleBlock < 0)
-            throw new RuntimeException("Forbidden value on tackleBlock = " + tackleBlock + ", it doesn't respect the following condition : tackleBlock < 0");
         tackleEvade = reader.readShort();
-        if (tackleEvade < 0)
-            throw new RuntimeException("Forbidden value on tackleEvade = " + tackleEvade + ", it doesn't respect the following condition : tackleEvade < 0");
         invisibilityState = reader.readByte();
     }
     

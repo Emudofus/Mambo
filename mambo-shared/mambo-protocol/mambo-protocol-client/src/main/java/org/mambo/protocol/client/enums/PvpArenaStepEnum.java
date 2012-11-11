@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 18:18:42
+// Generated on 11/11/2012 20:41:44
 package org.mambo.protocol.client.enums;
 
 public enum PvpArenaStepEnum {

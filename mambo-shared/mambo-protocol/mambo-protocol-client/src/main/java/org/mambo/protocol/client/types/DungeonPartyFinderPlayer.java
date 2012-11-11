@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:13
+// Generated on 11/11/2012 20:41:40
 package org.mambo.protocol.client.types;
 
 import java.util.*;
@@ -48,8 +48,8 @@ public class DungeonPartyFinderPlayer implements SerializerInterface, Deserializ
             throw new RuntimeException("Forbidden value on playerId = " + playerId + ", it doesn't respect the following condition : playerId < 0");
         playerName = reader.readString();
         breed = reader.readByte();
-        if (breed < PlayableBreedEnum.Feca.value() || breed > PlayableBreedEnum.Zobal.value())
-            throw new RuntimeException("Forbidden value on breed = " + breed + ", it doesn't respect the following condition : breed < PlayableBreedEnum.Feca.value() || breed > PlayableBreedEnum.Zobal.value()");
+        if (breed < PlayableBreedEnum.Feca.value() || breed > PlayableBreedEnum.Steamer.value())
+            throw new RuntimeException("Forbidden value on breed = " + breed + ", it doesn't respect the following condition : breed < PlayableBreedEnum.Feca.value() || breed > PlayableBreedEnum.Steamer.value()");
         sex = reader.readBoolean();
         level = reader.readShort();
         if (level < 0)

@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:13
+// Generated on 11/11/2012 20:41:40
 package org.mambo.protocol.client.types;
 
 import java.util.*;
@@ -20,14 +20,18 @@ public class PartyGuestInformations implements SerializerInterface, Deserializer
     public int hostId;
     public String name;
     public EntityLook guestLook;
+    public byte breed;
+    public boolean sex;
     
     public PartyGuestInformations() { }
     
-    public PartyGuestInformations(int guestId, int hostId, String name, EntityLook guestLook) {
+    public PartyGuestInformations(int guestId, int hostId, String name, EntityLook guestLook, byte breed, boolean sex) {
         this.guestId = guestId;
         this.hostId = hostId;
         this.name = name;
         this.guestLook = guestLook;
+        this.breed = breed;
+        this.sex = sex;
     }
     
     @Override
@@ -36,6 +40,8 @@ public class PartyGuestInformations implements SerializerInterface, Deserializer
         writer.writeInt(hostId);
         writer.writeString(name);
         guestLook.serialize(writer);
+        writer.writeByte(breed);
+        writer.writeBoolean(sex);
     }
     
     @Override
@@ -49,6 +55,8 @@ public class PartyGuestInformations implements SerializerInterface, Deserializer
         name = reader.readString();
         guestLook = new EntityLook();
         guestLook.deserialize(reader);
+        breed = reader.readByte();
+        sex = reader.readBoolean();
     }
     
 }

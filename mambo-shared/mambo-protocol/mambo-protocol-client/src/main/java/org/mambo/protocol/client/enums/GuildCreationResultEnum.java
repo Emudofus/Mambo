@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 18:18:42
+// Generated on 11/11/2012 20:41:42
 package org.mambo.protocol.client.enums;
 
 public enum GuildCreationResultEnum {
@@ -11,7 +11,8 @@ public enum GuildCreationResultEnum {
     GUILD_CREATE_ERROR_EMBLEM_ALREADY_EXISTS(5),
     GUILD_CREATE_ERROR_LEAVE(6),
     GUILD_CREATE_ERROR_CANCEL(7),
-    GUILD_CREATE_ERROR_REQUIREMENT_UNMET(8);
+    GUILD_CREATE_ERROR_REQUIREMENT_UNMET(8),
+    GUILD_CREATE_ERROR_EMBLEM_INVALID(9);
     
     private int value;
     GuildCreationResultEnum(int value) { this.value = value; }

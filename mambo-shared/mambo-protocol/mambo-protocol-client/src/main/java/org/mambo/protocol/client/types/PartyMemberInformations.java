@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:13
+// Generated on 11/11/2012 20:41:40
 package org.mambo.protocol.client.types;
 
 import java.util.*;
@@ -8,7 +8,7 @@ import org.mambo.protocol.client.enums.*;
 import org.mambo.protocol.client.*;
 import org.mambo.protocol.client.io.*;
 
-public class PartyMemberInformations extends CharacterMinimalPlusLookInformations {
+public class PartyMemberInformations extends CharacterBaseInformations {
     public static final short TYPE_ID = 90;
     
     @Override
@@ -23,11 +23,15 @@ public class PartyMemberInformations extends CharacterMinimalPlusLookInformation
     public short initiative;
     public boolean pvpEnabled;
     public byte alignmentSide;
+    public short worldX;
+    public short worldY;
+    public int mapId;
+    public short subAreaId;
     
     public PartyMemberInformations() { }
     
-    public PartyMemberInformations(int id, short level, String name, EntityLook entityLook, int lifePoints, int maxLifePoints, short prospecting, short regenRate, short initiative, boolean pvpEnabled, byte alignmentSide) {
-        super(id, level, name, entityLook);
+    public PartyMemberInformations(int id, short level, String name, EntityLook entityLook, byte breed, boolean sex, int lifePoints, int maxLifePoints, short prospecting, short regenRate, short initiative, boolean pvpEnabled, byte alignmentSide, short worldX, short worldY, int mapId, short subAreaId) {
+        super(id, level, name, entityLook, breed, sex);
         this.lifePoints = lifePoints;
         this.maxLifePoints = maxLifePoints;
         this.prospecting = prospecting;
@@ -35,6 +39,10 @@ public class PartyMemberInformations extends CharacterMinimalPlusLookInformation
         this.initiative = initiative;
         this.pvpEnabled = pvpEnabled;
         this.alignmentSide = alignmentSide;
+        this.worldX = worldX;
+        this.worldY = worldY;
+        this.mapId = mapId;
+        this.subAreaId = subAreaId;
     }
     
     @Override
@@ -47,6 +55,10 @@ public class PartyMemberInformations extends CharacterMinimalPlusLookInformation
         writer.writeShort(initiative);
         writer.writeBoolean(pvpEnabled);
         writer.writeByte(alignmentSide);
+        writer.writeShort(worldX);
+        writer.writeShort(worldY);
+        writer.writeInt(mapId);
+        writer.writeShort(subAreaId);
     }
     
     @Override
@@ -69,6 +81,16 @@ public class PartyMemberInformations extends CharacterMinimalPlusLookInformation
             throw new RuntimeException("Forbidden value on initiative = " + initiative + ", it doesn't respect the following condition : initiative < 0");
         pvpEnabled = reader.readBoolean();
         alignmentSide = reader.readByte();
+        worldX = reader.readShort();
+        if (worldX < -255 || worldX > 255)
+            throw new RuntimeException("Forbidden value on worldX = " + worldX + ", it doesn't respect the following condition : worldX < -255 || worldX > 255");
+        worldY = reader.readShort();
+        if (worldY < -255 || worldY > 255)
+            throw new RuntimeException("Forbidden value on worldY = " + worldY + ", it doesn't respect the following condition : worldY < -255 || worldY > 255");
+        mapId = reader.readInt();
+        subAreaId = reader.readShort();
+        if (subAreaId < 0)
+            throw new RuntimeException("Forbidden value on subAreaId = " + subAreaId + ", it doesn't respect the following condition : subAreaId < 0");
     }
     
 }

@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 18:18:42
+// Generated on 11/11/2012 20:41:44
 package org.mambo.protocol.client.enums;
 
 public enum ObjectErrorEnum {
@@ -12,7 +12,9 @@ public enum ObjectErrorEnum {
     CANNOT_DESTROY(6),
     LEVEL_TOO_LOW(7),
     LIVING_OBJECT_REFUSED_FOOD(8),
-    CANNOT_UNEQUIP(9);
+    CANNOT_UNEQUIP(9),
+    CANNOT_EQUIP_HERE(10),
+    CRITERIONS(11);
     
     private int value;
     ObjectErrorEnum(int value) { this.value = value; }

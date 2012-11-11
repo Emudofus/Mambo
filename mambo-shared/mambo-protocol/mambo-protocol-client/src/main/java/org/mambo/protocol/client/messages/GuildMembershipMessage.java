@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:17:08
+// Generated on 11/11/2012 20:41:31
 package org.mambo.protocol.client.messages;
 
 import java.util.*;
@@ -20,8 +20,8 @@ public class GuildMembershipMessage extends GuildJoinedMessage {
     
     public GuildMembershipMessage() { }
     
-    public GuildMembershipMessage(GuildInformations guildInfo, long memberRights) {
-        super(guildInfo, memberRights);
+    public GuildMembershipMessage(GuildInformations guildInfo, long memberRights, boolean enabled) {
+        super(guildInfo, memberRights, enabled);
     }
     
     @Override

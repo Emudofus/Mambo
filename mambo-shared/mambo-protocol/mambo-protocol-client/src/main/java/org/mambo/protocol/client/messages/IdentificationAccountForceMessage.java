@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:16:57
+// Generated on 11/11/2012 20:41:22
 package org.mambo.protocol.client.messages;
 
 import java.util.*;
@@ -21,7 +21,7 @@ public class IdentificationAccountForceMessage extends IdentificationMessage {
     
     public IdentificationAccountForceMessage() { }
     
-    public IdentificationAccountForceMessage(boolean autoconnect, boolean useCertificate, boolean useLoginToken, Version version, String lang, String login, byte[] credentials, short serverId, String forcedAccountLogin) {
+    public IdentificationAccountForceMessage(boolean autoconnect, boolean useCertificate, boolean useLoginToken, VersionExtended version, String lang, String login, byte[] credentials, short serverId, String forcedAccountLogin) {
         super(autoconnect, useCertificate, useLoginToken, version, lang, login, credentials, serverId);
         this.forcedAccountLogin = forcedAccountLogin;
     }

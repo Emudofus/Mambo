@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:17:04
+// Generated on 11/11/2012 20:41:29
 package org.mambo.protocol.client.messages;
 
 import java.util.*;
@@ -22,8 +22,8 @@ public class PartyInvitationDungeonDetailsMessage extends PartyInvitationDetails
     
     public PartyInvitationDungeonDetailsMessage() { }
     
-    public PartyInvitationDungeonDetailsMessage(int partyId, byte partyType, int fromId, String fromName, int leaderId, PartyInvitationMemberInformations[] members, short dungeonId, boolean[] playersDungeonReady) {
-        super(partyId, partyType, fromId, fromName, leaderId, members);
+    public PartyInvitationDungeonDetailsMessage(int partyId, byte partyType, int fromId, String fromName, int leaderId, PartyInvitationMemberInformations[] members, PartyGuestInformations[] guests, short dungeonId, boolean[] playersDungeonReady) {
+        super(partyId, partyType, fromId, fromName, leaderId, members, guests);
         this.dungeonId = dungeonId;
         this.playersDungeonReady = playersDungeonReady;
     }

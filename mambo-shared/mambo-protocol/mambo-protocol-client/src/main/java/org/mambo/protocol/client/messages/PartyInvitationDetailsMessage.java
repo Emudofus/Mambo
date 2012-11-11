@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:17:04
+// Generated on 11/11/2012 20:41:29
 package org.mambo.protocol.client.messages;
 
 import java.util.*;
@@ -22,16 +22,18 @@ public class PartyInvitationDetailsMessage extends AbstractPartyMessage {
     public String fromName;
     public int leaderId;
     public PartyInvitationMemberInformations[] members;
+    public PartyGuestInformations[] guests;
     
     public PartyInvitationDetailsMessage() { }
     
-    public PartyInvitationDetailsMessage(int partyId, byte partyType, int fromId, String fromName, int leaderId, PartyInvitationMemberInformations[] members) {
+    public PartyInvitationDetailsMessage(int partyId, byte partyType, int fromId, String fromName, int leaderId, PartyInvitationMemberInformations[] members, PartyGuestInformations[] guests) {
         super(partyId);
         this.partyType = partyType;
         this.fromId = fromId;
         this.fromName = fromName;
         this.leaderId = leaderId;
         this.members = members;
+        this.guests = guests;
     }
     
     @Override
@@ -43,6 +45,10 @@ public class PartyInvitationDetailsMessage extends AbstractPartyMessage {
         writer.writeInt(leaderId);
         writer.writeUnsignedShort(members.length);
         for (PartyInvitationMemberInformations entry : members) {
+            entry.serialize(writer);
+        }
+        writer.writeUnsignedShort(guests.length);
+        for (PartyGuestInformations entry : guests) {
             entry.serialize(writer);
         }
     }
@@ -65,6 +71,12 @@ public class PartyInvitationDetailsMessage extends AbstractPartyMessage {
         for (int i = 0; i < limit; i++) {
             members[i] = new PartyInvitationMemberInformations();
             members[i].deserialize(reader);
+        }
+        limit = reader.readUnsignedShort();
+        guests = new PartyGuestInformations[limit];
+        for (int i = 0; i < limit; i++) {
+            guests[i] = new PartyGuestInformations();
+            guests[i].deserialize(reader);
         }
     }
     

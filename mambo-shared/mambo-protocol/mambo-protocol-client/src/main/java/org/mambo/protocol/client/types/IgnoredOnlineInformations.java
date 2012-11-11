@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:14
+// Generated on 11/11/2012 20:41:40
 package org.mambo.protocol.client.types;
 
 import java.util.*;
@@ -42,8 +42,8 @@ public class IgnoredOnlineInformations extends IgnoredInformations {
         super.deserialize(reader);
         playerName = reader.readString();
         breed = reader.readByte();
-        if (breed < PlayableBreedEnum.Feca.value() || breed > PlayableBreedEnum.Zobal.value())
-            throw new RuntimeException("Forbidden value on breed = " + breed + ", it doesn't respect the following condition : breed < PlayableBreedEnum.Feca.value() || breed > PlayableBreedEnum.Zobal.value()");
+        if (breed < PlayableBreedEnum.Feca.value() || breed > PlayableBreedEnum.Steamer.value())
+            throw new RuntimeException("Forbidden value on breed = " + breed + ", it doesn't respect the following condition : breed < PlayableBreedEnum.Feca.value() || breed > PlayableBreedEnum.Steamer.value()");
         sex = reader.readBoolean();
     }
     

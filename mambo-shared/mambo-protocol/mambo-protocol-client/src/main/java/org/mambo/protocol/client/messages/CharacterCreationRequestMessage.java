@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:16:59
+// Generated on 11/11/2012 20:41:24
 package org.mambo.protocol.client.messages;
 
 import java.util.*;
@@ -45,8 +45,8 @@ public class CharacterCreationRequestMessage extends NetworkMessage {
     public void deserialize(DataReaderInterface reader) {
         name = reader.readString();
         breed = reader.readByte();
-        if (breed < BreedEnum.Feca.value() || breed > BreedEnum.Zobal.value())
-            throw new RuntimeException("Forbidden value on breed = " + breed + ", it doesn't respect the following condition : breed < BreedEnum.Feca.value() || breed > BreedEnum.Zobal.value()");
+        if (breed < PlayableBreedEnum.Feca.value() || breed > PlayableBreedEnum.Steamer.value())
+            throw new RuntimeException("Forbidden value on breed = " + breed + ", it doesn't respect the following condition : breed < PlayableBreedEnum.Feca.value() || breed > PlayableBreedEnum.Steamer.value()");
         sex = reader.readBoolean();
         colors = new int[5];
         for (int i = 0; i < 5; i++) {

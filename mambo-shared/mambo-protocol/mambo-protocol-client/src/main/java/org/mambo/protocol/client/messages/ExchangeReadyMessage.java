@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:17:09
+// Generated on 11/11/2012 20:41:35
 package org.mambo.protocol.client.messages;
 
 import java.util.*;
@@ -18,21 +18,27 @@ public class ExchangeReadyMessage extends NetworkMessage {
     }
     
     public boolean ready;
+    public short step;
     
     public ExchangeReadyMessage() { }
     
-    public ExchangeReadyMessage(boolean ready) {
+    public ExchangeReadyMessage(boolean ready, short step) {
         this.ready = ready;
+        this.step = step;
     }
     
     @Override
     public void serialize(DataWriterInterface writer) {
         writer.writeBoolean(ready);
+        writer.writeShort(step);
     }
     
     @Override
     public void deserialize(DataReaderInterface reader) {
         ready = reader.readBoolean();
+        step = reader.readShort();
+        if (step < 0)
+            throw new RuntimeException("Forbidden value on step = " + step + ", it doesn't respect the following condition : step < 0");
     }
     
 }

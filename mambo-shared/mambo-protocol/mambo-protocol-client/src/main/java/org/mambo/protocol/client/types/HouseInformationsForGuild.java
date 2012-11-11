@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:14
+// Generated on 11/11/2012 20:41:41
 package org.mambo.protocol.client.types;
 
 import java.util.*;
@@ -21,17 +21,21 @@ public class HouseInformationsForGuild implements SerializerInterface, Deseriali
     public String ownerName;
     public short worldX;
     public short worldY;
+    public int mapId;
+    public short subAreaId;
     public int[] skillListIds;
     public long guildshareParams;
     
     public HouseInformationsForGuild() { }
     
-    public HouseInformationsForGuild(int houseId, int modelId, String ownerName, short worldX, short worldY, int[] skillListIds, long guildshareParams) {
+    public HouseInformationsForGuild(int houseId, int modelId, String ownerName, short worldX, short worldY, int mapId, short subAreaId, int[] skillListIds, long guildshareParams) {
         this.houseId = houseId;
         this.modelId = modelId;
         this.ownerName = ownerName;
         this.worldX = worldX;
         this.worldY = worldY;
+        this.mapId = mapId;
+        this.subAreaId = subAreaId;
         this.skillListIds = skillListIds;
         this.guildshareParams = guildshareParams;
     }
@@ -43,6 +47,8 @@ public class HouseInformationsForGuild implements SerializerInterface, Deseriali
         writer.writeString(ownerName);
         writer.writeShort(worldX);
         writer.writeShort(worldY);
+        writer.writeInt(mapId);
+        writer.writeShort(subAreaId);
         writer.writeUnsignedShort(skillListIds.length);
         for (int entry : skillListIds) {
             writer.writeInt(entry);
@@ -65,6 +71,10 @@ public class HouseInformationsForGuild implements SerializerInterface, Deseriali
         worldY = reader.readShort();
         if (worldY < -255 || worldY > 255)
             throw new RuntimeException("Forbidden value on worldY = " + worldY + ", it doesn't respect the following condition : worldY < -255 || worldY > 255");
+        mapId = reader.readInt();
+        subAreaId = reader.readShort();
+        if (subAreaId < 0)
+            throw new RuntimeException("Forbidden value on subAreaId = " + subAreaId + ", it doesn't respect the following condition : subAreaId < 0");
         int limit = reader.readUnsignedShort();
         skillListIds = new int[limit];
         for (int i = 0; i < limit; i++) {

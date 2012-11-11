@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:12
+// Generated on 11/11/2012 20:41:40
 package org.mambo.protocol.client.types;
 
 import java.util.*;
@@ -20,8 +20,8 @@ public class GameRolePlayCharacterInformations extends GameRolePlayHumanoidInfor
     
     public GameRolePlayCharacterInformations() { }
     
-    public GameRolePlayCharacterInformations(int contextualId, EntityLook look, EntityDispositionInformations disposition, String name, HumanInformations humanoidInfo, ActorAlignmentInformations alignmentInfos) {
-        super(contextualId, look, disposition, name, humanoidInfo);
+    public GameRolePlayCharacterInformations(int contextualId, EntityLook look, EntityDispositionInformations disposition, String name, HumanInformations humanoidInfo, int accountId, ActorAlignmentInformations alignmentInfos) {
+        super(contextualId, look, disposition, name, humanoidInfo, accountId);
         this.alignmentInfos = alignmentInfos;
     }
     

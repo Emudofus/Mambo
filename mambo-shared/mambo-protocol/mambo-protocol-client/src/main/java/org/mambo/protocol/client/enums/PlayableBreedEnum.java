@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 18:18:42
+// Generated on 11/11/2012 20:41:44
 package org.mambo.protocol.client.enums;
 
 public enum PlayableBreedEnum {
@@ -19,7 +19,7 @@ public enum PlayableBreedEnum {
     Pandawa(12),
     Roublard(13),
     Zobal(14),
-    XV(15);
+    Steamer(15);
     
     private int value;
     PlayableBreedEnum(int value) { this.value = value; }

@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:12
+// Generated on 11/11/2012 20:41:40
 package org.mambo.protocol.client.types;
 
 import java.util.*;
@@ -16,21 +16,19 @@ public class GameRolePlayGroupMonsterInformations extends GameRolePlayActorInfor
         return TYPE_ID;
     }
     
-    public int mainCreatureGenericId;
-    public byte mainCreatureGrade;
-    public MonsterInGroupInformations[] underlings;
+    public GroupMonsterStaticInformations staticInfos;
     public short ageBonus;
+    public byte lootShare;
     public byte alignmentSide;
     public boolean keyRingBonus;
     
     public GameRolePlayGroupMonsterInformations() { }
     
-    public GameRolePlayGroupMonsterInformations(int contextualId, EntityLook look, EntityDispositionInformations disposition, int mainCreatureGenericId, byte mainCreatureGrade, MonsterInGroupInformations[] underlings, short ageBonus, byte alignmentSide, boolean keyRingBonus) {
+    public GameRolePlayGroupMonsterInformations(int contextualId, EntityLook look, EntityDispositionInformations disposition, GroupMonsterStaticInformations staticInfos, short ageBonus, byte lootShare, byte alignmentSide, boolean keyRingBonus) {
         super(contextualId, look, disposition);
-        this.mainCreatureGenericId = mainCreatureGenericId;
-        this.mainCreatureGrade = mainCreatureGrade;
-        this.underlings = underlings;
+        this.staticInfos = staticInfos;
         this.ageBonus = ageBonus;
+        this.lootShare = lootShare;
         this.alignmentSide = alignmentSide;
         this.keyRingBonus = keyRingBonus;
     }
@@ -38,13 +36,10 @@ public class GameRolePlayGroupMonsterInformations extends GameRolePlayActorInfor
     @Override
     public void serialize(DataWriterInterface writer) {
         super.serialize(writer);
-        writer.writeInt(mainCreatureGenericId);
-        writer.writeByte(mainCreatureGrade);
-        writer.writeUnsignedShort(underlings.length);
-        for (MonsterInGroupInformations entry : underlings) {
-            entry.serialize(writer);
-        }
+        writer.writeShort(staticInfos.getTypeId());
+        staticInfos.serialize(writer);
         writer.writeShort(ageBonus);
+        writer.writeByte(lootShare);
         writer.writeByte(alignmentSide);
         writer.writeBoolean(keyRingBonus);
     }
@@ -52,19 +47,14 @@ public class GameRolePlayGroupMonsterInformations extends GameRolePlayActorInfor
     @Override
     public void deserialize(DataReaderInterface reader) {
         super.deserialize(reader);
-        mainCreatureGenericId = reader.readInt();
-        mainCreatureGrade = reader.readByte();
-        if (mainCreatureGrade < 0)
-            throw new RuntimeException("Forbidden value on mainCreatureGrade = " + mainCreatureGrade + ", it doesn't respect the following condition : mainCreatureGrade < 0");
-        int limit = reader.readUnsignedShort();
-        underlings = new MonsterInGroupInformations[limit];
-        for (int i = 0; i < limit; i++) {
-            underlings[i] = new MonsterInGroupInformations();
-            underlings[i].deserialize(reader);
-        }
+        staticInfos = ProtocolTypeManager.getInstance().build(reader.readShort(), GroupMonsterStaticInformations.class);
+        staticInfos.deserialize(reader);
         ageBonus = reader.readShort();
         if (ageBonus < -1 || ageBonus > 1000)
             throw new RuntimeException("Forbidden value on ageBonus = " + ageBonus + ", it doesn't respect the following condition : ageBonus < -1 || ageBonus > 1000");
+        lootShare = reader.readByte();
+        if (lootShare < -1 || lootShare > 8)
+            throw new RuntimeException("Forbidden value on lootShare = " + lootShare + ", it doesn't respect the following condition : lootShare < -1 || lootShare > 8");
         alignmentSide = reader.readByte();
         keyRingBonus = reader.readBoolean();
     }

@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:12
+// Generated on 11/11/2012 20:41:40
 package org.mambo.protocol.client.types;
 
 import java.util.*;

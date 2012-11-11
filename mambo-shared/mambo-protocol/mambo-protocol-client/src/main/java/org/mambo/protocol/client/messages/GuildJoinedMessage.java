@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:17:07
+// Generated on 11/11/2012 20:41:31
 package org.mambo.protocol.client.messages;
 
 import java.util.*;
@@ -19,18 +19,21 @@ public class GuildJoinedMessage extends NetworkMessage {
     
     public GuildInformations guildInfo;
     public long memberRights;
+    public boolean enabled;
     
     public GuildJoinedMessage() { }
     
-    public GuildJoinedMessage(GuildInformations guildInfo, long memberRights) {
+    public GuildJoinedMessage(GuildInformations guildInfo, long memberRights, boolean enabled) {
         this.guildInfo = guildInfo;
         this.memberRights = memberRights;
+        this.enabled = enabled;
     }
     
     @Override
     public void serialize(DataWriterInterface writer) {
         guildInfo.serialize(writer);
         writer.writeUnsignedInt(memberRights);
+        writer.writeBoolean(enabled);
     }
     
     @Override
@@ -40,6 +43,7 @@ public class GuildJoinedMessage extends NetworkMessage {
         memberRights = reader.readUnsignedInt();
         if (memberRights < 0 || memberRights > 4294967295L)
             throw new RuntimeException("Forbidden value on memberRights = " + memberRights + ", it doesn't respect the following condition : memberRights < 0 || memberRights > 4294967295L");
+        enabled = reader.readBoolean();
     }
     
 }

@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:13
+// Generated on 11/11/2012 20:41:40
 package org.mambo.protocol.client.types;
 
 import java.util.*;
@@ -20,8 +20,8 @@ public class PartyMemberArenaInformations extends PartyMemberInformations {
     
     public PartyMemberArenaInformations() { }
     
-    public PartyMemberArenaInformations(int id, short level, String name, EntityLook entityLook, int lifePoints, int maxLifePoints, short prospecting, short regenRate, short initiative, boolean pvpEnabled, byte alignmentSide, short rank) {
-        super(id, level, name, entityLook, lifePoints, maxLifePoints, prospecting, regenRate, initiative, pvpEnabled, alignmentSide);
+    public PartyMemberArenaInformations(int id, short level, String name, EntityLook entityLook, byte breed, boolean sex, int lifePoints, int maxLifePoints, short prospecting, short regenRate, short initiative, boolean pvpEnabled, byte alignmentSide, short worldX, short worldY, int mapId, short subAreaId, short rank) {
+        super(id, level, name, entityLook, breed, sex, lifePoints, maxLifePoints, prospecting, regenRate, initiative, pvpEnabled, alignmentSide, worldX, worldY, mapId, subAreaId);
         this.rank = rank;
     }
     

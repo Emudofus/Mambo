@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:14
+// Generated on 11/11/2012 20:41:40
 package org.mambo.protocol.client.types;
 
 import java.util.*;
@@ -26,10 +26,11 @@ public class GuildMember extends CharacterMinimalInformations {
     public byte alignmentSide;
     public int hoursSinceLastConnection;
     public byte moodSmileyId;
+    public int accountId;
     
     public GuildMember() { }
     
-    public GuildMember(int id, short level, String name, byte breed, boolean sex, short rank, double givenExperience, byte experienceGivenPercent, long rights, byte connected, byte alignmentSide, int hoursSinceLastConnection, byte moodSmileyId) {
+    public GuildMember(int id, short level, String name, byte breed, boolean sex, short rank, double givenExperience, byte experienceGivenPercent, long rights, byte connected, byte alignmentSide, int hoursSinceLastConnection, byte moodSmileyId, int accountId) {
         super(id, level, name);
         this.breed = breed;
         this.sex = sex;
@@ -41,6 +42,7 @@ public class GuildMember extends CharacterMinimalInformations {
         this.alignmentSide = alignmentSide;
         this.hoursSinceLastConnection = hoursSinceLastConnection;
         this.moodSmileyId = moodSmileyId;
+        this.accountId = accountId;
     }
     
     @Override
@@ -56,6 +58,7 @@ public class GuildMember extends CharacterMinimalInformations {
         writer.writeByte(alignmentSide);
         writer.writeUnsignedShort(hoursSinceLastConnection);
         writer.writeByte(moodSmileyId);
+        writer.writeInt(accountId);
     }
     
     @Override
@@ -83,6 +86,9 @@ public class GuildMember extends CharacterMinimalInformations {
         if (hoursSinceLastConnection < 0 || hoursSinceLastConnection > 65535)
             throw new RuntimeException("Forbidden value on hoursSinceLastConnection = " + hoursSinceLastConnection + ", it doesn't respect the following condition : hoursSinceLastConnection < 0 || hoursSinceLastConnection > 65535");
         moodSmileyId = reader.readByte();
+        accountId = reader.readInt();
+        if (accountId < 0)
+            throw new RuntimeException("Forbidden value on accountId = " + accountId + ", it doesn't respect the following condition : accountId < 0");
     }
     
 }

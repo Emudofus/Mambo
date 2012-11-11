@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:16:58
+// Generated on 11/11/2012 20:41:22
 package org.mambo.protocol.client.messages;
 
 import java.util.*;
@@ -21,8 +21,8 @@ public class GameActionFightCloseCombatMessage extends AbstractGameActionFightTa
     
     public GameActionFightCloseCombatMessage() { }
     
-    public GameActionFightCloseCombatMessage(short actionId, int sourceId, short destinationCellId, byte critical, boolean silentCast, int weaponGenericId) {
-        super(actionId, sourceId, destinationCellId, critical, silentCast);
+    public GameActionFightCloseCombatMessage(short actionId, int sourceId, int targetId, short destinationCellId, byte critical, boolean silentCast, int weaponGenericId) {
+        super(actionId, sourceId, targetId, destinationCellId, critical, silentCast);
         this.weaponGenericId = weaponGenericId;
     }
     

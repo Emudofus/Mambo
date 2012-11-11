@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:17:01
+// Generated on 11/11/2012 20:41:26
 package org.mambo.protocol.client.messages;
 
 import java.util.*;
@@ -19,13 +19,15 @@ public class GameFightEndMessage extends NetworkMessage {
     
     public int duration;
     public short ageBonus;
+    public short lootShareLimitMalus;
     public FightResultListEntry[] results;
     
     public GameFightEndMessage() { }
     
-    public GameFightEndMessage(int duration, short ageBonus, FightResultListEntry[] results) {
+    public GameFightEndMessage(int duration, short ageBonus, short lootShareLimitMalus, FightResultListEntry[] results) {
         this.duration = duration;
         this.ageBonus = ageBonus;
+        this.lootShareLimitMalus = lootShareLimitMalus;
         this.results = results;
     }
     
@@ -33,6 +35,7 @@ public class GameFightEndMessage extends NetworkMessage {
     public void serialize(DataWriterInterface writer) {
         writer.writeInt(duration);
         writer.writeShort(ageBonus);
+        writer.writeShort(lootShareLimitMalus);
         writer.writeUnsignedShort(results.length);
         for (FightResultListEntry entry : results) {
             writer.writeShort(entry.getTypeId());
@@ -46,6 +49,7 @@ public class GameFightEndMessage extends NetworkMessage {
         if (duration < 0)
             throw new RuntimeException("Forbidden value on duration = " + duration + ", it doesn't respect the following condition : duration < 0");
         ageBonus = reader.readShort();
+        lootShareLimitMalus = reader.readShort();
         int limit = reader.readUnsignedShort();
         results = new FightResultListEntry[limit];
         for (int i = 0; i < limit; i++) {

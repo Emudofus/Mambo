@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:17:07
+// Generated on 11/11/2012 20:41:31
 package org.mambo.protocol.client.messages;
 
 import java.util.*;
@@ -23,16 +23,18 @@ public class GuildInformationsGeneralMessage extends NetworkMessage {
     public double expLevelFloor;
     public double experience;
     public double expNextLevelFloor;
+    public int creationDate;
     
     public GuildInformationsGeneralMessage() { }
     
-    public GuildInformationsGeneralMessage(boolean enabled, boolean abandonnedPaddock, short level, double expLevelFloor, double experience, double expNextLevelFloor) {
+    public GuildInformationsGeneralMessage(boolean enabled, boolean abandonnedPaddock, short level, double expLevelFloor, double experience, double expNextLevelFloor, int creationDate) {
         this.enabled = enabled;
         this.abandonnedPaddock = abandonnedPaddock;
         this.level = level;
         this.expLevelFloor = expLevelFloor;
         this.experience = experience;
         this.expNextLevelFloor = expNextLevelFloor;
+        this.creationDate = creationDate;
     }
     
     @Override
@@ -45,6 +47,7 @@ public class GuildInformationsGeneralMessage extends NetworkMessage {
         writer.writeDouble(expLevelFloor);
         writer.writeDouble(experience);
         writer.writeDouble(expNextLevelFloor);
+        writer.writeInt(creationDate);
     }
     
     @Override
@@ -64,6 +67,9 @@ public class GuildInformationsGeneralMessage extends NetworkMessage {
         expNextLevelFloor = reader.readDouble();
         if (expNextLevelFloor < 0)
             throw new RuntimeException("Forbidden value on expNextLevelFloor = " + expNextLevelFloor + ", it doesn't respect the following condition : expNextLevelFloor < 0");
+        creationDate = reader.readInt();
+        if (creationDate < 0)
+            throw new RuntimeException("Forbidden value on creationDate = " + creationDate + ", it doesn't respect the following condition : creationDate < 0");
     }
     
 }

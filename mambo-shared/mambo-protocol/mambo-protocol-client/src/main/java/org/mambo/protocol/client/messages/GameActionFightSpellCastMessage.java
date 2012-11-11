@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:16:58
+// Generated on 11/11/2012 20:41:23
 package org.mambo.protocol.client.messages;
 
 import java.util.*;
@@ -22,8 +22,8 @@ public class GameActionFightSpellCastMessage extends AbstractGameActionFightTarg
     
     public GameActionFightSpellCastMessage() { }
     
-    public GameActionFightSpellCastMessage(short actionId, int sourceId, short destinationCellId, byte critical, boolean silentCast, short spellId, byte spellLevel) {
-        super(actionId, sourceId, destinationCellId, critical, silentCast);
+    public GameActionFightSpellCastMessage(short actionId, int sourceId, int targetId, short destinationCellId, byte critical, boolean silentCast, short spellId, byte spellLevel) {
+        super(actionId, sourceId, targetId, destinationCellId, critical, silentCast);
         this.spellId = spellId;
         this.spellLevel = spellLevel;
     }

@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:16:57
+// Generated on 11/11/2012 20:41:22
 package org.mambo.protocol.client.messages;
 
 import java.util.*;
@@ -20,7 +20,7 @@ public class IdentificationMessage extends NetworkMessage {
     public boolean autoconnect;
     public boolean useCertificate;
     public boolean useLoginToken;
-    public Version version;
+    public VersionExtended version;
     public String lang;
     public String login;
     public byte[] credentials;
@@ -28,7 +28,7 @@ public class IdentificationMessage extends NetworkMessage {
     
     public IdentificationMessage() { }
     
-    public IdentificationMessage(boolean autoconnect, boolean useCertificate, boolean useLoginToken, Version version, String lang, String login, byte[] credentials, short serverId) {
+    public IdentificationMessage(boolean autoconnect, boolean useCertificate, boolean useLoginToken, VersionExtended version, String lang, String login, byte[] credentials, short serverId) {
         this.autoconnect = autoconnect;
         this.useCertificate = useCertificate;
         this.useLoginToken = useLoginToken;
@@ -62,7 +62,7 @@ public class IdentificationMessage extends NetworkMessage {
         autoconnect = BooleanByteWrapper.getFlag(flag1, 0);
         useCertificate = BooleanByteWrapper.getFlag(flag1, 1);
         useLoginToken = BooleanByteWrapper.getFlag(flag1, 2);
-        version = new Version();
+        version = new VersionExtended();
         version.deserialize(reader);
         lang = reader.readString();
         login = reader.readString();

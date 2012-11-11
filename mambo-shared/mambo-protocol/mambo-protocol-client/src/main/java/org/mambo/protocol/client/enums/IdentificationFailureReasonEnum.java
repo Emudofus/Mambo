@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 18:18:42
+// Generated on 11/11/2012 20:41:43
 package org.mambo.protocol.client.enums;
 
 public enum IdentificationFailureReasonEnum {
@@ -14,6 +14,7 @@ public enum IdentificationFailureReasonEnum {
     BAD_IPRANGE(8),
     CREDENTIALS_RESET(9),
     EMAIL_UNVALIDATED(10),
+    SERVICE_UNAVAILABLE(53),
     UNKNOWN_AUTH_ERROR(99),
     SPARE(100);
     

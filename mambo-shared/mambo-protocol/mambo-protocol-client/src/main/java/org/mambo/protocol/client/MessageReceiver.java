@@ -373,7 +373,6 @@ public final class MessageReceiver {
         messageClasses.put(5679, IgnoredAddFailureMessage.class);
         messageClasses.put(5680, IgnoredDeleteRequestMessage.class);
         messageClasses.put(5681, TaxCollectorHireRequestMessage.class);
-        messageClasses.put(5682, TaxCollectorFireRequestMessage.class);
         messageClasses.put(5683, EmotePlayMessage.class);
         messageClasses.put(5684, LifePointsRegenBeginMessage.class);
         messageClasses.put(5685, EmotePlayRequestMessage.class);
@@ -732,7 +731,6 @@ public final class MessageReceiver {
         messageClasses.put(6186, PackRestrictedSubAreaMessage.class);
         messageClasses.put(6188, ExchangeCraftResultMagicWithObjectDescMessage.class);
         messageClasses.put(6189, MountFeedRequestMessage.class);
-        messageClasses.put(6190, AuthenticationTicketWithClientPacksMessage.class);
         messageClasses.put(6192, MoodSmileyRequestMessage.class);
         messageClasses.put(6196, MoodSmileyResultMessage.class);
         messageClasses.put(6197, ErrorMapNotFoundMessage.class);
@@ -835,5 +833,29 @@ public final class MessageReceiver {
         messageClasses.put(6319, AlignmentSubAreaUpdateExtendedMessage.class);
         messageClasses.put(6320, GameActionFightInvisibleDetectedMessage.class);
         messageClasses.put(6321, CharacterExperienceGainMessage.class);
+        messageClasses.put(6322, FighterStatsListMessage.class);
+        messageClasses.put(6323, GuildModificationValidMessage.class);
+        messageClasses.put(6324, GuildModificationStartedMessage.class);
+        messageClasses.put(6325, ExchangeObjectTransfertExistingFromInvMessage.class);
+        messageClasses.put(6326, ExchangeObjectTransfertExistingToInvMessage.class);
+        messageClasses.put(6327, GuildModificationNameValidMessage.class);
+        messageClasses.put(6328, GuildModificationEmblemValidMessage.class);
+        messageClasses.put(6330, GameActionFightCastOnTargetRequestMessage.class);
+        messageClasses.put(6335, ObjectAveragePricesMessage.class);
+        messageClasses.put(6336, ObjectAveragePricesErrorMessage.class);
+        messageClasses.put(6337, ExchangeBidHouseInListUpdatedMessage.class);
+        messageClasses.put(6339, CharacterCapabilitiesMessage.class);
+        messageClasses.put(6340, ServerSettingsMessage.class);
+        messageClasses.put(6341, AlmanachCalendarDateMessage.class);
+        messageClasses.put(6342, PartyMemberInFightMessage.class);
+        messageClasses.put(6343, KrosmasterInventoryErrorMessage.class);
+        messageClasses.put(6344, KrosmasterInventoryRequestMessage.class);
+        messageClasses.put(6345, KrosmasterAuthTokenErrorMessage.class);
+        messageClasses.put(6346, KrosmasterAuthTokenRequestMessage.class);
+        messageClasses.put(6347, KrosmasterPlayingStatusMessage.class);
+        messageClasses.put(6348, KrosmasterTransferMessage.class);
+        messageClasses.put(6349, KrosmasterTransferRequestMessage.class);
+        messageClasses.put(6350, KrosmasterInventoryMessage.class);
+        messageClasses.put(6351, KrosmasterAuthTokenMessage.class);
     }
 }

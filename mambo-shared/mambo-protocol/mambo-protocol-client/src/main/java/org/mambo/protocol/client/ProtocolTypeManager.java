@@ -151,6 +151,7 @@ public final class ProtocolTypeManager {
         typeClasses.put(133, PaddockAbandonnedInformations.class);
         typeClasses.put(134, ObjectItemNotInContainer.class);
         typeClasses.put(135, AlignmentBonusInformations.class);
+        typeClasses.put(140, GroupMonsterStaticInformations.class);
         typeClasses.put(141, GameRolePlayActorInformations.class);
         typeClasses.put(142, PrismSubAreaInformation.class);
         typeClasses.put(143, GameFightFighterInformations.class);
@@ -257,5 +258,10 @@ public final class ProtocolTypeManager {
         typeClasses.put(390, AccountHouseInformations.class);
         typeClasses.put(391, PartyMemberArenaInformations.class);
         typeClasses.put(392, MapCoordinatesAndId.class);
+        typeClasses.put(393, VersionExtended.class);
+        typeClasses.put(394, AlternativeMonstersInGroupLightInformations.class);
+        typeClasses.put(395, MonsterInGroupLightInformations.class);
+        typeClasses.put(396, GroupMonsterStaticInformationsWithAlternatives.class);
+        typeClasses.put(397, KrosmasterFigure.class);
     }
 }

@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 19:06:12
+// Generated on 11/11/2012 20:41:40
 package org.mambo.protocol.client.types;
 
 import java.util.*;
@@ -21,8 +21,8 @@ public class GameRolePlayMutantInformations extends GameRolePlayHumanoidInformat
     
     public GameRolePlayMutantInformations() { }
     
-    public GameRolePlayMutantInformations(int contextualId, EntityLook look, EntityDispositionInformations disposition, String name, HumanInformations humanoidInfo, int monsterId, byte powerLevel) {
-        super(contextualId, look, disposition, name, humanoidInfo);
+    public GameRolePlayMutantInformations(int contextualId, EntityLook look, EntityDispositionInformations disposition, String name, HumanInformations humanoidInfo, int accountId, int monsterId, byte powerLevel) {
+        super(contextualId, look, disposition, name, humanoidInfo, accountId);
         this.monsterId = monsterId;
         this.powerLevel = powerLevel;
     }
