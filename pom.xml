@@ -17,5 +17,7 @@
   </properties>
   <modules>
     <module>mambo-shared</module>
+    <module>mambo-core</module>
+    <module>mambo-host</module>
   </modules>
 </project>
