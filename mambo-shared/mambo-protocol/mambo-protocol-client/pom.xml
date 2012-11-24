@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.mambo.protocol</groupId>
+        <groupId>org.mambo.shared</groupId>
         <artifactId>mambo-protocol</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.mambo.protocol.client</groupId>
+    <groupId>org.mambo.shared.protocol</groupId>
     <artifactId>mambo-protocol-client</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
