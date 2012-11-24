@@ -32,5 +32,15 @@
             <artifactId>guice</artifactId>
             <version>${guice.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mambo.core</groupId>
+            <artifactId>mambo-core-shared</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mambo.protocol.client</groupId>
+            <artifactId>mambo-protocol-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
