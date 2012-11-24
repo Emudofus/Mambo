@@ -1,6 +1,10 @@
 package org.mambo.core.event;
 
-import com.google.common.collect.*;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,7 +31,9 @@ public abstract class AbstractEventDispatcher<T> implements EventDispatcher<T> {
 
     private final Lock lock = new ReentrantLock();
 
-    protected void cache(Class<?> clazz) {
+    protected void cache(@NotNull Class<?> clazz) {
+        checkNotNull(clazz);
+
         // check if this class has already been cached
         for (Multimap<Class<?>, Method> methods : methodsCache.values()) {
             if (methods.containsKey(clazz)) {
@@ -48,7 +56,9 @@ public abstract class AbstractEventDispatcher<T> implements EventDispatcher<T> {
         }
     }
 
-    protected void dispatchEvent(T event) {
+    protected void dispatchEvent(@NotNull T event) {
+        checkNotNull(event);
+
         lock.lock();
         try {
             Multimap<Class<?>, Method> methods = methodsCache.get(event.getClass());
@@ -69,7 +79,9 @@ public abstract class AbstractEventDispatcher<T> implements EventDispatcher<T> {
     }
 
     @Override
-    public void register(Object listener) {
+    public void register(@NotNull Object listener) {
+        checkNotNull(listener);
+
         lock.lock();
         try {
             listeners.add(listener);
@@ -80,7 +92,9 @@ public abstract class AbstractEventDispatcher<T> implements EventDispatcher<T> {
     }
 
     @Override
-    public void unregister(Object listener) {
+    public void unregister(@NotNull Object listener) {
+        checkNotNull(listener);
+
         lock.lock();
         try {
             listeners.remove(listener);

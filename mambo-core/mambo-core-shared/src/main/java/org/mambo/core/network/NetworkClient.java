@@ -1,6 +1,6 @@
 package org.mambo.core.network;
 
-import org.mambo.core.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created with IntelliJ IDEA.

@@ -1,5 +1,7 @@
 package org.mambo.core.event;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Blackrush
@@ -7,8 +9,8 @@ package org.mambo.core.event;
  * Time: 19:04
  */
 public interface EventDispatcher<T> {
-    void dispatch(T event);
+    void dispatch(@NotNull T event);
 
-    void register(Object listener);
-    void unregister(Object listener);
+    void register(@NotNull Object listener);
+    void unregister(@NotNull Object listener);
 }

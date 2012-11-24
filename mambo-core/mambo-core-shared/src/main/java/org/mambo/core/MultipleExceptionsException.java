@@ -1,5 +1,7 @@
 package org.mambo.core;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;

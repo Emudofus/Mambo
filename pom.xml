@@ -17,6 +17,7 @@
         <slf4j.version>1.7.2</slf4j.version>
         <jodatime.version>2.1</jodatime.version>
         <netty.version>3.5.10.Final</netty.version> <!-- TODO upgrade to 4.0.Final -->
+        <intellij-annotations.version>9.0.4</intellij-annotations.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

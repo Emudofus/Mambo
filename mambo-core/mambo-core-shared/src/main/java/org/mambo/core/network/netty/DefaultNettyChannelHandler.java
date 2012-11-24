@@ -4,7 +4,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-import org.mambo.core.NotNull;
+import org.jetbrains.annotations.NotNull;
 import org.mambo.core.network.NetworkClient;
 
 import static com.google.common.base.Preconditions.checkNotNull;

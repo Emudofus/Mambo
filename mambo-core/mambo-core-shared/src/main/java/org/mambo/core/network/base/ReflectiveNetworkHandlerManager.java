@@ -2,8 +2,8 @@ package org.mambo.core.network.base;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
+import org.jetbrains.annotations.NotNull;
 import org.mambo.core.Exceptions;
-import org.mambo.core.NotNull;
 import org.mambo.core.network.Handler;
 import org.mambo.core.network.NetworkClient;
 import org.mambo.core.network.NetworkHandler;

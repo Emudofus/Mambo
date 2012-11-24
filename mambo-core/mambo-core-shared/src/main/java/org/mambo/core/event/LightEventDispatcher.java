@@ -1,5 +1,7 @@
 package org.mambo.core.event;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Blackrush
@@ -8,7 +10,7 @@ package org.mambo.core.event;
  */
 public class LightEventDispatcher<T> extends AbstractEventDispatcher<T> {
     @Override
-    public void dispatch(T event) {
+    public void dispatch(@NotNull T event) {
         dispatchEvent(event);
     }
 }

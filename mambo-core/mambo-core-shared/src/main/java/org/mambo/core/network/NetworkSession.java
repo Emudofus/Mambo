@@ -1,7 +1,7 @@
 package org.mambo.core.network;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.mambo.core.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created with IntelliJ IDEA.

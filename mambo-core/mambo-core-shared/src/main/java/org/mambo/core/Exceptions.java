@@ -1,6 +1,7 @@
 package org.mambo.core;
 
 import com.google.common.collect.ImmutableSet;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 
@@ -11,6 +12,7 @@ import java.util.HashSet;
  * Time: 19:18
  */
 public final class Exceptions extends HashSet<Throwable> {
+    @NotNull
     public static Exceptions create() {
         return new Exceptions();
     }

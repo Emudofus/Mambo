@@ -2,9 +2,9 @@ package org.mambo.core.network;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.Service;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joda.time.Instant;
-import org.mambo.core.NotNull;
-import org.mambo.core.Nullable;
 
 /**
  * Created with IntelliJ IDEA.

@@ -3,7 +3,7 @@ package org.mambo.core.network.netty;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.mambo.core.NotNull;
+import org.jetbrains.annotations.NotNull;
 import org.mambo.core.network.NetworkClient;
 import org.mambo.core.network.NetworkHandlerManager;
 import org.mambo.core.network.base.BaseNetworkService;

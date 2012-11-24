@@ -1,5 +1,7 @@
 package org.mambo.core.network;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Blackrush
@@ -9,6 +11,6 @@ package org.mambo.core.network;
 public interface NetworkHandler<T extends NetworkClient> {
     public static @interface Handler { }
 
-    void connected(T client);
-    void disconnected(T client);
+    void connected(@NotNull T client);
+    void disconnected(@NotNull T client);
 }

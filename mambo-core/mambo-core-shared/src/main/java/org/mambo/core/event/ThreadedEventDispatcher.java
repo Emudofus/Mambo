@@ -1,5 +1,7 @@
 package org.mambo.core.event;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -16,7 +18,7 @@ public class ThreadedEventDispatcher<T> extends AbstractEventDispatcher<T> {
     }
 
     @Override
-    public void dispatch(final T event) {
+    public void dispatch(@NotNull final T event) {
         worker.execute(new Runnable() {
             public void run() {
                 dispatchEvent(event);

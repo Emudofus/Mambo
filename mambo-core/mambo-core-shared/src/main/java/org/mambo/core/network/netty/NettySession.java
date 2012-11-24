@@ -5,7 +5,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
-import org.mambo.core.NotNull;
+import org.jetbrains.annotations.NotNull;
 import org.mambo.core.network.NetworkSession;
 
 import static com.google.common.base.Preconditions.checkNotNull;

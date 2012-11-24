@@ -1,6 +1,6 @@
 package org.mambo.core.network.base;
 
-import org.mambo.core.NotNull;
+import org.jetbrains.annotations.NotNull;
 import org.mambo.core.network.NetworkClient;
 import org.mambo.core.network.NetworkHandler;
 import org.mambo.core.network.NetworkHandlerManager;
