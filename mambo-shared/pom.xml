@@ -22,5 +22,6 @@
 
     <modules>
         <module>mambo-protocol</module>
+        <module>mambo-database</module>
     </modules>
 </project>
