@@ -8,6 +8,8 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.core.network.NetworkSession;
 
+import java.net.SocketAddress;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -51,6 +53,12 @@ public class NettySession implements NetworkSession {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @NotNull
+    @Override
+    public SocketAddress getRemoteAddress() {
+        return channel.getRemoteAddress();
     }
 
     private class Future extends AbstractFuture<NettySession> implements ChannelFutureListener {

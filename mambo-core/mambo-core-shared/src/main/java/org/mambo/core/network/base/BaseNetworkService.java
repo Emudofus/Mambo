@@ -7,12 +7,8 @@ import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joda.time.Instant;
-import org.mambo.core.network.NetworkClient;
-import org.mambo.core.network.NetworkHandlerManager;
-import org.mambo.core.network.NetworkService;
-import org.mambo.core.network.NetworkSession;
+import org.mambo.core.network.*;
 
 import java.util.List;
 import java.util.Set;
@@ -27,13 +23,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public abstract class BaseNetworkService<T extends NetworkClient> extends AbstractIdleService implements NetworkService {
     private final Set<T> clients = Sets.newHashSet();
-    private final NetworkHandlerManager<T> networkHandlerManager;
+    private final NetworkHandlerManager<T> handlerManager;
+    private final NetworkProtocol protocol;
 
     private Instant startUpInstant;
     private int largestOnlineClients;
 
-    protected BaseNetworkService(@NotNull NetworkHandlerManager<T> networkHandlerManager) {
-        this.networkHandlerManager = checkNotNull(networkHandlerManager);
+    protected BaseNetworkService(@NotNull NetworkHandlerManager<T> handlerManager, @NotNull NetworkProtocol protocol) {
+        this.handlerManager = checkNotNull(handlerManager);
+        this.protocol = checkNotNull(protocol);
     }
 
     protected abstract void configure();
@@ -78,7 +76,6 @@ public abstract class BaseNetworkService<T extends NetworkClient> extends Abstra
         return largestOnlineClients;
     }
 
-    @Nullable
     @Override
     public Instant getStartupInstant() {
         return startUpInstant;
@@ -86,7 +83,13 @@ public abstract class BaseNetworkService<T extends NetworkClient> extends Abstra
 
     @NotNull
     @Override
+    public NetworkProtocol getProtocol() {
+        return protocol;
+    }
+
+    @NotNull
+    @Override
     public NetworkHandlerManager<T> getHandlerManager() {
-        return networkHandlerManager;
+        return handlerManager;
     }
 }

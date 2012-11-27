@@ -4,7 +4,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.core.Exceptions;
-import org.mambo.core.network.Handler;
 import org.mambo.core.network.NetworkClient;
 import org.mambo.core.network.NetworkHandler;
 import org.slf4j.Logger;
@@ -52,7 +51,7 @@ public class ReflectiveNetworkHandlerManager<T extends NetworkClient> extends Ba
                     method.setAccessible(true);
                 }
 
-                Handler annotation = method.getAnnotation(Handler.class);
+                NetworkHandler.Handler annotation = method.getAnnotation(NetworkHandler.Handler.class);
                 if (annotation == null) continue;
 
                 Class<?>[] handlerParameters = method.getParameterTypes();

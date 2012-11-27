@@ -3,10 +3,8 @@
 // Generated on 11/11/2012 20:41:39
 package org.mambo.protocol.client.types;
 
-import java.util.*;
-import org.mambo.protocol.client.enums.*;
 import org.mambo.protocol.client.*;
-import org.mambo.protocol.client.io.*;
+import org.mambo.core.io.*;
 
 public class FightExternalInformations implements SerializerInterface, DeserializerInterface {
     public static final short TYPE_ID = 117;

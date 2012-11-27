@@ -1,6 +1,6 @@
 package org.mambo.protocol.client;
 
-import org.mambo.protocol.client.io.DataReaderInterface;
+import org.mambo.core.io.DataReaderInterface;
 
 /**
  * Created with IntelliJ IDEA.

@@ -28,13 +28,11 @@ public final class MessageReceiver {
     /**
      * instantiate a message by its id
      * @param messageId message's id
-     * @param clazz return class
-     * @param <T> class message
      * @return instantiated message
      * @throws RuntimeException thrown if MessageReceiver is not loaded or if it can not instantiate message
      * @throws IllegalArgumentException thrown if message's id is invalid or if target class is not assignable from message's class
      */
-    public <T> T build(int messageId, Class<T> clazz) {
+    public NetworkMessage build(int messageId) {
         if (messageClasses == null) throw new RuntimeException("MessageReceiver must be loaded before used");
 
         Class<?> clazz2 = messageClasses.get(messageId);
@@ -42,13 +40,10 @@ public final class MessageReceiver {
         if (clazz2 == null) {
             throw new IllegalArgumentException("unknown message " + messageId);
         }
-        if (!clazz.isAssignableFrom(clazz2)) {
-            throw new IllegalArgumentException("message " + clazz.getName() + " is not assignable from " + clazz2.getName());
-        }
 
         try {
             Object message = clazz2.newInstance();
-            return clazz.cast(message);
+            return (NetworkMessage) message;
         } catch (Exception e) {
             throw new RuntimeException("can't instantiate " + clazz2.getName(), e);
         }

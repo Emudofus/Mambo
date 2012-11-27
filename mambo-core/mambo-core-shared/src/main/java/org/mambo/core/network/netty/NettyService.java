@@ -6,6 +6,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.core.network.NetworkClient;
 import org.mambo.core.network.NetworkHandlerManager;
+import org.mambo.core.network.NetworkProtocol;
 import org.mambo.core.network.base.BaseNetworkService;
 
 import java.net.InetSocketAddress;
@@ -24,8 +25,8 @@ public abstract class NettyService<T extends NetworkClient> extends BaseNetworkS
 
     private Channel serverChannel;
 
-    protected NettyService(int port, @NotNull ChannelPipelineFactory pipelineFactory, @NotNull NetworkHandlerManager<T> networkHandlerManager) {
-        super(networkHandlerManager);
+    protected NettyService(int port, @NotNull ChannelPipelineFactory pipelineFactory, @NotNull NetworkHandlerManager<T> networkHandlerManager, @NotNull NetworkProtocol protocol) {
+        super(networkHandlerManager, protocol);
         this.port = port;
         this.pipelineFactory = pipelineFactory;
 
@@ -60,6 +61,7 @@ public abstract class NettyService<T extends NetworkClient> extends BaseNetworkS
     }
 
     private final class Handler extends SimpleChannelHandler {
+        @Override
         public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
             Channel channel = e.getChannel();
 

@@ -3,11 +3,7 @@
 // Generated on 11/11/2012 20:41:21
 package org.mambo.protocol.client.messages;
 
-import java.util.*;
-import org.mambo.protocol.client.types.*;
-import org.mambo.protocol.client.enums.*;
-import org.mambo.protocol.client.*;
-import org.mambo.protocol.client.io.*;
+import org.mambo.core.io.*;
 
 public class AdminQuietCommandMessage extends AdminCommandMessage {
     public static final int MESSAGE_ID = 5662;

@@ -3,7 +3,6 @@ package org.mambo.core.network;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.Service;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joda.time.Instant;
 
 /**
@@ -18,8 +17,10 @@ public interface NetworkService extends Service {
 
     int getLargestOnlineClients();
 
-    @Nullable
     Instant getStartupInstant();
+
+    @NotNull
+    NetworkProtocol getProtocol();
 
     @NotNull
     NetworkHandlerManager<? extends NetworkClient> getHandlerManager();

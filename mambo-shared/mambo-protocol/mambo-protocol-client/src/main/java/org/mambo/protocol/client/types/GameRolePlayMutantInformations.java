@@ -3,10 +3,7 @@
 // Generated on 11/11/2012 20:41:40
 package org.mambo.protocol.client.types;
 
-import java.util.*;
-import org.mambo.protocol.client.enums.*;
-import org.mambo.protocol.client.*;
-import org.mambo.protocol.client.io.*;
+import org.mambo.core.io.*;
 
 public class GameRolePlayMutantInformations extends GameRolePlayHumanoidInformations {
     public static final short TYPE_ID = 3;

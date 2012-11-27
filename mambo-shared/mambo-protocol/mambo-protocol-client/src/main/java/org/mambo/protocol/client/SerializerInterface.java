@@ -1,6 +1,6 @@
 package org.mambo.protocol.client;
 
-import org.mambo.protocol.client.io.DataWriterInterface;
+import org.mambo.core.io.DataWriterInterface;
 
 /**
  * Created with IntelliJ IDEA.

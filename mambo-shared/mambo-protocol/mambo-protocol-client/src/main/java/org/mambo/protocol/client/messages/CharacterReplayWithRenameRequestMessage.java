@@ -3,11 +3,7 @@
 // Generated on 11/11/2012 20:41:24
 package org.mambo.protocol.client.messages;
 
-import java.util.*;
-import org.mambo.protocol.client.types.*;
-import org.mambo.protocol.client.enums.*;
-import org.mambo.protocol.client.*;
-import org.mambo.protocol.client.io.*;
+import org.mambo.core.io.*;
 
 public class CharacterReplayWithRenameRequestMessage extends CharacterReplayRequestMessage {
     public static final int MESSAGE_ID = 6122;

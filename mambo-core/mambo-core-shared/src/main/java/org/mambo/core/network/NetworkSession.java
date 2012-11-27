@@ -3,6 +3,8 @@ package org.mambo.core.network;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.SocketAddress;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Blackrush
@@ -17,4 +19,7 @@ public interface NetworkSession {
     ListenableFuture<? extends NetworkSession> close();
 
     void closeAndWait();
+
+    @NotNull
+    SocketAddress getRemoteAddress();
 }

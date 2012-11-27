@@ -2,7 +2,6 @@ package org.mambo.core.configuration;
 
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
@@ -27,7 +26,6 @@ public abstract class BaseConfigurationProvider implements ConfigurationProvider
         values.put(checkNotNull(key), checkNotNull(value));
     }
 
-    @Nullable
     protected Object getUnsafe(@NotNull String key) {
         return values.get(key);
     }

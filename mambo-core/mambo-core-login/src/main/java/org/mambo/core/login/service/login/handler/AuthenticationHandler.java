@@ -17,11 +17,12 @@ import org.slf4j.LoggerFactory;
  */
 public class AuthenticationHandler extends BaseNetworkHandler<LoginClient> {
     private static final Logger log = LoggerFactory.getLogger(AuthenticationHandler.class);
-    public static final byte REASON = (byte) IdentificationFailureReasonEnum.IN_MAINTENANCE.value();
+
+    public static final byte IN_MAINTENANCE = (byte) IdentificationFailureReasonEnum.IN_MAINTENANCE.value();
 
     @Handler
     public void identificationAction(LoginClient client, final IdentificationMessage msg) {
-        client.getSession().write(new IdentificationFailedMessage(REASON)).addListener(new Runnable() {
+        client.getSession().write(new IdentificationFailedMessage(IN_MAINTENANCE)).addListener(new Runnable() {
             public void run() {
                 log.debug("{} tried to connect", msg.login);
             }

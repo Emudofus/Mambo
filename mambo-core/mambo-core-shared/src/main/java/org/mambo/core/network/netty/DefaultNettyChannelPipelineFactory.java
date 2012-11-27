@@ -3,6 +3,9 @@ package org.mambo.core.network.netty;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
+import org.jetbrains.annotations.NotNull;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,8 +14,17 @@ import org.jboss.netty.channel.Channels;
  * Time: 15:29
  */
 public class DefaultNettyChannelPipelineFactory implements ChannelPipelineFactory {
+    private final NettyService<?> service;
+
+    public DefaultNettyChannelPipelineFactory(@NotNull NettyService<?> service) {
+        this.service = checkNotNull(service);
+    }
+
     @Override
     public ChannelPipeline getPipeline() throws Exception {
-        return Channels.pipeline();
+        ChannelPipeline pipeline = Channels.pipeline();
+        pipeline.addLast("protocol", new NettyProtocolAdapter(service.getProtocol()));
+
+        return pipeline;
     }
 }
