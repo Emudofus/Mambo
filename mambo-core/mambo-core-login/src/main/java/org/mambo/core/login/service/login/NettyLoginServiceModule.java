@@ -46,7 +46,7 @@ public class NettyLoginServiceModule extends PrivateModule {
 
     @Singleton
     @Provides
-    ChannelPipelineFactory provideChannelPipelineFactory(NettyLoginService loginService) {
-        return new DefaultNettyChannelPipelineFactory(loginService);
+    ChannelPipelineFactory provideChannelPipelineFactory(NetworkProtocol protocol) {
+        return new DefaultNettyChannelPipelineFactory(protocol);
     }
 }

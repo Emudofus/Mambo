@@ -1,15 +1,11 @@
 package org.mambo.core.bootstrap;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Service;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
@@ -35,11 +31,10 @@ public class ServiceBootstrap {
         }
     };
 
-    private final List<Service> services;
+    private final Set<Service> services = Sets.newTreeSet(SERVICE_COMPARATOR);
 
-    public ServiceBootstrap(@NotNull Set<Service> services) {
-        this.services = Lists.newArrayList(checkNotNull(services));
-        Collections.sort(this.services, SERVICE_COMPARATOR);
+    public void register(Service service) {
+        services.add(service);
     }
 
     public void boot() {

@@ -46,18 +46,12 @@ public class ReflectiveNetworkHandlerManager<T extends NetworkClient> extends Ba
             Class<?> handlerClass = handler.getClass();
 
             for (Method method : handlerClass.getDeclaredMethods()) {
-                if (!method.isAccessible()) {
-                    log.warn("\"{}\" action's \"{}\" may be public", handlerClass.getName(), method.getName());
-                    method.setAccessible(true);
-                }
-
-                NetworkHandler.Handler annotation = method.getAnnotation(NetworkHandler.Handler.class);
-                if (annotation == null) continue;
+                if (!handlerClass.isAnnotationPresent(NetworkHandler.Handler.class)) continue;
 
                 Class<?>[] handlerParameters = method.getParameterTypes();
                 if (handlerParameters.length != 2) {
                     log.error("\"{}\" action's \"{}\" must have only 2 arguments : client and message", handlerClass.getName(), method.getName());
-                } else if (!handlerParameters[0].isAssignableFrom(NetworkClient.class)) {
+                } else if (!NetworkClient.class.isAssignableFrom(handlerParameters[0])) {
                     log.error("\"{}\" action's \"{}\" must have in first argument a NetworkClient", handlerClass.getName(), method.getName());
                 } else {
                     Class<?> messageClass = handlerParameters[1];
