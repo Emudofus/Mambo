@@ -34,6 +34,23 @@ public class DofusProtocol implements NetworkProtocol {
 
     @NotNull
     @Override
+    public DataReaderInterface newReader(byte[] bytes, int offset) {
+        return new BigEndianDataReader(bytes, offset);
+    }
+
+    @NotNull
+    @Override
+    public DataWriterInterface newWriter() {
+        return newWriter(initialCapacity);
+    }
+
+    @NotNull
+    public DataWriterInterface newWriter(int initialCapacity) {
+        return new BigEndianDataWriter(initialCapacity);
+    }
+
+    @NotNull
+    @Override
     public Encoder getEncoder() {
         return encoder;
     }
@@ -68,82 +85,71 @@ public class DofusProtocol implements NetworkProtocol {
 
     private class DofusEncoder implements Encoder {
         @Override
-        public byte[] encode(@NotNull Object o) {
+        public DataWriterInterface encode(@NotNull Object o) {
             if (!(o instanceof NetworkMessage)) return null;
+            NetworkMessage message = (NetworkMessage) o;
+            DataWriterInterface messageWriter = newWriter();
+            message.serialize(messageWriter);
+            messageWriter.reduce();
 
-            NetworkMessage msg = (NetworkMessage) o;
-            DataWriterInterface writer = new BigEndianDataWriter(initialCapacity);
-            msg.serialize(writer);
+            int length = messageWriter.getLength();
+            int typeLen = computeTypeLen(length);
+            DataWriterInterface writer = newWriter(2 + typeLen + length);
 
-            writer.reduce();
-            writer.setOffset(0);
-
-            int len = writer.getLength();
-            int typeLen = computeTypeLen(len);
-            writer.shiftRight(2 + typeLen);
-
-            writer.writeShort((short) subComputeStaticHeader(msg.getNetworkMessageId(), typeLen));
-
+            writer.writeShort((short) subComputeStaticHeader(message.getNetworkMessageId(), typeLen));
             switch (typeLen) {
             case 1:
-                writer.writeUnsignedByte((short) len);
+                writer.writeUnsignedByte((short) length);
                 break;
             case 2:
-                writer.writeShort((short) len);
+                writer.writeShort((short) length);
                 break;
             case 3:
-                writer.writeUnsignedByte((short) (len >> 16 & 0xFF));
-                writer.writeShort((short) (len & 0xFFFF));
+                writer.writeUnsignedByte((short) (length >> 16 & 0xFF));
+                writer.writeShort((short) (length & 0xFFFF));
                 break;
             }
+            writer.writeBytes(messageWriter.getData());
 
-            writer.setOffset(2 + typeLen + len);
-            writer.reduce();
-            return writer.getData();
+            return writer;
         }
     }
 
     private class DofusDecoder implements Decoder {
         @Override
-        public Object decode(@NotNull byte[] buf) {
-            if (buf.length < 2) return null;
+        public Object decode(@NotNull DataReaderInterface reader) {
+            if (reader.getRemaining() < 2) return null; // can't read header
 
-            DataReaderInterface reader = new BigEndianDataReader(buf);
+            int header = reader.readShort(),
+                messageId = getMessageId(header),
+                typeLen = getTypeLen(header);
 
-            short header = reader.readShort();
-
-            int networkMessageId = getMessageId(header),
-                typeLen          = getTypeLen(header);
-
-            if (typeLen < 0) {
-                throw new RuntimeException("malformated message");
-            } else if (typeLen == 0) {
-                return messageReceiver.build(networkMessageId);
-            } else {
-                int length;
-                switch (typeLen) {
-                case 1:
-                    length = reader.readUnsignedByte();
-                    break;
-                case 2:
-                    length = reader.readShort();
-                    break;
-                case 3:
-                    length = ((reader.readByte() & 0xFF) << 16) + ((reader.readByte() & 0xFF) << 8) + (reader.readByte() & 0xFF);
-                    break;
-                default:
-                    throw new RuntimeException("malformated header");
-                }
-
-                if (reader.getRemaining() < length) {
-                    return null;
-                } else {
-                    NetworkMessage message = messageReceiver.build(networkMessageId);
-                    message.deserialize(reader);
-
-                    return message;
-                }
+            NetworkMessage message = messageReceiver.build(messageId);
+            if (message == null) {
+                throw new RuntimeException("unknown message " + messageId);
             }
+
+            int length;
+            switch (typeLen) {
+            case 0:
+                return message;
+            case 1:
+                length = reader.readUnsignedByte();
+                break;
+            case 2:
+                length = reader.readShort();
+                break;
+            case 3:
+                length = ((reader.readByte() & 0xFF) << 16) + ((reader.readByte() & 0xFF) << 8) + (reader.readByte() & 0xFF);
+                break;
+            default:
+                throw new RuntimeException("bad type length " + typeLen);
+            }
+
+            if (reader.getRemaining() < length) return null; // can't read complete message
+
+            message.deserialize(reader);
+            return message;
         }
     }
 }

@@ -1,6 +1,8 @@
 package org.mambo.core.network;
 
 import org.jetbrains.annotations.NotNull;
+import org.mambo.core.io.DataReaderInterface;
+import org.mambo.core.io.DataWriterInterface;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,14 +12,20 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface NetworkProtocol {
     public static interface Encoder {
-        byte[] encode(@NotNull Object msg);
+        DataWriterInterface encode(@NotNull Object msg);
     }
 
     public static interface Decoder {
-        Object decode(@NotNull byte[] buf);
+        Object decode(@NotNull DataReaderInterface buf);
     }
 
     boolean canHandle(@NotNull Object msg);
+
+    @NotNull
+    DataReaderInterface newReader(byte[] bytes, int offset);
+
+    @NotNull
+    DataWriterInterface newWriter();
 
     @NotNull
     Encoder getEncoder();

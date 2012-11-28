@@ -16,8 +16,13 @@ public class BigEndianDataReader implements DataReaderInterface {
     private byte[] data;
     private int offset;
 
-    public BigEndianDataReader(byte[] data) {
+    public BigEndianDataReader(byte[] data, int offset) {
         this.data = data;
+        this.offset = offset;
+    }
+
+    public BigEndianDataReader(byte[] data) {
+        this(data, 0);
     }
 
     @Override
