@@ -1,0 +1,6 @@
+<config key="login">
+    <config key="required_version" type="Integer" value="1464" />
+    <config key="current_version" type="Integer" value="1464" />
+
+    <config key="port" type="Short" value="5555" />
+</config>

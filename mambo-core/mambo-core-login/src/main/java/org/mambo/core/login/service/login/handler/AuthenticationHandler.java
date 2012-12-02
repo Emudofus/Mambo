@@ -2,6 +2,7 @@ package org.mambo.core.login.service.login.handler;
 
 import com.google.common.util.concurrent.MoreExecutors;
 import org.jetbrains.annotations.NotNull;
+import org.mambo.core.configuration.InjectConfig;
 import org.mambo.core.login.service.login.LoginClient;
 import org.mambo.core.network.NetworkSession;
 import org.mambo.core.network.base.BaseNetworkHandler;
@@ -24,6 +25,9 @@ public class AuthenticationHandler extends BaseNetworkHandler<LoginClient> {
 
     public static final byte IN_MAINTENANCE = (byte) IdentificationFailureReasonEnum.IN_MAINTENANCE.value();
 
+    @InjectConfig("login.required_version") int requiredVersion;
+    @InjectConfig("login.current_version") int currentVersion;
+
     @Handler
     public void identificationAction(LoginClient client, final IdentificationMessage msg) {
         client.getSession().write(new IdentificationFailedMessage(IN_MAINTENANCE)).addListener(new Runnable() {
@@ -36,7 +40,7 @@ public class AuthenticationHandler extends BaseNetworkHandler<LoginClient> {
     @Override
     public void connected(@NotNull LoginClient client) {
         NetworkSession session = client.getSession();
-        session.write(new ProtocolRequired(1464, 1464));
+        session.write(new ProtocolRequired(requiredVersion, currentVersion));
         session.write(new HelloConnectMessage(client.getTicket(), new byte[0])); // TODO get rsa public key from LoginService
     }
 }
