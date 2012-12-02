@@ -1,11 +1,15 @@
 package org.mambo.core.login.service.login.handler;
 
 import com.google.common.util.concurrent.MoreExecutors;
+import org.jetbrains.annotations.NotNull;
 import org.mambo.core.login.service.login.LoginClient;
+import org.mambo.core.network.NetworkSession;
 import org.mambo.core.network.base.BaseNetworkHandler;
 import org.mambo.protocol.client.enums.IdentificationFailureReasonEnum;
+import org.mambo.protocol.client.messages.HelloConnectMessage;
 import org.mambo.protocol.client.messages.IdentificationFailedMessage;
 import org.mambo.protocol.client.messages.IdentificationMessage;
+import org.mambo.protocol.client.messages.ProtocolRequired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,5 +31,12 @@ public class AuthenticationHandler extends BaseNetworkHandler<LoginClient> {
                 log.debug("{} tried to connect", msg.login);
             }
         }, MoreExecutors.sameThreadExecutor());
+    }
+
+    @Override
+    public void connected(@NotNull LoginClient client) {
+        NetworkSession session = client.getSession();
+        session.write(new ProtocolRequired(1464, 1464));
+        session.write(new HelloConnectMessage(client.getTicket(), new byte[0])); // TODO get rsa public key from LoginService
     }
 }

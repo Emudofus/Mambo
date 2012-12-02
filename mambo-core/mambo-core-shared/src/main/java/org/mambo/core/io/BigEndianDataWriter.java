@@ -66,7 +66,7 @@ public class BigEndianDataWriter implements DataWriterInterface {
 
     @Override
     public void reduce() {
-        byte[] copied = new byte[offset + 1];
+        byte[] copied = new byte[offset];
         System.arraycopy(data, 0, copied, 0, offset);
         data = copied;
     }

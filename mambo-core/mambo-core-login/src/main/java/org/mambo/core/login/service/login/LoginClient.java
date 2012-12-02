@@ -13,4 +13,7 @@ public interface LoginClient extends NetworkClient {
     @NotNull
     @Override
     LoginService getService();
+
+    @NotNull
+    String getTicket();
 }
