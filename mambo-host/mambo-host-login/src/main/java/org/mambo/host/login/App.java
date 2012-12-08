@@ -8,6 +8,7 @@ import org.mambo.core.bootstrap.ServiceBootstrapModule;
 import org.mambo.core.configuration.ConfigurationProvider;
 import org.mambo.core.configuration.ConfigurationProviderModule;
 import org.mambo.core.configuration.XmlConfigurationProvider;
+import org.mambo.core.login.service.login.NioLoginServiceModule;
 import org.mambo.core.login.service.login.handler.LoginHandlerModule;
 import org.mambo.core.parser.string.StringParsers;
 import org.slf4j.Logger;
@@ -30,9 +31,9 @@ public class App {
         }
 
         Injector inject = Guice.createInjector(
-                Stage.PRODUCTION,
+                Stage.PRODUCTION, // forbid lazy initializations
                 new ConfigurationProviderModule(configuration),
-                // TODO add login service module
+                new NioLoginServiceModule(),
                 new LoginHandlerModule(),
                 new ServiceBootstrapModule()
         );
