@@ -9,14 +9,14 @@ import java.util.Collection;
  * Created with IntelliJ IDEA.
  * User: Blackrush
  * Date: 08/12/12
- * Time: 23:17
+ * Time: 23:19
  */
-public class IntegerPrimaryKeyGenerator implements PrimaryKeyGenerator<Integer> {
-    private Integer next = 0;
+public class LongGenerator implements PrimaryKeyGenerator<Long> {
+    private Long next = 0L;
 
     @Override
-    public void initialize(@NotNull Collection<Integer> keys) {
-        for (Integer key : keys) {
+    public void initialize(@NotNull Collection<Long> keys) {
+        for (Long key : keys) {
             if (next < key) {
                 next = key;
             }
@@ -25,7 +25,7 @@ public class IntegerPrimaryKeyGenerator implements PrimaryKeyGenerator<Integer> 
 
     @NotNull
     @Override
-    public Integer next() {
+    public Long next() {
         return ++next;
     }
 }

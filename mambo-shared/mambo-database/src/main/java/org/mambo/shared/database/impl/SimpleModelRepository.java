@@ -1,14 +1,16 @@
 package org.mambo.shared.database.impl;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.ModelInterface;
 import org.mambo.shared.database.ModelRepository;
 import org.mambo.shared.database.impl.internal.EntityField;
 import org.mambo.shared.database.impl.internal.EntityMetadata;
+import org.mambo.shared.database.impl.internal.References;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -27,8 +29,8 @@ public class SimpleModelRepository<E extends ModelInterface<?>> implements Model
     private final Map<Object, E> entities = Maps.newHashMap();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public SimpleModelRepository(TypeToken<E> type) {
-        this.metadata = EntityMetadata.of(type);
+    public SimpleModelRepository(@NotNull Class<E> clazz) {
+        this.metadata = EntityMetadata.of(clazz);
     }
 
     protected boolean isPersisted(@NotNull Object id) {
@@ -130,5 +132,32 @@ public class SimpleModelRepository<E extends ModelInterface<?>> implements Model
         } finally {
             lock.readLock().unlock();
         }
+    }
+
+    @Override
+    public List<E> findAll(String property, Object value) {
+        EntityField field = metadata.getField(property);
+        if (field == null) {
+            throw new IllegalArgumentException("unknown property \"" + property + "\"");
+        }
+
+        lock.readLock().lock();
+        try {
+            List<E> result = Lists.newArrayList();
+            for (E entity : entities.values()) {
+                Object fieldValue = field.get(entity);
+                if (fieldValue == value) {
+                    result.add(entity);
+                }
+            }
+            return result;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public E getReference(Object id) {
+        return References.create(this, metadata, id);
     }
 }

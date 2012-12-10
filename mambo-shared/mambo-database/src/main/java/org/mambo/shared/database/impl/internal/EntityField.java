@@ -4,6 +4,7 @@ import com.google.common.base.CaseFormat;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.ColumnConverter;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -42,14 +43,13 @@ public final class EntityField {
 
     private final Field field;
     private final String columnName;
-    private final ColumnConverter converter;
-
     private final Method getter, setter;
 
-    EntityField(@NotNull Field field, @NotNull String columnName, ColumnConverter converter) {
+    private ColumnConverter converter;
+
+    EntityField(@NotNull Field field, @NotNull String columnName) {
         this.field = checkNotNull(field);
         this.columnName = checkNotNull(columnName);
-        this.converter = converter;
 
         try {
             this.getter = getter(field);
@@ -64,6 +64,13 @@ public final class EntityField {
      */
     public Field getField() {
         return field;
+    }
+
+    /**
+     * @return field's type
+     */
+    public Class<?> getType() {
+        return field.getType();
     }
 
     /**
@@ -96,5 +103,13 @@ public final class EntityField {
 
     public ColumnConverter getConverter() {
         return converter;
+    }
+
+    public void setConverter(ColumnConverter converter) {
+        this.converter = converter;
+    }
+
+    public <T extends Annotation> T getAnnotation(Class<T> clazz) {
+        return field.getAnnotation(clazz);
     }
 }

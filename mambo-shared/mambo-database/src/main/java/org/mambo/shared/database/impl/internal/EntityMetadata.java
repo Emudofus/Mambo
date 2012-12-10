@@ -1,18 +1,20 @@
 package org.mambo.shared.database.impl.internal;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.ColumnConverter;
-import org.mambo.shared.database.annotations.Column;
-import org.mambo.shared.database.annotations.Id;
-import org.mambo.shared.database.annotations.Table;
+import org.mambo.shared.database.EntityInterface;
+import org.mambo.shared.database.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.Map;
 
+import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
+import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -23,34 +25,41 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class EntityMetadata {
     private static final Logger log = LoggerFactory.getLogger(EntityMetadata.class);
+    private static final Map<Class<?>, EntityMetadata> cache = Maps.newHashMap();
 
-    public static EntityMetadata of(Class<?> clazz) {
-        return new EntityMetadata(clazz);
+    public static EntityMetadata of(Class<? extends EntityInterface<?>> clazz) {
+        EntityMetadata metadata = cache.get(clazz);
+        if (metadata == null) {
+            metadata = new EntityMetadata(clazz);
+            cache.put(clazz, metadata);
+            metadata.load();
+        }
+        return metadata;
     }
 
-    public static EntityMetadata of(TypeToken<?> typeToken) {
-        return of(typeToken.getRawType());
+    @SuppressWarnings("unchecked")
+    public static EntityMetadata of(TypeToken<? extends EntityInterface<?>> typeToken) {
+        return of((Class<? extends EntityInterface<?>>) typeToken.getRawType());
     }
 
-    private final Class<?> entityClass;
+    private final Class<? extends EntityInterface<?>> entityClass;
 
-    private Class<?> primaryKeyClass;
     private String tableName;
+    private EntityField primaryKeyField;
     private Map<String, EntityField> fields;
 
-    private EntityMetadata(@NotNull Class<?> entityClass) {
+    private EntityMetadata(@NotNull Class<? extends EntityInterface<?>> entityClass) {
         this.entityClass = entityClass;
-        load();
     }
 
     @NotNull
-    public Class<?> getEntityClass() {
+    public Class<? extends EntityInterface<?>> getEntityClass() {
         return entityClass;
     }
 
     @NotNull
-    public Class<?> getPrimaryKeyClass() {
-        return primaryKeyClass;
+    public EntityField getPrimaryKeyField() {
+        return primaryKeyField;
     }
 
     @NotNull
@@ -76,43 +85,85 @@ public final class EntityMetadata {
         return fields.get(checkNotNull(name));
     }
 
-    private void load() {
-        Table tableAnnotation = entityClass.getAnnotation(Table.class);
-        if (tableAnnotation != null) {
-            tableName = tableAnnotation.value();
-        } else {
-            tableName = entityClass.getSimpleName().toLowerCase() + "s";
+    private EntityField load(Field field) {
+        Column columnAnnotation = field.getAnnotation(Column.class);
+        if (columnAnnotation == null) return null;
+
+        String name = columnAnnotation.name();
+        if (Strings.isNullOrEmpty(name)) {
+            name = field.getName();
         }
 
-        fields = Maps.newHashMap();
-        for (Field field : entityClass.getDeclaredFields()) {
-            Column columnAnnotation = field.getAnnotation(Column.class);
-            if (columnAnnotation == null) continue;
+        EntityField entityField = new EntityField(field, name);
 
-            Id idAnnotation = field.getAnnotation(Id.class);
-            if (idAnnotation != null) {
-                primaryKeyClass = field.getType();
-            }
+        if (field.isAnnotationPresent(ManyToOne.class)) {
+            ManyToOne m2oAnnotation = field.getAnnotation(ManyToOne.class);
 
+            @SuppressWarnings("unchecked")
+            EntityMetadata to = of((Class<? extends EntityInterface<?>>) field.getType());
+
+            entityField.setConverter(new Dependency(
+                    this,
+                    to,
+                    entityField,
+                    m2oAnnotation.targetField(),
+                    Dependency.Type.MANY_TO_ONE
+            ));
+        } else if (field.isAnnotationPresent(OneToMany.class)) {
+            OneToMany o2mAnnotation = field.getAnnotation(OneToMany.class);
+
+            @SuppressWarnings("unchecked")
+            EntityMetadata to = of((Class<? extends EntityInterface<?>>) o2mAnnotation.value());
+
+            entityField.setConverter(new Dependency(
+                    this,
+                    to,
+                    entityField,
+                    o2mAnnotation.mappedBy(),
+                    Dependency.Type.ONE_TO_MANY
+            ));
+        } else {
             Class<?> clazzConverter = columnAnnotation.converter();
-            ColumnConverter converter = null;
             if (clazzConverter != Column.DEFAULT_CONVERTER.class && ColumnConverter.class.isAssignableFrom(clazzConverter)) {
                 try {
-                    converter = (ColumnConverter) clazzConverter.newInstance();
+                    entityField.setConverter((ColumnConverter) clazzConverter.newInstance());
                 } catch (Throwable t) {
                     log.error(String.format("can't create converter of field %s in %s", field.getName(), entityClass.getName()), t);
                 }
             }
-
-            String name = columnAnnotation.name();
-            if (name == null || name.isEmpty()) {
-                name = field.getName();
-            }
-
-            EntityField entityField = new EntityField(field, name, converter);
-            fields.put(entityField.getColumnName(), entityField);
         }
 
-        checkNotNull(primaryKeyClass, "%s must have a primary key", entityClass);
+        return entityField;
+    }
+
+    private void load() {
+        Table tableAnnotation = entityClass.getAnnotation(Table.class);
+        if (tableAnnotation == null) {
+            throw new RuntimeException("entity \"" + entityClass.getName() + "\" must be annotated with @Table");
+        }
+
+        if (!Strings.isNullOrEmpty(tableAnnotation.value())) {
+            tableName = tableAnnotation.value();
+        } else {
+            tableName = UPPER_CAMEL.to(LOWER_UNDERSCORE, entityClass.getSimpleName().toLowerCase()) + "s";
+        }
+
+        fields = Maps.newHashMap();
+        for (Field field : entityClass.getDeclaredFields()) {
+            EntityField entityField = load(field);
+
+            if (entityField != null) {
+                fields.put(entityField.getColumnName(), entityField);
+
+                if (field.isAnnotationPresent(Id.class)) {
+                    if (primaryKeyField != null) {
+                        throw new RuntimeException("an entity can't have multiple id");
+                    }
+                    primaryKeyField = entityField;
+                }
+            }
+        }
+
+        checkNotNull(primaryKeyField, "%s must have a primary key", entityClass);
     }
 }

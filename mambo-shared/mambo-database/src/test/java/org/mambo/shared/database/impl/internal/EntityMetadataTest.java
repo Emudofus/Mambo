@@ -1,14 +1,17 @@
 package org.mambo.shared.database.impl.internal;
 
 import com.google.common.collect.Sets;
-import fi.evident.dalesbred.ResultTable;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.mambo.shared.database.ColumnConverter;
+import org.mambo.shared.database.DatabaseContext;
 import org.mambo.shared.database.annotations.*;
 import org.mambo.shared.database.impl.Model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -23,13 +26,13 @@ import static org.junit.Assert.assertThat;
 public class EntityMetadataTest {
     static class ComplexDataConverter implements ColumnConverter {
         @Override
-        public Object fromDatabase(ResultTable.ResultRow row) {
+        public Object extract(@NotNull DatabaseContext ctx, @NotNull ResultSet rset) throws SQLException {
             return new ComplexData();
         }
 
         @Override
-        public Object toDatabase(Object entity) {
-            return null;
+        public void export(@NotNull DatabaseContext ctx, @NotNull Object obj, @NotNull Map<String, Object> rset) throws SQLException {
+
         }
     }
 
@@ -37,6 +40,7 @@ public class EntityMetadataTest {
 
     }
 
+    @SuppressWarnings("unused")
     @Table("my_parent_model")
     static class MyParentModel extends Model<Long, MyParentModel> {
         @Column
@@ -44,7 +48,7 @@ public class EntityMetadataTest {
         private Long id = 0L;
 
         @Column
-        @OneToMany(MyModel.class)
+        @OneToMany(value = MyModel.class, mappedBy = "parent")
         private Set<MyModel> children = Sets.newHashSet();
 
         @NotNull
@@ -72,7 +76,8 @@ public class EntityMetadataTest {
         }
     }
 
-    @Table("my_model")
+    @SuppressWarnings("unused")
+    @Table
     static class MyModel extends Model<Long, MyModel> {
         @Column
         @Id
@@ -134,12 +139,13 @@ public class EntityMetadataTest {
 
     @Test
     public void tableName() {
-        assertThat(metadata.getTableName(), is("my_model"));
+        assertThat(metadata.getTableName(), is("mymodels"));
     }
 
     @Test
-    public void primaryKeyType() {
-        assertThat(metadata.getPrimaryKeyClass(), sameInstance((Class) Long.class));
+    public void primaryKey() {
+        assertThat(metadata.getPrimaryKeyField().getColumnName(), is("id"));
+        assertThat(metadata.getPrimaryKeyField().getType(), sameInstance((Class) Long.class));
     }
 
     @Test

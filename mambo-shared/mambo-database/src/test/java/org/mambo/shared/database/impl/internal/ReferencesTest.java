@@ -1,6 +1,7 @@
 package org.mambo.shared.database.impl.internal;
 
 import com.google.common.base.Supplier;
+import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +10,8 @@ import org.mambo.shared.database.Repository;
 import org.mambo.shared.database.annotations.Column;
 import org.mambo.shared.database.annotations.Id;
 import org.mambo.shared.database.annotations.Table;
+
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -25,9 +28,10 @@ public class ReferencesTest {
         final E instance;
         final EntityMetadata metadata;
 
+        @SuppressWarnings("unchecked")
         FakeRepository(E instance) {
             this.instance = instance;
-            this.metadata = EntityMetadata.of(instance.getClass());
+            this.metadata = EntityMetadata.of((Class) instance.getClass());
         }
 
         EntityMetadata getMetadata() {
@@ -41,6 +45,16 @@ public class ReferencesTest {
 
         @Override
         public E find(String property, Object value) {
+            return instance;
+        }
+
+        @Override
+        public List<E> findAll(String property, Object value) {
+            return Lists.newArrayList(instance);
+        }
+
+        @Override
+        public E getReference(Object id) {
             return instance;
         }
     }

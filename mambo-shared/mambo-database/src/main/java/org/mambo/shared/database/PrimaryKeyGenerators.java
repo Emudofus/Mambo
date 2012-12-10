@@ -3,9 +3,9 @@ package org.mambo.shared.database;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
-import org.mambo.shared.database.impl.BigIntegerPrimaryKeyGenerator;
-import org.mambo.shared.database.impl.IntegerPrimaryKeyGenerator;
-import org.mambo.shared.database.impl.LongPrimaryKeyGenerator;
+import org.mambo.shared.database.impl.BigIntegerGenerator;
+import org.mambo.shared.database.impl.IntegerGenerator;
+import org.mambo.shared.database.impl.LongGenerator;
 
 import java.math.BigInteger;
 import java.util.Map;
@@ -20,9 +20,9 @@ public final class PrimaryKeyGenerators {
     private PrimaryKeyGenerators() {}
 
     private static final Map<TypeToken<?>, PrimaryKeyGenerator<?>> generators = ImmutableMap.<TypeToken<?>, PrimaryKeyGenerator<?>>builder()
-            .put(TypeToken.of(Integer.class), new IntegerPrimaryKeyGenerator())
-            .put(TypeToken.of(Long.class), new LongPrimaryKeyGenerator())
-            .put(TypeToken.of(BigInteger.class), new BigIntegerPrimaryKeyGenerator())
+            .put(TypeToken.of(Integer.class), new IntegerGenerator())
+            .put(TypeToken.of(Long.class), new LongGenerator())
+            .put(TypeToken.of(BigInteger.class), new BigIntegerGenerator())
             .build();
 
     /**

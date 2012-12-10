@@ -15,4 +15,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface OneToMany {
     Class<?> value();
+    String mappedBy();
 }

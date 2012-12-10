@@ -12,7 +12,7 @@ import java.util.Collection;
  * Date: 08/12/12
  * Time: 23:20
  */
-public class BigIntegerPrimaryKeyGenerator implements PrimaryKeyGenerator<BigInteger> {
+public class BigIntegerGenerator implements PrimaryKeyGenerator<BigInteger> {
     private BigInteger next = BigInteger.ZERO;
 
     @Override
