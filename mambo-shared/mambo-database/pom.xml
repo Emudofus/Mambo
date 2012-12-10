@@ -15,6 +15,7 @@
 
     <properties>
         <cglib.version>2.2.2</cglib.version>
+        <cqengine.version>1.0.3</cqengine.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -53,6 +54,11 @@
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
             <version>${cglib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.cqengine</groupId>
+            <artifactId>cqengine</artifactId>
+            <version>${cqengine.version}</version>
         </dependency>
     </dependencies>
 </project>

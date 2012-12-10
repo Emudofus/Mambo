@@ -1,8 +1,10 @@
 package org.mambo.shared.database.impl.internal;
 
 import com.google.common.base.CaseFormat;
+import com.googlecode.cqengine.attribute.Attribute;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.ColumnConverter;
+import org.mambo.shared.database.EntityInterface;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -111,5 +113,10 @@ public final class EntityField {
 
     public <T extends Annotation> T getAnnotation(Class<T> clazz) {
         return field.getAnnotation(clazz);
+    }
+
+    @NotNull
+    public <E extends EntityInterface<?>> Attribute<E, Object> asAttribute(@NotNull EntityMetadata metadata) {
+        return new EntityAttribute<E>(metadata, this);
     }
 }

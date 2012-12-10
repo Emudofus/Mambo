@@ -1,8 +1,10 @@
 package org.mambo.shared.database.impl;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableList;
+import com.googlecode.cqengine.CQEngine;
+import com.googlecode.cqengine.IndexedCollection;
+import com.googlecode.cqengine.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.ModelInterface;
 import org.mambo.shared.database.ModelRepository;
@@ -11,9 +13,8 @@ import org.mambo.shared.database.impl.internal.EntityMetadata;
 import org.mambo.shared.database.impl.internal.References;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static com.googlecode.cqengine.query.QueryFactory.equal;
 
 /**
  * a thread-safe and very simple {@link ModelRepository}
@@ -26,20 +27,31 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class SimpleModelRepository<E extends ModelInterface<?>> implements ModelRepository<E> {
     private final EntityMetadata metadata;
-    private final Map<Object, E> entities = Maps.newHashMap();
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final IndexedCollection<E> entities = CQEngine.newInstance(); // thread-safe collection
 
     public SimpleModelRepository(@NotNull Class<E> clazz) {
         this.metadata = EntityMetadata.of(clazz);
     }
 
-    protected boolean isPersisted(@NotNull Object id) {
-        lock.readLock().lock();
-        try {
-            return entities.containsKey(id);
-        } finally {
-            lock.readLock().unlock();
+    protected Query<E> queryId(Object id) {
+        return equal(metadata.getPrimaryKeyField().<E>asAttribute(metadata), id);
+    }
+
+    protected Query<E> query(String property, Object value) {
+        EntityField field = metadata.getField(property);
+        if (field == null) {
+            throw new IllegalArgumentException("unknown property \"" + property + "\"");
         }
+
+        return equal(field.<E>asAttribute(metadata), value);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see com.googlecode.cqengine.resultset.ResultSet#size()
+     */
+    protected boolean isPersisted(@NotNull Object id) {
+        return entities.retrieve(queryId(id)).size() == 1;
     }
 
     @Override
@@ -52,39 +64,34 @@ public class SimpleModelRepository<E extends ModelInterface<?>> implements Model
         if (!isPersisted(entity)) {
             // TODO insert entity in database
 
-            lock.writeLock().lock();
-            try {
-                entities.put(entity.getId(), entity);
-            } finally {
-                lock.writeLock().unlock();
-            }
+            entities.add(entity);
         } else {
             // TODO update entity in database
         }
     }
 
+    private void safeDelete(@NotNull E entity) {
+        entities.remove(entity);
+    }
+
     @Override
     public void delete(@NotNull E entity) {
-        delete(entity.getId());
+        if (!isPersisted(entity)) {
+            throw new IllegalArgumentException("{id=" + entity.getId() + "} is not persisted, cannot delete it");
+        }
+
+        safeDelete(entity);
     }
 
     @NotNull
     @Override
     public E delete(@NotNull Object id) {
-        if (!isPersisted(id)) {
+        E entity = find(id);
+        if (entity == null) {
             throw new IllegalArgumentException("unknown id=" + id);
         }
 
-        E entity;
-        lock.writeLock().lock();
-        try {
-            entity = entities.remove(id);
-        } finally {
-            lock.writeLock().unlock();
-        }
-
-        // TODO delete entity in database
-
+        safeDelete(entity);
         return entity;
     }
 
@@ -103,61 +110,33 @@ public class SimpleModelRepository<E extends ModelInterface<?>> implements Model
         return entity;
     }
 
+    /**
+     * {@inheritDoc}
+     * @see com.googlecode.cqengine.resultset.ResultSet#uniqueResult()
+     */
     @Override
-    public E find(Object id) {
-        lock.readLock().lock();
-        try {
-            return entities.get(id);
-        } finally {
-            lock.readLock().unlock();
-        }
+    public E find(@NotNull Object id) {
+        return entities.retrieve(queryId(id)).uniqueResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see com.googlecode.cqengine.resultset.ResultSet#uniqueResult()
+     */
+    @Override
+    public E find(@NotNull String property, Object value) {
+        Query<E> query = query(property, value);
+        return entities.retrieve(query).uniqueResult();
     }
 
     @Override
-    public E find(String property, Object value) {
-        EntityField field = metadata.getField(property);
-        if (field == null) {
-            throw new IllegalArgumentException("unknown property \"" + property + "\"");
-        }
-
-        lock.readLock().lock();
-        try {
-            for (E entity : entities.values()) {
-                Object fieldValue = field.get(entity);
-                if (fieldValue == value) {
-                    return entity;
-                }
-            }
-            return null;
-        } finally {
-            lock.readLock().unlock();
-        }
+    public List<E> findAll(@NotNull String property, Object value) {
+        Query<E> query = query(property, value);
+        return ImmutableList.copyOf(entities.retrieve(query));
     }
 
     @Override
-    public List<E> findAll(String property, Object value) {
-        EntityField field = metadata.getField(property);
-        if (field == null) {
-            throw new IllegalArgumentException("unknown property \"" + property + "\"");
-        }
-
-        lock.readLock().lock();
-        try {
-            List<E> result = Lists.newArrayList();
-            for (E entity : entities.values()) {
-                Object fieldValue = field.get(entity);
-                if (fieldValue == value) {
-                    result.add(entity);
-                }
-            }
-            return result;
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-
-    @Override
-    public E getReference(Object id) {
+    public E getReference(@NotNull Object id) {
         return References.create(this, metadata, id);
     }
 }

@@ -1,5 +1,7 @@
 package org.mambo.shared.database;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 /**
@@ -14,7 +16,7 @@ public interface Repository<E extends EntityInterface<?>> {
      * @param id persisted entity's id
      * @return persisted  entity
      */
-    E find(Object id);
+    E find(@NotNull Object id);
 
     /**
      * returns a persisted entity by one of its properties
@@ -22,7 +24,7 @@ public interface Repository<E extends EntityInterface<?>> {
      * @param value property value
      * @return persisted entity
      */
-    E find(String property, Object value);
+    E find(@NotNull String property, Object value);
 
     /**
      * returns a list of persisted entity by one of their properties
@@ -30,12 +32,12 @@ public interface Repository<E extends EntityInterface<?>> {
      * @param value property value
      * @return list of persisted entity
      */
-    List<E> findAll(String property, Object value);
+    List<E> findAll(@NotNull String property, Object value);
 
     /**
      * returns a lazy reference to an entity by its id
      * @param id entity's id
      * @return lazy reference
      */
-    E getReference(Object id);
+    E getReference(@NotNull Object id);
 }

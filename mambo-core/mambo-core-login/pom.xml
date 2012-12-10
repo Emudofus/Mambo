@@ -47,5 +47,10 @@
             <artifactId>mambo-protocol-client</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mambo.shared</groupId>
+            <artifactId>mambo-database</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

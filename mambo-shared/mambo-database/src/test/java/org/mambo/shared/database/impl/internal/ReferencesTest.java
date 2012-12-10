@@ -1,7 +1,6 @@
 package org.mambo.shared.database.impl.internal;
 
 import com.google.common.base.Supplier;
-import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +10,7 @@ import org.mambo.shared.database.annotations.Column;
 import org.mambo.shared.database.annotations.Id;
 import org.mambo.shared.database.annotations.Table;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,22 +39,22 @@ public class ReferencesTest {
         }
 
         @Override
-        public E find(Object id) {
+        public E find(@NotNull Object id) {
             return instance;
         }
 
         @Override
-        public E find(String property, Object value) {
+        public E find(@NotNull String property, Object value) {
             return instance;
         }
 
         @Override
-        public List<E> findAll(String property, Object value) {
-            return Lists.newArrayList(instance);
+        public List<E> findAll(@NotNull String property, Object value) {
+            return Collections.singletonList(instance);
         }
 
         @Override
-        public E getReference(Object id) {
+        public E getReference(@NotNull Object id) {
             return instance;
         }
     }

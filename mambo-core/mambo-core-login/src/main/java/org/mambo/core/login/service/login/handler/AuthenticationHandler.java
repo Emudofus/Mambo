@@ -3,6 +3,7 @@ package org.mambo.core.login.service.login.handler;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.core.configuration.InjectConfig;
+import org.mambo.core.login.database.model.User;
 import org.mambo.core.login.service.login.LoginClient;
 import org.mambo.core.network.NetworkSession;
 import org.mambo.core.network.base.BaseNetworkHandler;
@@ -11,8 +12,11 @@ import org.mambo.protocol.client.messages.HelloConnectMessage;
 import org.mambo.protocol.client.messages.IdentificationFailedMessage;
 import org.mambo.protocol.client.messages.IdentificationMessage;
 import org.mambo.protocol.client.messages.ProtocolRequired;
+import org.mambo.shared.database.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,12 +31,15 @@ public class AuthenticationHandler extends BaseNetworkHandler<LoginClient> {
 
     @InjectConfig("login.required_version") int requiredVersion;
     @InjectConfig("login.current_version") int currentVersion;
+    @Inject Repository<User> users;
 
     @Handler
     public void identificationAction(LoginClient client, final IdentificationMessage msg) {
+        final User user = users.find("username", msg.login);
+
         client.getSession().write(new IdentificationFailedMessage(IN_MAINTENANCE)).addListener(new Runnable() {
             public void run() {
-                log.debug("{} tried to connect", msg.login);
+                log.debug("{} tried to connect", user.getNickname());
             }
         }, MoreExecutors.sameThreadExecutor());
     }
