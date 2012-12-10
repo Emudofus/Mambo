@@ -24,7 +24,7 @@ public class DatabaseContext {
     }
 
     public <E extends ModelInterface<?>> void registerModel(Class<E> clazz) {
-        repositories.put(clazz, new SimpleModelRepository<E>(clazz));
+        repositories.put(clazz, new SimpleModelRepository<E>(clazz, persistence));
     }
 
     @SuppressWarnings("unchecked")

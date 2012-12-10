@@ -6,14 +6,17 @@ import com.googlecode.cqengine.CQEngine;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.query.Query;
 import org.jetbrains.annotations.NotNull;
+import org.mambo.shared.database.DatabaseContext;
 import org.mambo.shared.database.ModelInterface;
 import org.mambo.shared.database.ModelRepository;
+import org.mambo.shared.database.PersistenceStrategy;
 import org.mambo.shared.database.impl.internal.EntityField;
 import org.mambo.shared.database.impl.internal.EntityMetadata;
 import org.mambo.shared.database.impl.internal.References;
 
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.googlecode.cqengine.query.QueryFactory.equal;
 
 /**
@@ -28,9 +31,16 @@ import static com.googlecode.cqengine.query.QueryFactory.equal;
 public class SimpleModelRepository<E extends ModelInterface<?>> implements ModelRepository<E> {
     private final EntityMetadata metadata;
     private final IndexedCollection<E> entities = CQEngine.newInstance(); // thread-safe collection
+    private final PersistenceStrategy persistence;
 
-    public SimpleModelRepository(@NotNull Class<E> clazz) {
+    /**
+     * TODO initialize context
+     */
+    private DatabaseContext ctx;
+
+    public SimpleModelRepository(@NotNull Class<E> clazz, @NotNull PersistenceStrategy persistence) {
         this.metadata = EntityMetadata.of(clazz);
+        this.persistence = checkNotNull(persistence);
     }
 
     protected Query<E> queryId(Object id) {
@@ -61,37 +71,31 @@ public class SimpleModelRepository<E extends ModelInterface<?>> implements Model
 
     @Override
     public void persist(@NotNull E entity) {
-        if (!isPersisted(entity)) {
-            // TODO insert entity in database
-
-            entities.add(entity);
+        if (entities.add(entity)) {
+            persistence.insert(ctx, metadata, entity);
         } else {
-            // TODO update entity in database
+            persistence.update(ctx, metadata, entity);
         }
-    }
-
-    private void safeDelete(@NotNull E entity) {
-        entities.remove(entity);
     }
 
     @Override
     public void delete(@NotNull E entity) {
-        if (!isPersisted(entity)) {
-            throw new IllegalArgumentException("{id=" + entity.getId() + "} is not persisted, cannot delete it");
+        if (!entities.remove(entity)) {
+            throw new IllegalArgumentException("{" + entity + "} is not persisted");
         }
 
-        safeDelete(entity);
+        persistence.delete(ctx, metadata, entity);
     }
 
     @NotNull
     @Override
     public E delete(@NotNull Object id) {
         E entity = find(id);
-        if (entity == null) {
+        if (entity == null || !entities.remove(entity)) {
             throw new IllegalArgumentException("unknown id=" + id);
         }
 
-        safeDelete(entity);
+        persistence.delete(ctx, metadata, entity);
         return entity;
     }
 
