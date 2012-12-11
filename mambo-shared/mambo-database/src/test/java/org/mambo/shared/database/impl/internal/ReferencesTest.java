@@ -56,6 +56,7 @@ public class ReferencesTest {
             return Collections.singletonList(instance);
         }
 
+        @NotNull
         @Override
         public E getReference(@NotNull Object id) {
             return References.create(this, id);

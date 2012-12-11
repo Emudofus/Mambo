@@ -3,6 +3,7 @@ package org.mambo.shared.database.impl.internal;
 import com.google.common.base.Supplier;
 import net.sf.cglib.proxy.Dispatcher;
 import net.sf.cglib.proxy.Enhancer;
+import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.Entity;
 import org.mambo.shared.database.Repository;
 
@@ -15,6 +16,7 @@ import org.mambo.shared.database.Repository;
 public final class References {
     private References() {}
 
+    @NotNull
     @SuppressWarnings("unchecked")
     public static <E extends Entity> E create(final Repository<E> repository, final Object id) {
         return (E) Enhancer.create(repository.getEntityMetadata().getEntityClass(), new Dispatcher() {
@@ -25,6 +27,7 @@ public final class References {
         });
     }
 
+    @NotNull
     @SuppressWarnings("unchecked")
     public static <E extends Entity> E of(final Class<E> clazz, final Supplier<E> supplier) {
         return (E) Enhancer.create(clazz, new Dispatcher() {

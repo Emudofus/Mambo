@@ -50,5 +50,6 @@ public interface Repository<E extends Entity> {
      * @param id entity's id
      * @return lazy reference
      */
+    @NotNull
     E getReference(@NotNull Object id);
 }

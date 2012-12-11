@@ -141,6 +141,7 @@ public class SimpleMutableRepository<E extends MutableEntity> implements Mutable
         return ImmutableList.copyOf(entities.retrieve(query));
     }
 
+    @NotNull
     @Override
     public E getReference(@NotNull Object id) {
         return References.create(this, id);
