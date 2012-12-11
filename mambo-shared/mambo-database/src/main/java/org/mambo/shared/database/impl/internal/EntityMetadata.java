@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.ColumnConverter;
-import org.mambo.shared.database.EntityInterface;
+import org.mambo.shared.database.Entity;
 import org.mambo.shared.database.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public final class EntityMetadata {
     private static final Logger log = LoggerFactory.getLogger(EntityMetadata.class);
     private static final Map<Class<?>, EntityMetadata> cache = Maps.newHashMap();
 
-    public static EntityMetadata of(Class<? extends EntityInterface<?>> clazz) {
+    public static EntityMetadata of(Class<? extends Entity> clazz) {
         EntityMetadata metadata = cache.get(clazz);
         if (metadata == null) {
             metadata = new EntityMetadata(clazz);
@@ -38,22 +38,22 @@ public final class EntityMetadata {
     }
 
     @SuppressWarnings("unchecked")
-    public static EntityMetadata of(TypeToken<? extends EntityInterface<?>> typeToken) {
-        return of((Class<? extends EntityInterface<?>>) typeToken.getRawType());
+    public static EntityMetadata of(TypeToken<? extends Entity> typeToken) {
+        return of((Class<? extends Entity>) typeToken.getRawType());
     }
 
-    private final Class<? extends EntityInterface<?>> entityClass;
+    private final Class<? extends Entity> entityClass;
 
     private String tableName;
     private EntityField primaryKeyField;
     private Map<String, EntityField> fields;
 
-    private EntityMetadata(@NotNull Class<? extends EntityInterface<?>> entityClass) {
+    private EntityMetadata(@NotNull Class<? extends Entity> entityClass) {
         this.entityClass = entityClass;
     }
 
     @NotNull
-    public Class<? extends EntityInterface<?>> getEntityClass() {
+    public Class<? extends Entity> getEntityClass() {
         return entityClass;
     }
 
@@ -100,7 +100,7 @@ public final class EntityMetadata {
             ManyToOne m2oAnnotation = field.getAnnotation(ManyToOne.class);
 
             @SuppressWarnings("unchecked")
-            EntityMetadata to = of((Class<? extends EntityInterface<?>>) field.getType());
+            EntityMetadata to = of((Class<? extends Entity>) field.getType());
 
             entityField.setConverter(new Dependency(
                     this,
@@ -113,7 +113,7 @@ public final class EntityMetadata {
             OneToMany o2mAnnotation = field.getAnnotation(OneToMany.class);
 
             @SuppressWarnings("unchecked")
-            EntityMetadata to = of((Class<? extends EntityInterface<?>>) o2mAnnotation.value());
+            EntityMetadata to = of((Class<? extends Entity>) o2mAnnotation.value());
 
             entityField.setConverter(new Dependency(
                     this,

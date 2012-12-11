@@ -5,12 +5,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
+ * only provides search methods
+ * can handle {@link Entity} and {@link MutableEntity}
+ *
  * Created with IntelliJ IDEA.
  * User: Blackrush
  * Date: 08/12/12
  * Time: 19:54
  */
-public interface Repository<E extends EntityInterface<?>> {
+public interface Repository<E extends Entity> {
     /**
      * returns a persisted entity by its id
      * @param id persisted entity's id

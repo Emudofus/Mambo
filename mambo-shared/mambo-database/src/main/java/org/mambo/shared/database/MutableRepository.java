@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 08/12/12
  * Time: 20:01
  */
-public interface ModelRepository<E extends ModelInterface<?>> extends Repository<E> {
+public interface MutableRepository<E extends MutableEntity> extends Repository<E> {
     /**
      * @param entity non-null entity
      * @return true if exists in database

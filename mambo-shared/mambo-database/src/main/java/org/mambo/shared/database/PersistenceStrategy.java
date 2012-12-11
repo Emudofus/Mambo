@@ -10,7 +10,7 @@ import org.mambo.shared.database.impl.internal.EntityMetadata;
  * Time: 22:32
  */
 public interface PersistenceStrategy {
-    <E extends EntityInterface<?>> void insert(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity);
-    <E extends EntityInterface<?>> void update(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity);
-    <E extends EntityInterface<?>> void delete(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity);
+    <E extends Entity> void insert(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity);
+    <E extends Entity> void update(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity);
+    <E extends Entity> void delete(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity);
 }

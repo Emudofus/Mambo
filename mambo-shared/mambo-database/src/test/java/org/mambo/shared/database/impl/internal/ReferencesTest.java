@@ -4,11 +4,12 @@ import com.google.common.base.Supplier;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
-import org.mambo.shared.database.EntityInterface;
+import org.mambo.shared.database.Entity;
 import org.mambo.shared.database.Repository;
 import org.mambo.shared.database.annotations.Column;
 import org.mambo.shared.database.annotations.Id;
 import org.mambo.shared.database.annotations.Table;
+import org.mambo.shared.database.impl.Model;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +25,7 @@ import static org.junit.Assert.assertThat;
  * Time: 10:46
  */
 public class ReferencesTest {
-    static class FakeRepository<E extends EntityInterface<?>> implements Repository<E> {
+    static class FakeRepository<E extends Entity> implements Repository<E> {
         final E instance;
         final EntityMetadata metadata;
 
@@ -60,7 +61,7 @@ public class ReferencesTest {
     }
 
     @Table("my_models")
-    static class MyModel implements EntityInterface<Integer> {
+    static class MyModel extends Model<MyModel> {
         @Id
         @Column
         private Integer id = 0;
@@ -72,8 +73,8 @@ public class ReferencesTest {
         }
 
         @Override
-        public void setId(@NotNull Integer id) {
-            this.id = id;
+        public void setId(@NotNull Object id) {
+            this.id = (Integer) id;
         }
     }
 

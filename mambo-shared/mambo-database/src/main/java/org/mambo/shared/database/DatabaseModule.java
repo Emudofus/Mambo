@@ -19,7 +19,7 @@ public abstract class DatabaseModule extends AbstractModule {
         configureRepositories();
     }
 
-    protected <E extends EntityInterface<?>, R extends Repository<E>> void bindRepository(TypeLiteral<R> repository) {
+    protected <E extends Entity, R extends Repository<E>> void bindRepository(TypeLiteral<R> repository) {
         bind(new TypeLiteral<Repository<E>>(){}).to(repository).in(Singleton.class);
     }
 }

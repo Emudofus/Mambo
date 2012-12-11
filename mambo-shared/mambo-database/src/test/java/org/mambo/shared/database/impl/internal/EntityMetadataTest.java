@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mambo.shared.database.ColumnConverter;
 import org.mambo.shared.database.DatabaseContext;
+import org.mambo.shared.database.Entity;
 import org.mambo.shared.database.annotations.*;
 import org.mambo.shared.database.impl.Model;
 
@@ -42,7 +43,7 @@ public class EntityMetadataTest {
 
     @SuppressWarnings("unused")
     @Table("my_parent_model")
-    static class MyParentModel extends Model<Long, MyParentModel> {
+    static class MyParentModel implements Entity {
         @Column
         @Id
         private Long id = 0L;
@@ -57,28 +58,15 @@ public class EntityMetadataTest {
             return id;
         }
 
-        @Override
-        public void setId(@NotNull Long id) {
-            this.id = id;
-        }
-
         @NotNull
         public Set<MyModel> getChildren() {
             return children;
-        }
-
-        public void setChildren(@NotNull Set<MyModel> children) {
-            this.children = children;
-        }
-
-        public void addChild(@NotNull MyModel child) {
-            children.add(child);
         }
     }
 
     @SuppressWarnings("unused")
     @Table
-    static class MyModel extends Model<Long, MyModel> {
+    static class MyModel extends Model<MyModel> {
         @Column
         @Id
         private Long id = 0L;
@@ -100,8 +88,8 @@ public class EntityMetadataTest {
         }
 
         @Override
-        public void setId(@NotNull Long id) {
-            this.id = id;
+        public void setId(@NotNull Object id) {
+            this.id = (Long) id;
         }
 
         @NotNull
@@ -161,5 +149,13 @@ public class EntityMetadataTest {
     @Test
     public void createEmpty() {
         assertThat(metadata.createEmpty(), is(MyModel.class));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void setImmutableProperty() {
+        EntityMetadata metadata = EntityMetadata.of(MyParentModel.class);
+        MyParentModel model = new MyParentModel();
+
+        metadata.getField("id").set(model, 1);
     }
 }

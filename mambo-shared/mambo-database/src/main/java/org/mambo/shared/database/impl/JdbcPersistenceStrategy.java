@@ -2,7 +2,7 @@ package org.mambo.shared.database.impl;
 
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.DatabaseContext;
-import org.mambo.shared.database.EntityInterface;
+import org.mambo.shared.database.Entity;
 import org.mambo.shared.database.PersistenceStrategy;
 import org.mambo.shared.database.impl.internal.EntityMetadata;
 
@@ -25,17 +25,17 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
     }
 
     @Override
-    public <E extends EntityInterface<?>> void insert(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity) {
+    public <E extends Entity> void insert(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity) {
         // TODO
     }
 
     @Override
-    public <E extends EntityInterface<?>> void update(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity) {
+    public <E extends Entity> void update(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity) {
         // TODO
     }
 
     @Override
-    public <E extends EntityInterface<?>> void delete(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity) {
+    public <E extends Entity> void delete(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity) {
         // TODO
     }
 }

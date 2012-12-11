@@ -2,7 +2,7 @@ package org.mambo.shared.database;
 
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
-import org.mambo.shared.database.impl.SimpleModelRepository;
+import org.mambo.shared.database.impl.SimpleMutableRepository;
 
 import java.util.Map;
 
@@ -29,20 +29,20 @@ public class DatabaseContext {
         return persistenceStrategy;
     }
 
-    public <E extends EntityInterface<?>> void registerEntity(Class<E> clazz) {
+    public <E extends Entity> void registerEntity(Class<E> clazz) {
         // TODO
     }
 
-    public <E extends EntityInterface<?>> Repository<E> getEntity(Class<E> clazz) {
+    public <E extends Entity> Repository<E> getEntity(Class<E> clazz) {
         return null; // TODO
     }
 
-    public <E extends ModelInterface<?>> void registerModel(Class<E> clazz) {
-        repositories.put(clazz, new SimpleModelRepository<E>(this, clazz));
+    public <E extends MutableEntity> void registerModel(Class<E> clazz) {
+        repositories.put(clazz, new SimpleMutableRepository<E>(this, clazz));
     }
 
     @SuppressWarnings("unchecked")
-    public <E extends ModelInterface<?>> ModelRepository<E> getModel(Class<E> clazz) {
-        return (ModelRepository<E>) repositories.get(clazz);
+    public <E extends MutableEntity> MutableRepository<E> getModel(Class<E> clazz) {
+        return (MutableRepository<E>) repositories.get(clazz);
     }
 }
