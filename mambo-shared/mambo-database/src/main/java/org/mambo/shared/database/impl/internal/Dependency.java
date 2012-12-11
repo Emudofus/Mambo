@@ -22,18 +22,6 @@ public final class Dependency implements ColumnConverter {
         ONE_TO_MANY,
         MANY_TO_ONE,
         //MANY_TO_MANY,
-        ;
-
-        public Type reverse() {
-            switch (this) {
-            case ONE_TO_MANY:
-                return MANY_TO_ONE;
-            case MANY_TO_ONE:
-                return ONE_TO_MANY;
-            default:
-                throw new RuntimeException("can't reverse dependency type " + this);
-            }
-        }
     }
 
     private final EntityMetadata from, to;
@@ -49,14 +37,17 @@ public final class Dependency implements ColumnConverter {
         this.type = checkNotNull(type);
     }
 
+
     public Dependency reverse() {
-        return new Dependency(
-                to,
-                from,
-                to.getField(triggerProperty),
-                field.getColumnName(),
-                type.reverse()
-        );
+        for (EntityField field : to.getFields().values()) {
+            if (field.getConverter() instanceof Dependency) {
+                Dependency dependency = (Dependency) field.getConverter();
+                if (dependency.to == from) {
+                    return dependency;
+                }
+            }
+        }
+        return null;
     }
 
     @Override

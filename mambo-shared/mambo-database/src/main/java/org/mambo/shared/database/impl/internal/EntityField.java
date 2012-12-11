@@ -43,13 +43,15 @@ public final class EntityField {
         return clazz.getMethod("set" + CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, field.getName()), type);
     }
 
+    private final EntityMetadata owner;
     private final Field field;
     private final String columnName;
     private final Method getter, setter;
 
     private ColumnConverter converter;
 
-    EntityField(@NotNull Field field, @NotNull String columnName) {
+    EntityField(@NotNull EntityMetadata owner, @NotNull Field field, @NotNull String columnName) {
+        this.owner = checkNotNull(owner);
         this.field = checkNotNull(field);
         this.columnName = checkNotNull(columnName);
 
@@ -59,6 +61,11 @@ public final class EntityField {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("entity must be a valid JavaBean", e);
         }
+    }
+
+    @NotNull
+    public EntityMetadata getOwner() {
+        return owner;
     }
 
     /**
@@ -116,7 +123,7 @@ public final class EntityField {
     }
 
     @NotNull
-    public <E extends EntityInterface<?>> Attribute<E, Object> asAttribute(@NotNull EntityMetadata metadata) {
-        return new EntityAttribute<E>(metadata, this);
+    public <E extends EntityInterface<?>> Attribute<E, Object> asAttribute() {
+        return new EntityAttribute<E>(this);
     }
 }

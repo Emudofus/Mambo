@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.DatabaseContext;
 import org.mambo.shared.database.ModelInterface;
 import org.mambo.shared.database.ModelRepository;
-import org.mambo.shared.database.PersistenceStrategy;
 import org.mambo.shared.database.impl.internal.EntityField;
 import org.mambo.shared.database.impl.internal.EntityMetadata;
 import org.mambo.shared.database.impl.internal.References;
@@ -29,22 +28,17 @@ import static com.googlecode.cqengine.query.QueryFactory.equal;
  * Time: 15:53
  */
 public class SimpleModelRepository<E extends ModelInterface<?>> implements ModelRepository<E> {
+    private final DatabaseContext ctx;
     private final EntityMetadata metadata;
     private final IndexedCollection<E> entities = CQEngine.newInstance(); // thread-safe collection
-    private final PersistenceStrategy persistence;
 
-    /**
-     * TODO initialize context
-     */
-    private DatabaseContext ctx;
-
-    public SimpleModelRepository(@NotNull Class<E> clazz, @NotNull PersistenceStrategy persistence) {
+    public SimpleModelRepository(@NotNull DatabaseContext ctx, @NotNull Class<E> clazz) {
+        this.ctx = checkNotNull(ctx);
         this.metadata = EntityMetadata.of(clazz);
-        this.persistence = checkNotNull(persistence);
     }
 
     protected Query<E> queryId(Object id) {
-        return equal(metadata.getPrimaryKeyField().<E>asAttribute(metadata), id);
+        return equal(metadata.getPrimaryKeyField().<E>asAttribute(), id);
     }
 
     protected Query<E> query(String property, Object value) {
@@ -53,7 +47,7 @@ public class SimpleModelRepository<E extends ModelInterface<?>> implements Model
             throw new IllegalArgumentException("unknown property \"" + property + "\"");
         }
 
-        return equal(field.<E>asAttribute(metadata), value);
+        return equal(field.<E>asAttribute(), value);
     }
 
     /**
@@ -72,9 +66,9 @@ public class SimpleModelRepository<E extends ModelInterface<?>> implements Model
     @Override
     public void persist(@NotNull E entity) {
         if (entities.add(entity)) {
-            persistence.insert(ctx, metadata, entity);
+            ctx.getPersistenceStrategy().insert(ctx, metadata, entity);
         } else {
-            persistence.update(ctx, metadata, entity);
+            ctx.getPersistenceStrategy().update(ctx, metadata, entity);
         }
     }
 
@@ -84,7 +78,7 @@ public class SimpleModelRepository<E extends ModelInterface<?>> implements Model
             throw new IllegalArgumentException("{" + entity + "} is not persisted");
         }
 
-        persistence.delete(ctx, metadata, entity);
+        ctx.getPersistenceStrategy().delete(ctx, metadata, entity);
     }
 
     @NotNull
@@ -95,7 +89,7 @@ public class SimpleModelRepository<E extends ModelInterface<?>> implements Model
             throw new IllegalArgumentException("unknown id=" + id);
         }
 
-        persistence.delete(ctx, metadata, entity);
+        ctx.getPersistenceStrategy().delete(ctx, metadata, entity);
         return entity;
     }
 

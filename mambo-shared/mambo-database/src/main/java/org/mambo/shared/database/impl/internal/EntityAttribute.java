@@ -16,18 +16,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Time: 22:10
  */
 public final class EntityAttribute<E extends EntityInterface<?>> implements Attribute<E, Object> {
-    private final EntityMetadata metadata;
     private final EntityField field;
 
-    public EntityAttribute(@NotNull EntityMetadata metadata, @NotNull EntityField field) {
-        this.metadata = checkNotNull(metadata);
+    public EntityAttribute(@NotNull EntityField field) {
         this.field = checkNotNull(field);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Class<E> getObjectType() {
-        return (Class<E>) metadata.getEntityClass();
+        return (Class<E>) field.getOwner().getEntityClass();
     }
 
     @SuppressWarnings("unchecked")

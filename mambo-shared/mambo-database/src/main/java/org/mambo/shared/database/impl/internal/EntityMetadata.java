@@ -94,7 +94,7 @@ public final class EntityMetadata {
             name = field.getName();
         }
 
-        EntityField entityField = new EntityField(field, name);
+        EntityField entityField = new EntityField(this, field, name);
 
         if (field.isAnnotationPresent(ManyToOne.class)) {
             ManyToOne m2oAnnotation = field.getAnnotation(ManyToOne.class);
