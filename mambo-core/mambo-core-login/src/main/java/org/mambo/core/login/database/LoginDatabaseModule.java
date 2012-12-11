@@ -3,8 +3,8 @@ package org.mambo.core.login.database;
 import com.google.inject.Scopes;
 import org.mambo.core.login.database.model.User;
 import org.mambo.shared.database.DatabaseModule;
-import org.mambo.shared.database.PersistenceStrategy;
-import org.mambo.shared.database.impl.JdbcPersistenceStrategy;
+import org.mambo.shared.database.persistence.PersistenceStrategy;
+import org.mambo.shared.database.persistence.JdbcPersistenceStrategy;
 
 /**
  * Created with IntelliJ IDEA.

@@ -16,6 +16,11 @@ import java.util.List;
  */
 public interface Repository<E extends Entity> {
     /**
+     * load repository
+     */
+    void load();
+
+    /**
      * returns entity's metadata
      * @return non-null {@link EntityMetadata}
      */

@@ -6,6 +6,7 @@ import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 import org.mambo.core.inject.Matchers2;
 import org.mambo.shared.database.impl.SimpleMutableRepository;
+import org.mambo.shared.database.persistence.PersistenceStrategy;
 
 /**
  * Created with IntelliJ IDEA.

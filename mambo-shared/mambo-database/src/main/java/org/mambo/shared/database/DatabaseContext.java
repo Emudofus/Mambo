@@ -3,6 +3,7 @@ package org.mambo.shared.database;
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.impl.SimpleMutableRepository;
+import org.mambo.shared.database.persistence.PersistenceStrategy;
 
 import java.util.Map;
 

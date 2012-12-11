@@ -1,13 +1,14 @@
-package org.mambo.shared.database.impl;
+package org.mambo.shared.database.persistence;
 
+import com.google.common.collect.Sets;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.DatabaseContext;
 import org.mambo.shared.database.Entity;
-import org.mambo.shared.database.PersistenceStrategy;
 import org.mambo.shared.database.impl.internal.EntityMetadata;
 
 import javax.inject.Provider;
 import java.sql.Connection;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -22,6 +23,12 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
 
     public JdbcPersistenceStrategy(@NotNull Provider<Connection> connection) {
         this.connection = checkNotNull(connection);
+    }
+
+    @NotNull
+    @Override
+    public <E extends Entity> Set<E> load(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata) {
+        return Sets.newHashSet(); // TODO
     }
 
     @Override

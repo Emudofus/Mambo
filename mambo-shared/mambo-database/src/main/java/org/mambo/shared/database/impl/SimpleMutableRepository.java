@@ -12,6 +12,7 @@ import org.mambo.shared.database.impl.internal.EntityMetadata;
 import org.mambo.shared.database.impl.internal.References;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.googlecode.cqengine.query.QueryFactory.equal;
@@ -36,6 +37,12 @@ public class SimpleMutableRepository<E extends MutableEntity> implements Mutable
         this.ctx = checkNotNull(ctx);
         this.metadata = EntityMetadata.of(clazz);
         this.primaryKeyGenerator = PrimaryKeyGenerators.of(metadata.getPrimaryKeyField().getType());
+    }
+
+    @Override
+    public void load() {
+        Set<E> loaded = ctx.getPersistenceStrategy().load(ctx, metadata);
+        entities.addAll(loaded);
     }
 
     @NotNull
@@ -135,9 +142,29 @@ public class SimpleMutableRepository<E extends MutableEntity> implements Mutable
         return entities.retrieve(query).uniqueResult();
     }
 
+    /**
+     * @see com.googlecode.cqengine.resultset.ResultSet#uniqueResult()
+     * @param query query
+     * @return query's result
+     */
+    @NotNull
+    public E find(@NotNull Query<E> query) {
+        return entities.retrieve(query).uniqueResult();
+    }
+
     @Override
     public List<E> findAll(@NotNull String property, Object value) {
         Query<E> query = query(property, value);
+        return ImmutableList.copyOf(entities.retrieve(query));
+    }
+
+    /**
+     * @see com.googlecode.cqengine.resultset.ResultSet#uniqueResult()
+     * @param query query
+     * @return query's result
+     */
+    @NotNull
+    public List<E> findAll(@NotNull Query<E> query) {
         return ImmutableList.copyOf(entities.retrieve(query));
     }
 

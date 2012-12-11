@@ -35,6 +35,11 @@ public class ReferencesTest {
             this.metadata = EntityMetadata.of((Class) instance.getClass());
         }
 
+        @Override
+        public void load() {
+
+        }
+
         @NotNull
         @Override
         public EntityMetadata getEntityMetadata() {
