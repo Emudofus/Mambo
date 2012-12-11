@@ -16,8 +16,8 @@ public final class References {
     private References() {}
 
     @SuppressWarnings("unchecked")
-    public static <E extends Entity> E create(final Repository<E> repository, final EntityMetadata metadata, final Object id) {
-        return (E) Enhancer.create(metadata.getEntityClass(), new Dispatcher() {
+    public static <E extends Entity> E create(final Repository<E> repository, final Object id) {
+        return (E) Enhancer.create(repository.getEntityMetadata().getEntityClass(), new Dispatcher() {
             @Override
             public Object loadObject() throws Exception {
                 return repository.find(id);

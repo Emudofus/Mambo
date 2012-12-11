@@ -29,6 +29,13 @@ public class DatabaseContext {
         return persistenceStrategy;
     }
 
+    public void register(Repository<?> repository) {
+        if (repositories.containsKey(repository.getClass())) {
+            throw new UnsupportedOperationException("");
+        }
+        repositories.put(repository.getClass(), repository);
+    }
+
     public <E extends Entity> void registerEntity(Class<E> clazz) {
         // TODO
     }

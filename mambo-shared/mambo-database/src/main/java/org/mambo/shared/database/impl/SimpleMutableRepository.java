@@ -6,9 +6,7 @@ import com.googlecode.cqengine.CQEngine;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.query.Query;
 import org.jetbrains.annotations.NotNull;
-import org.mambo.shared.database.DatabaseContext;
-import org.mambo.shared.database.MutableEntity;
-import org.mambo.shared.database.MutableRepository;
+import org.mambo.shared.database.*;
 import org.mambo.shared.database.impl.internal.EntityField;
 import org.mambo.shared.database.impl.internal.EntityMetadata;
 import org.mambo.shared.database.impl.internal.References;
@@ -20,6 +18,7 @@ import static com.googlecode.cqengine.query.QueryFactory.equal;
 
 /**
  * a thread-safe and very simple {@link org.mambo.shared.database.MutableRepository}
+ * @see CQEngine
  * todo: database management
  *
  * Created with IntelliJ IDEA.
@@ -31,10 +30,18 @@ public class SimpleMutableRepository<E extends MutableEntity> implements Mutable
     private final DatabaseContext ctx;
     private final EntityMetadata metadata;
     private final IndexedCollection<E> entities = CQEngine.newInstance(); // thread-safe collection
+    private final PrimaryKeyGenerator<?> primaryKeyGenerator;
 
     public SimpleMutableRepository(@NotNull DatabaseContext ctx, @NotNull Class<E> clazz) {
         this.ctx = checkNotNull(ctx);
         this.metadata = EntityMetadata.of(clazz);
+        this.primaryKeyGenerator = PrimaryKeyGenerators.of(metadata.getPrimaryKeyField().getType());
+    }
+
+    @NotNull
+    @Override
+    public EntityMetadata getEntityMetadata() {
+        return metadata;
     }
 
     protected Query<E> queryId(Object id) {
@@ -66,6 +73,7 @@ public class SimpleMutableRepository<E extends MutableEntity> implements Mutable
     @Override
     public void persist(@NotNull E entity) {
         if (entities.add(entity)) {
+            entity.setId(primaryKeyGenerator.next());
             ctx.getPersistenceStrategy().insert(ctx, metadata, entity);
         } else {
             ctx.getPersistenceStrategy().update(ctx, metadata, entity);
@@ -135,6 +143,6 @@ public class SimpleMutableRepository<E extends MutableEntity> implements Mutable
 
     @Override
     public E getReference(@NotNull Object id) {
-        return References.create(this, metadata, id);
+        return References.create(this, id);
     }
 }

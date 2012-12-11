@@ -59,7 +59,7 @@ public final class Dependency implements ColumnConverter {
         case MANY_TO_ONE:
             String columnName = field.getColumnName() + "_" + trigger.getColumnName();
             Object id = rset.getObject(columnName);
-            return References.create(repository, to, id);
+            return References.create(repository, id);
 
         case ONE_TO_MANY:
             if (!(trigger.getConverter() instanceof Dependency)) {

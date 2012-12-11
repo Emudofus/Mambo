@@ -65,5 +65,10 @@
             <artifactId>joda-time</artifactId>
             <version>${jodatime.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mambo.core</groupId>
+            <artifactId>mambo-core-shared</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

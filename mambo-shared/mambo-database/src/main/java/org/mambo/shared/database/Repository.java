@@ -1,6 +1,7 @@
 package org.mambo.shared.database;
 
 import org.jetbrains.annotations.NotNull;
+import org.mambo.shared.database.impl.internal.EntityMetadata;
 
 import java.util.List;
 
@@ -14,6 +15,13 @@ import java.util.List;
  * Time: 19:54
  */
 public interface Repository<E extends Entity> {
+    /**
+     * returns entity's metadata
+     * @return non-null {@link EntityMetadata}
+     */
+    @NotNull
+    EntityMetadata getEntityMetadata();
+
     /**
      * returns a persisted entity by its id
      * @param id persisted entity's id

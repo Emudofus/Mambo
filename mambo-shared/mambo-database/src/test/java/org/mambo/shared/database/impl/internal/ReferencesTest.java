@@ -35,7 +35,9 @@ public class ReferencesTest {
             this.metadata = EntityMetadata.of((Class) instance.getClass());
         }
 
-        EntityMetadata getMetadata() {
+        @NotNull
+        @Override
+        public EntityMetadata getEntityMetadata() {
             return metadata;
         }
 
@@ -56,7 +58,7 @@ public class ReferencesTest {
 
         @Override
         public E getReference(@NotNull Object id) {
-            return instance;
+            return References.create(this, id);
         }
     }
 
@@ -82,7 +84,7 @@ public class ReferencesTest {
     private FakeRepository<MyModel> repository;
 
     private MyModel reference() {
-        return References.create(repository, repository.getMetadata(), instance.getId());
+        return repository.getReference(1);
     }
 
     private Supplier<MyModel> supplier() {
@@ -137,7 +139,7 @@ public class ReferencesTest {
     public void withMetadata() {
         MyModel ref = reference();
 
-        EntityMetadata metadata = repository.getMetadata();
+        EntityMetadata metadata = repository.getEntityMetadata();
         metadata.getField("id").set(ref, 1);
 
         assertThat(ref.getId(), is(1));
