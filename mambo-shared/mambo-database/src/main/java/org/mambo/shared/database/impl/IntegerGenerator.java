@@ -1,9 +1,8 @@
 package org.mambo.shared.database.impl;
 
 import org.jetbrains.annotations.NotNull;
+import org.mambo.shared.database.Entity;
 import org.mambo.shared.database.PrimaryKeyGenerator;
-
-import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,10 +14,15 @@ public class IntegerGenerator implements PrimaryKeyGenerator<Integer> {
     private Integer next = 0;
 
     @Override
-    public void initialize(@NotNull Collection<Integer> keys) {
-        for (Integer key : keys) {
-            if (next < key) {
-                next = key;
+    public void initialize(@NotNull Iterable<? extends Entity> entities) {
+        for (Entity entity : entities) {
+            if (!(entity.getId() instanceof Integer)) {
+                throw new IllegalArgumentException("entities must have an Integer id");
+            }
+
+            Integer id = (Integer) entity.getId();
+            if (next < id) {
+                next = id;
             }
         }
     }

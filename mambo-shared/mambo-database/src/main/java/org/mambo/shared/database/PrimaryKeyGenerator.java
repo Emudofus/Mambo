@@ -2,8 +2,6 @@ package org.mambo.shared.database;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Blackrush
@@ -12,10 +10,10 @@ import java.util.Collection;
  */
 public interface PrimaryKeyGenerator<K> {
     /**
-     * initilialize this generator with existing keys
-     * @param keys existing keys
+     * initilialize this generator with existing entities
+     * @param entities existing entities
      */
-    void initialize(@NotNull Collection<K> keys);
+    void initialize(@NotNull Iterable<? extends Entity> entities);
 
     /**
      * generate an unique primary key

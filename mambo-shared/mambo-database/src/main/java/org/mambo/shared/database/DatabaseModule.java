@@ -7,6 +7,7 @@ import com.google.inject.spi.TypeListener;
 import org.mambo.core.inject.Matchers2;
 import org.mambo.shared.database.impl.SimpleMutableRepository;
 import org.mambo.shared.database.persistence.PersistenceStrategy;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,7 +55,7 @@ public abstract class DatabaseModule extends AbstractModule {
 
         @Override
         public MutableRepository<E> get() {
-            return new SimpleMutableRepository<E>(ctx.get(), clazz);
+            return new SimpleMutableRepository<E>(LoggerFactory.getLogger(clazz), ctx.get(), clazz);
         }
     }
 

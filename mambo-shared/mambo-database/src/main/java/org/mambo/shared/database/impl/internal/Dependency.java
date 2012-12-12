@@ -52,7 +52,7 @@ public final class Dependency implements ColumnConverter {
 
     @Override
     public Object extract(@NotNull DatabaseContext ctx, @NotNull ResultSet rset) throws SQLException {
-        Repository<?> repository = ctx.getEntity(to.getEntityClass());
+        Repository<?> repository = ctx.get(to.getEntityClass());
         EntityField trigger = to.getField(triggerProperty);
 
         switch (type) {

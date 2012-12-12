@@ -4,12 +4,16 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.googlecode.cqengine.CQEngine;
 import com.googlecode.cqengine.IndexedCollection;
+import com.googlecode.cqengine.attribute.Attribute;
+import com.googlecode.cqengine.index.AttributeIndex;
+import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.query.Query;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.*;
 import org.mambo.shared.database.impl.internal.EntityField;
 import org.mambo.shared.database.impl.internal.EntityMetadata;
 import org.mambo.shared.database.impl.internal.References;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Set;
@@ -28,12 +32,14 @@ import static com.googlecode.cqengine.query.QueryFactory.equal;
  * Time: 15:53
  */
 public class SimpleMutableRepository<E extends MutableEntity> implements MutableRepository<E> {
+    private final Logger log;
     private final DatabaseContext ctx;
     private final EntityMetadata metadata;
     private final IndexedCollection<E> entities = CQEngine.newInstance(); // thread-safe collection
     private final PrimaryKeyGenerator<?> primaryKeyGenerator;
 
-    public SimpleMutableRepository(@NotNull DatabaseContext ctx, @NotNull Class<E> clazz) {
+    public SimpleMutableRepository(@NotNull Logger log, @NotNull DatabaseContext ctx, @NotNull Class<E> clazz) {
+        this.log = log;
         this.ctx = checkNotNull(ctx);
         this.metadata = EntityMetadata.of(clazz);
         this.primaryKeyGenerator = PrimaryKeyGenerators.of(metadata.getPrimaryKeyField().getType());
@@ -43,6 +49,36 @@ public class SimpleMutableRepository<E extends MutableEntity> implements Mutable
     public void load() {
         Set<E> loaded = ctx.getPersistenceStrategy().load(ctx, metadata);
         entities.addAll(loaded);
+        primaryKeyGenerator.initialize(entities);
+
+        entities.addIndex(UniqueIndex.onAttribute(metadata.getPrimaryKeyField().<E>asAttribute()));
+
+        addIndex(UniqueIndex.class, "id");
+    }
+
+    public <I extends AttributeIndex<?, E>> void addIndex(@NotNull Class<I> clazz, @NotNull String property) {
+        EntityField field = metadata.getField(property);
+        if (field == null) {
+            throw new IllegalArgumentException("unknown property \"" + property + "\"");
+        }
+
+        Object obj = null;
+        try {
+            obj = clazz.getMethod("onAttribute", Attribute.class).invoke(null, field.<E>asAttribute());
+        } catch (Throwable t) {
+            log.error(String.format("can't create index %s on \"%s\"", clazz.getSimpleName(), field.getColumnName()), t);
+        }
+
+        if (obj != null) {
+            if (!(obj instanceof AttributeIndex<?, ?>)) {
+                throw new IllegalArgumentException("\"" + clazz.getSimpleName() + "\" is not a valid index");
+            }
+
+            @SuppressWarnings("unchecked")
+            AttributeIndex<?, E> index = (AttributeIndex<?, E>) obj;
+
+            entities.addIndex(index);
+        }
     }
 
     @NotNull

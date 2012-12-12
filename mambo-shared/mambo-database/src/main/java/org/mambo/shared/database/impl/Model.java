@@ -29,14 +29,13 @@ public abstract class Model<E extends Model<E>> implements MutableEntity, Timest
         createdAt = Instant.now();
     }
 
-    protected Model(@NotNull MutableRepository<E> repository) {
-        this();
-        this.repository = checkNotNull(repository);
-    }
-
     @SuppressWarnings("unchecked")
     protected E that() {
         return (E) this;
+    }
+
+    protected void setRepository(@NotNull MutableRepository<E> repository) {
+        this.repository = checkNotNull(repository);
     }
 
     @Override
@@ -67,8 +66,22 @@ public abstract class Model<E extends Model<E>> implements MutableEntity, Timest
         return persistedAt;
     }
 
+    /**
+     * @param persistedAt nullable
+     */
+    protected void setPersistedAt(Instant persistedAt) {
+        this.persistedAt = persistedAt;
+    }
+
     @Override
     public Instant getDeletedAt() {
         return deletedAt;
+    }
+
+    /**
+     * @param deletedAt nullable
+     */
+    protected void setDeletedAt(Instant deletedAt) {
+        this.deletedAt = deletedAt;
     }
 }

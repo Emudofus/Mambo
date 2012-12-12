@@ -2,7 +2,6 @@ package org.mambo.shared.database;
 
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
-import org.mambo.shared.database.impl.SimpleMutableRepository;
 import org.mambo.shared.database.persistence.PersistenceStrategy;
 
 import java.util.Map;
@@ -17,7 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class DatabaseContext {
     private final Map<Class<?>, Repository<?>> repositories =
-            Maps.newIdentityHashMap();
+            Maps.newHashMap();
 
     private final PersistenceStrategy persistenceStrategy;
 
@@ -30,27 +29,24 @@ public class DatabaseContext {
         return persistenceStrategy;
     }
 
-    public void register(Repository<?> repository) {
-        if (repositories.containsKey(repository.getClass())) {
-            throw new UnsupportedOperationException("");
+    public <T extends Repository<?>> T register(T repository) {
+        Class<?> entityClass = repository.getEntityMetadata().getEntityClass();
+
+        if (repositories.containsKey(entityClass)) {
+            throw new UnsupportedOperationException("this database context already contains a " + entityClass.getName() + " repository");
         }
-        repositories.put(repository.getClass(), repository);
-    }
 
-    public <E extends Entity> void registerEntity(Class<E> clazz) {
-        // TODO
-    }
-
-    public <E extends Entity> Repository<E> getEntity(Class<E> clazz) {
-        return null; // TODO
-    }
-
-    public <E extends MutableEntity> void registerModel(Class<E> clazz) {
-        repositories.put(clazz, new SimpleMutableRepository<E>(this, clazz));
+        repositories.put(entityClass, repository);
+        return repository;
     }
 
     @SuppressWarnings("unchecked")
-    public <E extends MutableEntity> MutableRepository<E> getModel(Class<E> clazz) {
-        return (MutableRepository<E>) repositories.get(clazz);
+    public <E extends Entity> Repository<E> get(Class<E> entityClass) {
+        return (Repository<E>) repositories.get(entityClass);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <E extends MutableEntity> MutableRepository<E> getMutable(Class<E> entityClass) {
+        return (MutableRepository<E>) repositories.get(entityClass);
     }
 }

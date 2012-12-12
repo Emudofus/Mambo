@@ -1,10 +1,10 @@
 package org.mambo.shared.database.impl;
 
 import org.jetbrains.annotations.NotNull;
+import org.mambo.shared.database.Entity;
 import org.mambo.shared.database.PrimaryKeyGenerator;
 
 import java.math.BigInteger;
-import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,10 +16,15 @@ public class BigIntegerGenerator implements PrimaryKeyGenerator<BigInteger> {
     private BigInteger next = BigInteger.ZERO;
 
     @Override
-    public void initialize(@NotNull Collection<BigInteger> keys) {
-        for (BigInteger key : keys) {
-            if (next.compareTo(key) < 0) {
-                next = key;
+    public void initialize(@NotNull Iterable<? extends Entity> entities) {
+        for (Entity entity : entities) {
+            if (!(entity.getId() instanceof BigInteger)) {
+                throw new IllegalArgumentException("entities must have a BigInteger id");
+            }
+
+            BigInteger id = (BigInteger) entity.getId();
+            if (next.compareTo(id) < 0) {
+                next = id;
             }
         }
     }
@@ -29,5 +34,6 @@ public class BigIntegerGenerator implements PrimaryKeyGenerator<BigInteger> {
     public BigInteger next() {
         next = next.add(BigInteger.ONE);
         return next;
+        //return ++next;
     }
 }
