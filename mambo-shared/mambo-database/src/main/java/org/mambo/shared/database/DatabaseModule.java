@@ -6,6 +6,7 @@ import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 import org.mambo.core.inject.Matchers2;
 import org.mambo.shared.database.impl.SimpleMutableRepository;
+import org.mambo.shared.database.impl.SimpleRepository;
 import org.mambo.shared.database.persistence.PersistenceStrategy;
 
 /**
@@ -35,13 +36,29 @@ public abstract class DatabaseModule extends AbstractModule {
     }
 
     protected <E extends Entity> void bindRepository(Class<E> clazz) {
-        // TODO
+        bind(new TypeLiteral<Repository<E>>(){})
+            .toProvider(new RepositoryProvider<E>(clazz))
+                .in(Scopes.SINGLETON);
     }
 
     protected <E extends MutableEntity> void bindMutableRepository(Class<E> clazz) {
         bind(new TypeLiteral<MutableRepository<E>>(){})
             .toProvider(new MutableRepositoryProvider<E>(clazz))
                 .in(Scopes.SINGLETON);
+    }
+
+    private class RepositoryProvider<E extends Entity> implements Provider<Repository<E>> {
+        private final Class<E> clazz;
+        private final Provider<DatabaseContext> ctx = getProvider(DatabaseContext.class);
+
+        private RepositoryProvider(Class<E> clazz) {
+            this.clazz = clazz;
+        }
+
+        @Override
+        public Repository<E> get() {
+            return new SimpleRepository<E>(ctx.get(), clazz);
+        }
     }
 
     private class MutableRepositoryProvider<E extends MutableEntity> implements Provider<MutableRepository<E>> {
