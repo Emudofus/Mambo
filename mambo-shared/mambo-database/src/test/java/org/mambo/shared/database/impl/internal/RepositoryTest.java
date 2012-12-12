@@ -111,11 +111,8 @@ public class RepositoryTest {
 
         ctx = new DatabaseContext(persistenceStrategy);
 
-        final MutableRepository<MyModel> repository = ctx.register(new SimpleMutableRepository<MyModel>(
-                LoggerFactory.getLogger(MyModel.class),
-                ctx,
-                MyModel.class
-        ));
+        final MutableRepository<MyModel> repository = ctx.register(
+                new SimpleMutableRepository<MyModel>(ctx, MyModel.class));
 
         instance = repository.createWithValues(new Function<MyModel, Void>() {
             public Void apply(MyModel input) {
