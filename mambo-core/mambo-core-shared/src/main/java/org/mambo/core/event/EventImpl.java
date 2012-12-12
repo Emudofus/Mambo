@@ -10,7 +10,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Blackrush
  *         Mambo
  */
-public class EventImpl<M> implements EventInterface<M> {
+public class EventImpl<M> implements Event<M> {
     private final M message;
 
     private boolean stopped;

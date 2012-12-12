@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Blackrush
  *         Mambo
  */
-public interface EventInterface<M> {
+public interface Event<M> {
     /**
      * @return <code>true</code> if propagation has been stopped
      */

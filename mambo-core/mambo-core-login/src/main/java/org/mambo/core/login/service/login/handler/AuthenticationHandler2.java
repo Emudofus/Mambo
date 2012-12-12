@@ -2,10 +2,11 @@ package org.mambo.core.login.service.login.handler;
 
 import org.mambo.core.configuration.InjectConfig;
 import org.mambo.core.event.EventHandler;
-import org.mambo.core.event.EventInterface;
+import org.mambo.core.event.Event;
 import org.mambo.core.login.database.model.User;
 import org.mambo.core.login.service.login.LoginClient;
 import org.mambo.core.network.base.event.NetworkClientConnectionEvent;
+import org.mambo.core.network.base.event.NetworkClientDisconnectionEvent;
 import org.mambo.core.network.base.event.NetworkClientMessageEvent;
 import org.mambo.protocol.client.enums.IdentificationFailureReasonEnum;
 import org.mambo.protocol.client.messages.HelloConnectMessage;
@@ -32,7 +33,7 @@ public class AuthenticationHandler2 {
     @Inject Repository<User> users;
 
     @EventHandler
-    public void onIdentificationmessage(EventInterface<NetworkClientMessageEvent<LoginClient>> event) {
+    public void onIdentificationmessage(Event<NetworkClientMessageEvent<LoginClient>> event) {
         if (!(event.get().getMessage() instanceof IdentificationMessage)) return;
         IdentificationMessage message = (IdentificationMessage) event.get().getMessage();
 
@@ -43,9 +44,16 @@ public class AuthenticationHandler2 {
     }
 
     @EventHandler
-    public void onConnected(EventInterface<NetworkClientConnectionEvent<LoginClient>> event) {
+    public void onConnected(Event<NetworkClientConnectionEvent<LoginClient>> event) {
         LoginClient client = event.get().getClient();
         event.reply(new ProtocolRequired(requiredVersion, currentVersion));
         event.reply(new HelloConnectMessage(client.getTicket(), new byte[0])); // TODO get rsa public key from LoginService
+
+        log.debug("new incoming login client");
+    }
+
+    @EventHandler
+    public void onDisconnected(NetworkClientDisconnectionEvent<LoginClient> event) {
+        log.debug("client has been disconnected");
     }
 }

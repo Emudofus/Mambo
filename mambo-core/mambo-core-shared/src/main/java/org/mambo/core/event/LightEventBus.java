@@ -31,8 +31,8 @@ public class LightEventBus extends EventBus {
 
     @NotNull
     @Override
-    public <M> EventInterface<M> publish(@NotNull M message) {
-        EventInterface<M> event = new EventImpl<M>(message);
+    public <M> Event<M> publish(@NotNull M message) {
+        Event<M> event = new EventImpl<M>(message);
         manager.dispatch(handlers, event);
         return event;
     }

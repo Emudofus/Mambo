@@ -3,6 +3,7 @@ package org.mambo.core.event;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.google.inject.TypeLiteral;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.core.Exceptions;
 import org.slf4j.Logger;
@@ -22,9 +23,9 @@ import java.util.Set;
 public class ReflectiveEventHandlerManager extends EventHandlerManager {
     private static final Logger log = LoggerFactory.getLogger(ReflectiveEventHandlerManager.class);
 
-    private final Map<Class<?>, Set<Holder>> holders = Maps.newHashMap();
+    private final Map<TypeLiteral<?>, Set<Holder>> holders = Maps.newHashMap();
 
-    protected void put(Class<?> messageClass, Holder holder) {
+    protected void put(TypeLiteral<?> messageClass, Holder holder) {
         Set<Holder> holders = this.holders.get(messageClass);
         if (holders == null) {
             holders = Sets.newTreeSet();
@@ -39,23 +40,29 @@ public class ReflectiveEventHandlerManager extends EventHandlerManager {
             EventHandler annotation = method.getAnnotation(EventHandler.class);
             if (annotation == null) break;
 
-            Class<?>[] parameters = method.getExceptionTypes();
-            if (parameters.length != 1 || parameters[0] != EventInterface.class) {
-                throw new RuntimeException("an EventHandler must take only one parameter EventInterface<M>");
+            Type[] types = method.getGenericParameterTypes();
+            if (types.length != 1) {
+                throw new RuntimeException("an EventHandler must take only one parameter Event<M>");
+            }
+            if (!(types[0] instanceof ParameterizedType)) {
+                throw new RuntimeException("can't determine message class");
             }
 
-            Type type = method.getGenericParameterTypes()[0];
-            if (!(type instanceof ParameterizedType)) {
-                throw new RuntimeException("can't determines message's class");
-            }
+            TypeLiteral<?> messageClass;
+            Holder holder;
 
-            Type messageType = ((ParameterizedType) type).getActualTypeArguments()[0];
-            if (!(messageType instanceof Class<?>)) {
-                throw new RuntimeException("can't determines message's class");
-            }
+            ParameterizedType type = (ParameterizedType) types[0];
+            if (type.getRawType() == Event.class) {
+                if (type.getActualTypeArguments().length != 1) {
+                    throw new RuntimeException("can't determine message class : it has no or more than one type arguments");
+                }
 
-            Class<?> messageClass = (Class<?>) messageType;
-            Holder holder = new Holder(method, annotation.priority());
+                messageClass = TypeLiteral.get(type.getActualTypeArguments()[0]);
+                holder = new Holder(true, method, annotation.priority());
+            } else {
+                messageClass = TypeLiteral.get(type);
+                holder = new Holder(false, method, annotation.priority());
+            }
 
             put(messageClass, holder);
         }
@@ -67,8 +74,8 @@ public class ReflectiveEventHandlerManager extends EventHandlerManager {
     }
 
     @Override
-    public void dispatch(@NotNull Multimap<Class<?>, Object> handlers, @NotNull EventInterface<?> event) {
-        Set<Holder> holders = this.holders.get(event.get().getClass());
+    public void dispatch(@NotNull Multimap<Class<?>, Object> handlers, @NotNull Event<?> event) {
+        Set<Holder> holders = this.holders.get(TypeLiteral.get(event.get().getClass()));
         if (holders == null) return;
 
         Exceptions exceptions = Exceptions.create();
@@ -78,7 +85,11 @@ public class ReflectiveEventHandlerManager extends EventHandlerManager {
                 if (event.hasBeenStopped()) return;
 
                 try {
-                    holder.method.invoke(handler, event);
+                    if (holder.event) {
+                        holder.method.invoke(handler, event);
+                    } else {
+                        holder.method.invoke(handler, event.get());
+                    }
                 } catch (IllegalAccessException e) {
                     log.error("can't dispatch event", e);
                 } catch (InvocationTargetException e) {
@@ -91,10 +102,12 @@ public class ReflectiveEventHandlerManager extends EventHandlerManager {
     }
 
     private static class Holder implements Comparable<Holder> {
+        private final boolean event;
         private final Method method;
         private final EventHandler.Priority priority;
 
-        private Holder(Method method, EventHandler.Priority priority) {
+        private Holder(boolean event, Method method, EventHandler.Priority priority) {
+            this.event = event;
             this.method = method;
             this.priority = priority;
         }

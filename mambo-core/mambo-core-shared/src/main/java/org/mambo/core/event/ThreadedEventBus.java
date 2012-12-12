@@ -50,8 +50,8 @@ public class ThreadedEventBus extends EventBus {
 
     @NotNull
     @Override
-    public <M> EventInterface<M> publish(@NotNull M message) {
-        final EventInterface<M> event = new EventImpl<M>(message);
+    public <M> Event<M> publish(@NotNull M message) {
+        final Event<M> event = new EventImpl<M>(message);
         lock.readLock().lock();
         try {
             worker.execute(new Runnable() {

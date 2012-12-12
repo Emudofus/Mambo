@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.core.event.EventBus;
-import org.mambo.core.event.EventInterface;
+import org.mambo.core.event.Event;
 import org.mambo.core.network.NetworkClient;
 import org.mambo.core.network.NetworkHandlerManager;
 import org.mambo.core.network.base.event.NetworkClientConnectionEvent;
@@ -36,7 +36,7 @@ public class EventBusNetworkHandlerManager<T extends NetworkClient> implements N
 
     @Override
     public void dispatchMessage(@NotNull final T client, @NotNull Object message) {
-        EventInterface<NetworkClientMessageEvent<T>> event =
+        Event<NetworkClientMessageEvent<T>> event =
                 eventBus.publish(new NetworkClientMessageEvent<T>(client, message));
 
         Futures.addCallback(event.getReplyFuture(), new FutureCallback<Object>() {

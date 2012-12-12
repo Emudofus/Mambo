@@ -11,5 +11,5 @@ public abstract class EventHandlerManager {
     public abstract void onRegistered(@NotNull Class<?> handlerClass);
     public abstract void onUnregistered(@NotNull Class<?> handlerClass);
 
-    public abstract void dispatch(@NotNull Multimap<Class<?>, Object> handlers, @NotNull EventInterface<?> event);
+    public abstract void dispatch(@NotNull Multimap<Class<?>, Object> handlers, @NotNull Event<?> event);
 }

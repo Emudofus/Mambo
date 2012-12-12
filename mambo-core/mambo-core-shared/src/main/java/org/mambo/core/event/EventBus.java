@@ -11,10 +11,10 @@ public abstract class EventBus {
      * dispatch message to all handlers
      * @param message handler's message
      * @param <M> message's type
-     * @return message's {@link EventInterface}
+     * @return message's {@link Event}
      */
     @NotNull
-    public abstract <M> EventInterface<M> publish(@NotNull M message);
+    public abstract <M> Event<M> publish(@NotNull M message);
 
     /**
      * register a handler from this {@link EventBus}
