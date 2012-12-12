@@ -37,17 +37,29 @@ public final class Dependency implements ColumnConverter {
         this.type = checkNotNull(type);
     }
 
+    @NotNull
+    public EntityMetadata getFrom() {
+        return from;
+    }
 
-    public Dependency reverse() {
-        for (EntityField field : to.getFields().values()) {
-            if (field.getConverter() instanceof Dependency) {
-                Dependency dependency = (Dependency) field.getConverter();
-                if (dependency.to == from) {
-                    return dependency;
-                }
-            }
-        }
-        return null;
+    @NotNull
+    public EntityMetadata getTo() {
+        return to;
+    }
+
+    @NotNull
+    public EntityField getField() {
+        return field;
+    }
+
+    @NotNull
+    public String getTriggerProperty() {
+        return triggerProperty;
+    }
+
+    @NotNull
+    public Type getType() {
+        return type;
     }
 
     @Override

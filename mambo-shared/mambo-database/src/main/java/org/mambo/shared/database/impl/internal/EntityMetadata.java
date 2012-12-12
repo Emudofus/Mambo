@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
@@ -113,8 +115,16 @@ public final class EntityMetadata {
         } else if (field.isAnnotationPresent(OneToMany.class)) {
             OneToMany o2mAnnotation = field.getAnnotation(OneToMany.class);
 
+            if (field.getType() != List.class) {
+                throw new RuntimeException("OneToMany dependency has to be a java.util.List");
+            }
+            if (!(field.getGenericType() instanceof ParameterizedType)) {
+                throw new RuntimeException(field.getName() + " is not parameterized");
+            }
+
+            ParameterizedType type = (ParameterizedType) field.getGenericType();
             @SuppressWarnings("unchecked")
-            EntityMetadata to = of((Class<? extends Entity>) o2mAnnotation.value());
+            EntityMetadata to = of((Class) type.getActualTypeArguments()[0]);
 
             entityField.setConverter(new Dependency(
                     this,

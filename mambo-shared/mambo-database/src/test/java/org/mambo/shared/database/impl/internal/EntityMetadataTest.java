@@ -1,6 +1,6 @@
 package org.mambo.shared.database.impl.internal;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,8 +12,8 @@ import org.mambo.shared.database.impl.Model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -49,8 +49,8 @@ public class EntityMetadataTest {
         private Long id = 0L;
 
         @Column
-        @OneToMany(value = MyModel.class, mappedBy = "parent")
-        private Set<MyModel> children = Sets.newHashSet();
+        @OneToMany(mappedBy = "parent")
+        private List<MyModel> children = Lists.newArrayList();
 
         @NotNull
         @Override
@@ -59,7 +59,7 @@ public class EntityMetadataTest {
         }
 
         @NotNull
-        public Set<MyModel> getChildren() {
+        public List<MyModel> getChildren() {
             return children;
         }
     }
@@ -157,5 +157,31 @@ public class EntityMetadataTest {
         MyParentModel model = new MyParentModel();
 
         metadata.getField("id").set(model, 1);
+    }
+
+    @Test
+    public void oneToMany() {
+        EntityMetadata parent = EntityMetadata.of(MyParentModel.class);
+
+        EntityField field = parent.getField("children");
+        assertThat(field, notNullValue());
+        assertThat(field.getConverter(), is(Dependency.class));
+
+        Dependency dependency = (Dependency) field.getConverter();
+        assertThat(dependency.getType(), is(Dependency.Type.ONE_TO_MANY));
+        assertThat(dependency.getTo(), is(metadata));
+        assertThat(dependency.getTriggerProperty(), is("parent"));
+    }
+
+    @Test
+    public void manyToOne() {
+        EntityField field = metadata.getField("parent");
+        assertThat(field, notNullValue());
+        assertThat(field.getConverter(), is(Dependency.class));
+
+        Dependency dependency = (Dependency) field.getConverter();
+        assertThat(dependency.getType(), is(Dependency.Type.MANY_TO_ONE));
+        assertThat(dependency.getTo(), is(EntityMetadata.of(MyParentModel.class)));
+        assertThat(dependency.getTriggerProperty(), is("id"));
     }
 }
