@@ -74,11 +74,10 @@ public class SimpleMutableRepository<E extends MutableEntity> extends SimpleRepo
         return entity;
     }
 
-    @SuppressWarnings("unchecked")
     @NotNull
     @Override
     public E createEmpty() {
-        return (E) getEntityMetadata().createEmpty();
+        return getEntityMetadata().createEmpty();
     }
 
     @NotNull

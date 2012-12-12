@@ -78,21 +78,18 @@ public final class Dependency implements ColumnConverter {
     }
 
     @Override
-    public void export(@NotNull DatabaseContext ctx, @NotNull Object obj, @NotNull Map<String, Object> export) throws SQLException {
+    public void export(@NotNull DatabaseContext ctx, @NotNull Object obj, @NotNull Map<String, Object> values) {
         EntityField trigger = to.getField(triggerProperty);
 
         switch (type) {
         case MANY_TO_ONE:
             String columnName = field.getColumnName() + "_" + trigger.getColumnName();
             Object value = trigger.get(field.get(obj));
-            export.put(columnName, value);
+            values.put(columnName, value);
             break;
 
         case ONE_TO_MANY: // nothing to do
             break;
-
-        default:
-            throw new SQLException("can't export dependency type " + type);
         }
     }
 }

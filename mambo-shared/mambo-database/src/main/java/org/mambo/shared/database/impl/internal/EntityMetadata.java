@@ -62,10 +62,11 @@ public final class EntityMetadata {
         return primaryKeyField;
     }
 
+    @SuppressWarnings("unchecked")
     @NotNull
-    public Object createEmpty() {
+    public <E extends Entity> E createEmpty() {
         try {
-            return entityClass.newInstance();
+            return (E) entityClass.newInstance();
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }

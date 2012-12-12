@@ -32,7 +32,7 @@ public class EntityMetadataTest {
         }
 
         @Override
-        public void export(@NotNull DatabaseContext ctx, @NotNull Object obj, @NotNull Map<String, Object> rset) throws SQLException {
+        public void export(@NotNull DatabaseContext ctx, @NotNull Object obj, @NotNull Map<String, Object> values) {
 
         }
     }
