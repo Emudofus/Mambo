@@ -16,7 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Date: 24/11/12
  * Time: 19:28
  */
-public abstract class BaseNetworkHandlerManager<T extends NetworkClient> implements NetworkHandlerManager<T> {
+public abstract class BaseNetworkHandlerManager<T extends NetworkClient> implements NetworkHandlerManager<T>, Iterable<NetworkHandler<T>> {
     private final Set<NetworkHandler<T>> handlers;
 
     protected BaseNetworkHandlerManager(@NotNull Set<NetworkHandler<T>> handlers) {
