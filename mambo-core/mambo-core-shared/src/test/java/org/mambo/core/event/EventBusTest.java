@@ -1,4 +1,4 @@
-package org.mambo.core.io;
+package org.mambo.core.event;
 
 import org.junit.After;
 import org.junit.Before;
