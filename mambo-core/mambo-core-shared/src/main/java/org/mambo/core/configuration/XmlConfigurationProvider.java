@@ -72,7 +72,7 @@ public class XmlConfigurationProvider extends BaseConfigurationProvider {
                       typeAttr  = element.getAttribute(ATTR_TYPE),
                       valueAttr = element.getAttribute(ATTR_VALUE);
 
-            String key = combine(parentKey, keyAttr.getValue());
+            String key = keyAttr == null ? parentKey : combine(parentKey, keyAttr.getValue());
 
             if (typeAttr != null && valueAttr != null) {
                 load(key, typeAttr.getValue(), valueAttr.getValue());

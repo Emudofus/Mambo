@@ -28,8 +28,8 @@ public class AuthenticationHandler2 {
 
     public static final byte IN_MAINTENANCE = (byte) IdentificationFailureReasonEnum.IN_MAINTENANCE.value();
 
-    @InjectConfig("login.required_version") int requiredVersion;
-    @InjectConfig("login.current_version") int currentVersion;
+    @InjectConfig("services.login.required_version") int requiredVersion;
+    @InjectConfig("services.login.current_version") int currentVersion;
     @Inject Repository<User> users;
 
     private static String getUsername(IdentificationMessage message) {
