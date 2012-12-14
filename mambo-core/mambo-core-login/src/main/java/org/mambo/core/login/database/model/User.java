@@ -13,7 +13,7 @@ import org.mambo.shared.database.impl.Model;
  * Time: 00:09
  */
 @Table("users")
-public class User extends Model<Long, User> {
+public class User extends Model<User> {
     @Id
     @Column
     private Long id = 0L;
@@ -37,8 +37,8 @@ public class User extends Model<Long, User> {
     }
 
     @Override
-    public void setId(@NotNull Long id) {
-        this.id = id;
+    public void setId(@NotNull Object id) {
+        this.id = (Long) id;
     }
 
     @NotNull
