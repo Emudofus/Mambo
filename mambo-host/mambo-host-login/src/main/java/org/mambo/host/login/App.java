@@ -8,6 +8,7 @@ import org.mambo.core.bootstrap.ServiceBootstrapModule;
 import org.mambo.core.configuration.ConfigurationProvider;
 import org.mambo.core.configuration.ConfigurationProviderModule;
 import org.mambo.core.configuration.XmlConfigurationProvider;
+import org.mambo.core.login.database.LoginDatabaseModule;
 import org.mambo.core.login.service.login.NioLoginServiceModule;
 import org.mambo.core.login.service.login.handler.LoginHandlerModule;
 import org.mambo.core.parser.string.StringParsers;
@@ -35,7 +36,7 @@ public class App {
                 new ConfigurationProviderModule(configuration),
                 new NioLoginServiceModule(),
                 new LoginHandlerModule(),
-                //new LoginDatabaseModule(),
+                new LoginDatabaseModule(),
                 new ServiceBootstrapModule()
         );
 

@@ -42,7 +42,7 @@ public class BigEndianDataWriterTest {
         assertEquals(2, writer.getLength());
         assertEquals(2, writer.getOffset());
 
-        assertEquals(255, new BigEndianDataReader(writer.getData()).readUnsignedShort());
+        assertEquals(65535, new BigEndianDataReader(writer.getData()).readUnsignedShort());
     }
 
     @Test
