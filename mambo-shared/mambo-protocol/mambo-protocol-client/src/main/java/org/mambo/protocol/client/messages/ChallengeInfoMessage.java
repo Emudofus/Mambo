@@ -1,8 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:26
+// Generated on 12/14/2012 18:44:06
 package org.mambo.protocol.client.messages;
 
+import java.util.*;
+import org.mambo.protocol.client.types.*;
+import org.mambo.protocol.client.enums.*;
 import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
@@ -14,7 +17,7 @@ public class ChallengeInfoMessage extends NetworkMessage {
         return MESSAGE_ID;
     }
     
-    public byte challengeId;
+    public short challengeId;
     public int targetId;
     public int baseXpBonus;
     public int extraXpBonus;
@@ -23,7 +26,7 @@ public class ChallengeInfoMessage extends NetworkMessage {
     
     public ChallengeInfoMessage() { }
     
-    public ChallengeInfoMessage(byte challengeId, int targetId, int baseXpBonus, int extraXpBonus, int baseDropBonus, int extraDropBonus) {
+    public ChallengeInfoMessage(short challengeId, int targetId, int baseXpBonus, int extraXpBonus, int baseDropBonus, int extraDropBonus) {
         this.challengeId = challengeId;
         this.targetId = targetId;
         this.baseXpBonus = baseXpBonus;
@@ -34,7 +37,7 @@ public class ChallengeInfoMessage extends NetworkMessage {
     
     @Override
     public void serialize(DataWriterInterface writer) {
-        writer.writeByte(challengeId);
+        writer.writeShort(challengeId);
         writer.writeInt(targetId);
         writer.writeInt(baseXpBonus);
         writer.writeInt(extraXpBonus);
@@ -44,7 +47,7 @@ public class ChallengeInfoMessage extends NetworkMessage {
     
     @Override
     public void deserialize(DataReaderInterface reader) {
-        challengeId = reader.readByte();
+        challengeId = reader.readShort();
         if (challengeId < 0)
             throw new RuntimeException("Forbidden value on challengeId = " + challengeId + ", it doesn't respect the following condition : challengeId < 0");
         targetId = reader.readInt();

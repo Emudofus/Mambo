@@ -1,8 +1,10 @@
 
 
-// Generated on 11/11/2012 20:41:41
+// Generated on 12/14/2012 18:44:23
 package org.mambo.protocol.client.types;
 
+import java.util.*;
+import org.mambo.protocol.client.enums.*;
 import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
@@ -37,7 +39,7 @@ public class Version implements SerializerInterface, DeserializerInterface {
         writer.writeByte(major);
         writer.writeByte(minor);
         writer.writeByte(release);
-        writer.writeUnsignedShort(revision);
+        writer.writeInt(revision);
         writer.writeByte(patch);
         writer.writeByte(buildType);
     }
@@ -53,9 +55,9 @@ public class Version implements SerializerInterface, DeserializerInterface {
         release = reader.readByte();
         if (release < 0)
             throw new RuntimeException("Forbidden value on release = " + release + ", it doesn't respect the following condition : release < 0");
-        revision = reader.readUnsignedShort();
-        if (revision < 0 || revision > 65535)
-            throw new RuntimeException("Forbidden value on revision = " + revision + ", it doesn't respect the following condition : revision < 0 || revision > 65535");
+        revision = reader.readInt();
+        if (revision < 0)
+            throw new RuntimeException("Forbidden value on revision = " + revision + ", it doesn't respect the following condition : revision < 0");
         patch = reader.readByte();
         if (patch < 0)
             throw new RuntimeException("Forbidden value on patch = " + patch + ", it doesn't respect the following condition : patch < 0");

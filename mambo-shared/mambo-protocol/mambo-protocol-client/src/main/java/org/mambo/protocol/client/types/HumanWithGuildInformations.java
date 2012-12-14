@@ -1,8 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:40
+// Generated on 12/14/2012 18:44:22
 package org.mambo.protocol.client.types;
 
+import java.util.*;
+import org.mambo.protocol.client.enums.*;
+import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
 public class HumanWithGuildInformations extends HumanInformations {
@@ -17,8 +20,8 @@ public class HumanWithGuildInformations extends HumanInformations {
     
     public HumanWithGuildInformations() { }
     
-    public HumanWithGuildInformations(EntityLook[] followingCharactersLook, byte emoteId, double emoteStartTime, ActorRestrictionsInformations restrictions, short titleId, String titleParam, GuildInformations guildInformations) {
-        super(followingCharactersLook, emoteId, emoteStartTime, restrictions, titleId, titleParam);
+    public HumanWithGuildInformations(ActorRestrictionsInformations restrictions, boolean sex, HumanOption[] options, GuildInformations guildInformations) {
+        super(restrictions, sex, options);
         this.guildInformations = guildInformations;
     }
     

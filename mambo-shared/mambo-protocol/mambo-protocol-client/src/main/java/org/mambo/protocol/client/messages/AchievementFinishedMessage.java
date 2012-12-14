@@ -1,8 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:22
+// Generated on 12/14/2012 18:44:02
 package org.mambo.protocol.client.messages;
 
+import java.util.*;
+import org.mambo.protocol.client.types.*;
+import org.mambo.protocol.client.enums.*;
 import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
@@ -14,24 +17,30 @@ public class AchievementFinishedMessage extends NetworkMessage {
         return MESSAGE_ID;
     }
     
-    public short achievementId;
+    public short id;
+    public short finishedlevel;
     
     public AchievementFinishedMessage() { }
     
-    public AchievementFinishedMessage(short achievementId) {
-        this.achievementId = achievementId;
+    public AchievementFinishedMessage(short id, short finishedlevel) {
+        this.id = id;
+        this.finishedlevel = finishedlevel;
     }
     
     @Override
     public void serialize(DataWriterInterface writer) {
-        writer.writeShort(achievementId);
+        writer.writeShort(id);
+        writer.writeShort(finishedlevel);
     }
     
     @Override
     public void deserialize(DataReaderInterface reader) {
-        achievementId = reader.readShort();
-        if (achievementId < 0)
-            throw new RuntimeException("Forbidden value on achievementId = " + achievementId + ", it doesn't respect the following condition : achievementId < 0");
+        id = reader.readShort();
+        if (id < 0)
+            throw new RuntimeException("Forbidden value on id = " + id + ", it doesn't respect the following condition : id < 0");
+        finishedlevel = reader.readShort();
+        if (finishedlevel < 0 || finishedlevel > 200)
+            throw new RuntimeException("Forbidden value on finishedlevel = " + finishedlevel + ", it doesn't respect the following condition : finishedlevel < 0 || finishedlevel > 200");
     }
     
 }

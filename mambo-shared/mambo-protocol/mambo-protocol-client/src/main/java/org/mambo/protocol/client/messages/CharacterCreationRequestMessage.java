@@ -1,8 +1,10 @@
 
 
-// Generated on 11/11/2012 20:41:24
+// Generated on 12/14/2012 18:44:04
 package org.mambo.protocol.client.messages;
 
+import java.util.*;
+import org.mambo.protocol.client.types.*;
 import org.mambo.protocol.client.enums.*;
 import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
@@ -19,14 +21,16 @@ public class CharacterCreationRequestMessage extends NetworkMessage {
     public byte breed;
     public boolean sex;
     public int[] colors;
+    public int cosmeticId;
     
     public CharacterCreationRequestMessage() { }
     
-    public CharacterCreationRequestMessage(String name, byte breed, boolean sex, int[] colors) {
+    public CharacterCreationRequestMessage(String name, byte breed, boolean sex, int[] colors, int cosmeticId) {
         this.name = name;
         this.breed = breed;
         this.sex = sex;
         this.colors = colors;
+        this.cosmeticId = cosmeticId;
     }
     
     @Override
@@ -37,6 +41,7 @@ public class CharacterCreationRequestMessage extends NetworkMessage {
         for (int entry : colors) {
             writer.writeInt(entry);
         }
+        writer.writeInt(cosmeticId);
     }
     
     @Override
@@ -50,6 +55,9 @@ public class CharacterCreationRequestMessage extends NetworkMessage {
         for (int i = 0; i < 5; i++) {
             colors[i] = reader.readInt();
         }
+        cosmeticId = reader.readInt();
+        if (cosmeticId < 0)
+            throw new RuntimeException("Forbidden value on cosmeticId = " + cosmeticId + ", it doesn't respect the following condition : cosmeticId < 0");
     }
     
 }

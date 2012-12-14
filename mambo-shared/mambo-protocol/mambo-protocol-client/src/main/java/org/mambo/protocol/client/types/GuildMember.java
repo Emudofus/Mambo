@@ -1,8 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:40
+// Generated on 12/14/2012 18:44:23
 package org.mambo.protocol.client.types;
 
+import java.util.*;
+import org.mambo.protocol.client.enums.*;
+import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
 public class GuildMember extends CharacterMinimalInformations {
@@ -24,10 +27,11 @@ public class GuildMember extends CharacterMinimalInformations {
     public int hoursSinceLastConnection;
     public byte moodSmileyId;
     public int accountId;
+    public int achievementPoints;
     
     public GuildMember() { }
     
-    public GuildMember(int id, short level, String name, byte breed, boolean sex, short rank, double givenExperience, byte experienceGivenPercent, long rights, byte connected, byte alignmentSide, int hoursSinceLastConnection, byte moodSmileyId, int accountId) {
+    public GuildMember(int id, short level, String name, byte breed, boolean sex, short rank, double givenExperience, byte experienceGivenPercent, long rights, byte connected, byte alignmentSide, int hoursSinceLastConnection, byte moodSmileyId, int accountId, int achievementPoints) {
         super(id, level, name);
         this.breed = breed;
         this.sex = sex;
@@ -40,6 +44,7 @@ public class GuildMember extends CharacterMinimalInformations {
         this.hoursSinceLastConnection = hoursSinceLastConnection;
         this.moodSmileyId = moodSmileyId;
         this.accountId = accountId;
+        this.achievementPoints = achievementPoints;
     }
     
     @Override
@@ -56,6 +61,7 @@ public class GuildMember extends CharacterMinimalInformations {
         writer.writeUnsignedShort(hoursSinceLastConnection);
         writer.writeByte(moodSmileyId);
         writer.writeInt(accountId);
+        writer.writeInt(achievementPoints);
     }
     
     @Override
@@ -86,6 +92,7 @@ public class GuildMember extends CharacterMinimalInformations {
         accountId = reader.readInt();
         if (accountId < 0)
             throw new RuntimeException("Forbidden value on accountId = " + accountId + ", it doesn't respect the following condition : accountId < 0");
+        achievementPoints = reader.readInt();
     }
     
 }

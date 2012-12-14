@@ -1,9 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:40
+// Generated on 12/14/2012 18:44:23
 package org.mambo.protocol.client.types;
 
+import java.util.*;
 import org.mambo.protocol.client.enums.*;
+import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
 public class FriendOnlineInformations extends FriendInformations {
@@ -24,8 +26,8 @@ public class FriendOnlineInformations extends FriendInformations {
     
     public FriendOnlineInformations() { }
     
-    public FriendOnlineInformations(int accountId, String accountName, byte playerState, int lastConnection, String playerName, short level, byte alignmentSide, byte breed, boolean sex, BasicGuildInformations guildInfo, byte moodSmileyId) {
-        super(accountId, accountName, playerState, lastConnection);
+    public FriendOnlineInformations(int accountId, String accountName, byte playerState, int lastConnection, int achievementPoints, String playerName, short level, byte alignmentSide, byte breed, boolean sex, BasicGuildInformations guildInfo, byte moodSmileyId) {
+        super(accountId, accountName, playerState, lastConnection, achievementPoints);
         this.playerName = playerName;
         this.level = level;
         this.alignmentSide = alignmentSide;

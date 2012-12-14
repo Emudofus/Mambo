@@ -1,8 +1,12 @@
 
 
-// Generated on 11/11/2012 20:41:24
+// Generated on 12/14/2012 18:44:04
 package org.mambo.protocol.client.messages;
 
+import java.util.*;
+import org.mambo.protocol.client.types.*;
+import org.mambo.protocol.client.enums.*;
+import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
 public class CharacterLevelUpInformationMessage extends CharacterLevelUpMessage {
@@ -15,15 +19,13 @@ public class CharacterLevelUpInformationMessage extends CharacterLevelUpMessage 
     
     public String name;
     public int id;
-    public byte relationType;
     
     public CharacterLevelUpInformationMessage() { }
     
-    public CharacterLevelUpInformationMessage(short newLevel, String name, int id, byte relationType) {
+    public CharacterLevelUpInformationMessage(short newLevel, String name, int id) {
         super(newLevel);
         this.name = name;
         this.id = id;
-        this.relationType = relationType;
     }
     
     @Override
@@ -31,7 +33,6 @@ public class CharacterLevelUpInformationMessage extends CharacterLevelUpMessage 
         super.serialize(writer);
         writer.writeString(name);
         writer.writeInt(id);
-        writer.writeByte(relationType);
     }
     
     @Override
@@ -41,7 +42,6 @@ public class CharacterLevelUpInformationMessage extends CharacterLevelUpMessage 
         id = reader.readInt();
         if (id < 0)
             throw new RuntimeException("Forbidden value on id = " + id + ", it doesn't respect the following condition : id < 0");
-        relationType = reader.readByte();
     }
     
 }

@@ -1,8 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:39
+// Generated on 12/14/2012 18:44:21
 package org.mambo.protocol.client.types;
 
+import java.util.*;
+import org.mambo.protocol.client.enums.*;
+import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
 public class FightEntityDispositionInformations extends EntityDispositionInformations {

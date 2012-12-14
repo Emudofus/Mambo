@@ -263,5 +263,18 @@ public final class ProtocolTypeManager {
         typeClasses.put(395, MonsterInGroupLightInformations.class);
         typeClasses.put(396, GroupMonsterStaticInformationsWithAlternatives.class);
         typeClasses.put(397, KrosmasterFigure.class);
+        typeClasses.put(398, InteractiveElementWithAgeBonus.class);
+        typeClasses.put(399, CharacterToRelookInformation.class);
+        typeClasses.put(400, AbstractCharacterInformation.class);
+        typeClasses.put(402, AchievementStartedObjective.class);
+        typeClasses.put(404, AchievementObjective.class);
+        typeClasses.put(405, IndexedEntityLook.class);
+        typeClasses.put(406, HumanOption.class);
+        typeClasses.put(407, HumanOptionEmote.class);
+        typeClasses.put(408, HumanOptionTitle.class);
+        typeClasses.put(409, HumanOptionGuild.class);
+        typeClasses.put(410, HumanOptionFollowers.class);
+        typeClasses.put(411, HumanOptionOrnament.class);
+        typeClasses.put(412, AchievementRewardable.class);
     }
 }

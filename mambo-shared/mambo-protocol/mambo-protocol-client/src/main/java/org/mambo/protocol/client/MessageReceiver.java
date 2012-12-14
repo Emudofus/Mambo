@@ -836,6 +836,7 @@ public final class MessageReceiver {
         messageClasses.put(6327, GuildModificationNameValidMessage.class);
         messageClasses.put(6328, GuildModificationEmblemValidMessage.class);
         messageClasses.put(6330, GameActionFightCastOnTargetRequestMessage.class);
+        messageClasses.put(6334, ObjectAveragePricesGetMessage.class);
         messageClasses.put(6335, ObjectAveragePricesMessage.class);
         messageClasses.put(6336, ObjectAveragePricesErrorMessage.class);
         messageClasses.put(6337, ExchangeBidHouseInListUpdatedMessage.class);
@@ -852,5 +853,32 @@ public final class MessageReceiver {
         messageClasses.put(6349, KrosmasterTransferRequestMessage.class);
         messageClasses.put(6350, KrosmasterInventoryMessage.class);
         messageClasses.put(6351, KrosmasterAuthTokenMessage.class);
+        messageClasses.put(6353, CharacterSelectionWithRelookMessage.class);
+        messageClasses.put(6354, CharacterReplayWithRelookRequestMessage.class);
+        messageClasses.put(6355, SpouseGetInformationsMessage.class);
+        messageClasses.put(6356, SpouseInformationsMessage.class);
+        messageClasses.put(6357, AchievementDetailedListRequestMessage.class);
+        messageClasses.put(6358, AchievementDetailedListMessage.class);
+        messageClasses.put(6361, DisplayNumericalValueWithAgeBonusMessage.class);
+        messageClasses.put(6362, BasicAckMessage.class);
+        messageClasses.put(6363, TitlesAndOrnamentsListRequestMessage.class);
+        messageClasses.put(6364, TitleGainedMessage.class);
+        messageClasses.put(6365, TitleSelectRequestMessage.class);
+        messageClasses.put(6366, TitleSelectedMessage.class);
+        messageClasses.put(6367, TitlesAndOrnamentsListMessage.class);
+        messageClasses.put(6368, OrnamentGainedMessage.class);
+        messageClasses.put(6369, OrnamentSelectedMessage.class);
+        messageClasses.put(6370, OrnamentSelectErrorMessage.class);
+        messageClasses.put(6371, TitleLostMessage.class);
+        messageClasses.put(6373, TitleSelectErrorMessage.class);
+        messageClasses.put(6374, OrnamentSelectRequestMessage.class);
+        messageClasses.put(6375, AchievementRewardErrorMessage.class);
+        messageClasses.put(6376, AchievementRewardSuccessMessage.class);
+        messageClasses.put(6377, AchievementRewardRequestMessage.class);
+        messageClasses.put(6378, AchievementDetailsMessage.class);
+        messageClasses.put(6380, AchievementDetailsRequestMessage.class);
+        messageClasses.put(6381, AchievementFinishedInformationMessage.class);
+        messageClasses.put(6382, FriendGuildSetWarnOnAchievementCompleteMessage.class);
+        messageClasses.put(6383, FriendGuildWarnOnAchievementCompleteStateMessage.class);
     }
 }

@@ -33,9 +33,13 @@ public class AuthenticationHandler extends BaseNetworkHandler<LoginClient> {
     @InjectConfig("login.current_version") int currentVersion;
     @Inject Repository<User> users;
 
+    private static String getUsername(IdentificationMessage message) {
+        return "foo"; // TODO read message.credentials
+    }
+
     @Handler
     public void identificationAction(LoginClient client, final IdentificationMessage msg) {
-        final User user = users.find("username", msg.login);
+        final User user = users.find("username", getUsername(msg));
 
         client.getSession().write(new IdentificationFailedMessage(IN_MAINTENANCE)).addListener(new Runnable() {
             public void run() {

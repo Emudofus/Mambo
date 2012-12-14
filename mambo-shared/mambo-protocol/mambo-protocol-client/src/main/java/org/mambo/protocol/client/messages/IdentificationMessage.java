@@ -1,9 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:22
+// Generated on 12/14/2012 18:44:01
 package org.mambo.protocol.client.messages;
 
+import java.util.*;
 import org.mambo.protocol.client.types.*;
+import org.mambo.protocol.client.enums.*;
 import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
@@ -20,19 +22,17 @@ public class IdentificationMessage extends NetworkMessage {
     public boolean useLoginToken;
     public VersionExtended version;
     public String lang;
-    public String login;
     public byte[] credentials;
     public short serverId;
     
     public IdentificationMessage() { }
     
-    public IdentificationMessage(boolean autoconnect, boolean useCertificate, boolean useLoginToken, VersionExtended version, String lang, String login, byte[] credentials, short serverId) {
+    public IdentificationMessage(boolean autoconnect, boolean useCertificate, boolean useLoginToken, VersionExtended version, String lang, byte[] credentials, short serverId) {
         this.autoconnect = autoconnect;
         this.useCertificate = useCertificate;
         this.useLoginToken = useLoginToken;
         this.version = version;
         this.lang = lang;
-        this.login = login;
         this.credentials = credentials;
         this.serverId = serverId;
     }
@@ -46,7 +46,6 @@ public class IdentificationMessage extends NetworkMessage {
         writer.writeUnsignedByte(flag1);
         version.serialize(writer);
         writer.writeString(lang);
-        writer.writeString(login);
         writer.writeUnsignedShort(credentials.length);
         for (byte entry : credentials) {
             writer.writeByte(entry);
@@ -63,7 +62,6 @@ public class IdentificationMessage extends NetworkMessage {
         version = new VersionExtended();
         version.deserialize(reader);
         lang = reader.readString();
-        login = reader.readString();
         int limit = reader.readUnsignedShort();
         credentials = new byte[limit];
         for (int i = 0; i < limit; i++) {

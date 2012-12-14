@@ -1,8 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:26
+// Generated on 12/14/2012 18:44:06
 package org.mambo.protocol.client.messages;
 
+import java.util.*;
+import org.mambo.protocol.client.types.*;
+import org.mambo.protocol.client.enums.*;
 import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
@@ -14,22 +17,22 @@ public class ChallengeTargetsListRequestMessage extends NetworkMessage {
         return MESSAGE_ID;
     }
     
-    public byte challengeId;
+    public short challengeId;
     
     public ChallengeTargetsListRequestMessage() { }
     
-    public ChallengeTargetsListRequestMessage(byte challengeId) {
+    public ChallengeTargetsListRequestMessage(short challengeId) {
         this.challengeId = challengeId;
     }
     
     @Override
     public void serialize(DataWriterInterface writer) {
-        writer.writeByte(challengeId);
+        writer.writeShort(challengeId);
     }
     
     @Override
     public void deserialize(DataReaderInterface reader) {
-        challengeId = reader.readByte();
+        challengeId = reader.readShort();
         if (challengeId < 0)
             throw new RuntimeException("Forbidden value on challengeId = " + challengeId + ", it doesn't respect the following condition : challengeId < 0");
     }

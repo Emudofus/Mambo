@@ -1,9 +1,12 @@
 
 
-// Generated on 11/11/2012 20:41:22
+// Generated on 12/14/2012 18:44:01
 package org.mambo.protocol.client.messages;
 
+import java.util.*;
 import org.mambo.protocol.client.types.*;
+import org.mambo.protocol.client.enums.*;
+import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
 public class IdentificationAccountForceMessage extends IdentificationMessage {
@@ -18,8 +21,8 @@ public class IdentificationAccountForceMessage extends IdentificationMessage {
     
     public IdentificationAccountForceMessage() { }
     
-    public IdentificationAccountForceMessage(boolean autoconnect, boolean useCertificate, boolean useLoginToken, VersionExtended version, String lang, String login, byte[] credentials, short serverId, String forcedAccountLogin) {
-        super(autoconnect, useCertificate, useLoginToken, version, lang, login, credentials, serverId);
+    public IdentificationAccountForceMessage(boolean autoconnect, boolean useCertificate, boolean useLoginToken, VersionExtended version, String lang, byte[] credentials, short serverId, String forcedAccountLogin) {
+        super(autoconnect, useCertificate, useLoginToken, version, lang, credentials, serverId);
         this.forcedAccountLogin = forcedAccountLogin;
     }
     

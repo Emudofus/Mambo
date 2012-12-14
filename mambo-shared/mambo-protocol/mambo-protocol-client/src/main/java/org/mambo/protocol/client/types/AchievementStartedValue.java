@@ -1,8 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:38
+// Generated on 12/14/2012 18:44:21
 package org.mambo.protocol.client.types;
 
+import java.util.*;
+import org.mambo.protocol.client.enums.*;
+import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
 public class AchievementStartedValue extends Achievement {
@@ -18,8 +21,8 @@ public class AchievementStartedValue extends Achievement {
     
     public AchievementStartedValue() { }
     
-    public AchievementStartedValue(short id, short value, short maxValue) {
-        super(id);
+    public AchievementStartedValue(short id, AchievementObjective[] finishedObjective, AchievementStartedObjective[] startedObjectives, short value, short maxValue) {
+        super(id, finishedObjective, startedObjectives);
         this.value = value;
         this.maxValue = maxValue;
     }

@@ -1,9 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:27
+// Generated on 12/14/2012 18:44:07
 package org.mambo.protocol.client.messages;
 
+import java.util.*;
 import org.mambo.protocol.client.types.*;
+import org.mambo.protocol.client.enums.*;
 import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
@@ -56,6 +58,7 @@ public class MapComplementaryInformationsDataMessage extends NetworkMessage {
         }
         writer.writeUnsignedShort(interactiveElements.length);
         for (InteractiveElement entry : interactiveElements) {
+            writer.writeShort(entry.getTypeId());
             entry.serialize(writer);
         }
         writer.writeUnsignedShort(statedElements.length);
@@ -96,7 +99,7 @@ public class MapComplementaryInformationsDataMessage extends NetworkMessage {
         limit = reader.readUnsignedShort();
         interactiveElements = new InteractiveElement[limit];
         for (int i = 0; i < limit; i++) {
-            interactiveElements[i] = new InteractiveElement();
+            interactiveElements[i] = ProtocolTypeManager.getInstance().build(reader.readShort(), InteractiveElement.class);
             interactiveElements[i].deserialize(reader);
         }
         limit = reader.readUnsignedShort();

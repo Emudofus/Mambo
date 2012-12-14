@@ -1,6 +1,6 @@
 
 
-// Generated on 11/11/2012 20:41:42
+// Generated on 12/14/2012 18:33:50
 package org.mambo.protocol.client.enums;
 
 public enum GameContextEnum {

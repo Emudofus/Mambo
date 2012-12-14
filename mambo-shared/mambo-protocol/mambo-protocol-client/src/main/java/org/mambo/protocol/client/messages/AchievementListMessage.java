@@ -1,9 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:22
+// Generated on 12/14/2012 18:44:02
 package org.mambo.protocol.client.messages;
 
+import java.util.*;
 import org.mambo.protocol.client.types.*;
+import org.mambo.protocol.client.enums.*;
 import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
@@ -15,41 +17,40 @@ public class AchievementListMessage extends NetworkMessage {
         return MESSAGE_ID;
     }
     
-    public Achievement[] startedAchievements;
     public short[] finishedAchievementsIds;
+    public AchievementRewardable[] rewardableAchievements;
     
     public AchievementListMessage() { }
     
-    public AchievementListMessage(Achievement[] startedAchievements, short[] finishedAchievementsIds) {
-        this.startedAchievements = startedAchievements;
+    public AchievementListMessage(short[] finishedAchievementsIds, AchievementRewardable[] rewardableAchievements) {
         this.finishedAchievementsIds = finishedAchievementsIds;
+        this.rewardableAchievements = rewardableAchievements;
     }
     
     @Override
     public void serialize(DataWriterInterface writer) {
-        writer.writeUnsignedShort(startedAchievements.length);
-        for (Achievement entry : startedAchievements) {
-            writer.writeShort(entry.getTypeId());
-            entry.serialize(writer);
-        }
         writer.writeUnsignedShort(finishedAchievementsIds.length);
         for (short entry : finishedAchievementsIds) {
             writer.writeShort(entry);
+        }
+        writer.writeUnsignedShort(rewardableAchievements.length);
+        for (AchievementRewardable entry : rewardableAchievements) {
+            entry.serialize(writer);
         }
     }
     
     @Override
     public void deserialize(DataReaderInterface reader) {
         int limit = reader.readUnsignedShort();
-        startedAchievements = new Achievement[limit];
-        for (int i = 0; i < limit; i++) {
-            startedAchievements[i] = ProtocolTypeManager.getInstance().build(reader.readShort(), Achievement.class);
-            startedAchievements[i].deserialize(reader);
-        }
-        limit = reader.readUnsignedShort();
         finishedAchievementsIds = new short[limit];
         for (int i = 0; i < limit; i++) {
             finishedAchievementsIds[i] = reader.readShort();
+        }
+        limit = reader.readUnsignedShort();
+        rewardableAchievements = new AchievementRewardable[limit];
+        for (int i = 0; i < limit; i++) {
+            rewardableAchievements[i] = new AchievementRewardable();
+            rewardableAchievements[i].deserialize(reader);
         }
     }
     

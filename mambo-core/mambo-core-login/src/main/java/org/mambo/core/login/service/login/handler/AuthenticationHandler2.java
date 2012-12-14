@@ -32,12 +32,16 @@ public class AuthenticationHandler2 {
     @InjectConfig("login.current_version") int currentVersion;
     @Inject Repository<User> users;
 
+    private static String getUsername(IdentificationMessage message) {
+        return "foo"; // TODO read message.credentials
+    }
+
     @EventHandler
     public void onIdentificationmessage(Event<NetworkClientMessageEvent<LoginClient>> event) {
         if (!(event.get().getMessage() instanceof IdentificationMessage)) return;
         IdentificationMessage message = (IdentificationMessage) event.get().getMessage();
 
-        User user = users.find("username", message.login);
+        User user = users.find("username", getUsername(message));
         event.reply(new IdentificationFailedMessage(IN_MAINTENANCE));
 
         log.debug("{} tried to connect", user.getNickname());

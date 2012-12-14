@@ -1,8 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:40
+// Generated on 12/14/2012 18:44:22
 package org.mambo.protocol.client.types;
 
+import java.util.*;
+import org.mambo.protocol.client.enums.*;
+import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
 public class FriendInformations extends AbstractContactInformations {
@@ -15,13 +18,15 @@ public class FriendInformations extends AbstractContactInformations {
     
     public byte playerState;
     public int lastConnection;
+    public int achievementPoints;
     
     public FriendInformations() { }
     
-    public FriendInformations(int accountId, String accountName, byte playerState, int lastConnection) {
+    public FriendInformations(int accountId, String accountName, byte playerState, int lastConnection, int achievementPoints) {
         super(accountId, accountName);
         this.playerState = playerState;
         this.lastConnection = lastConnection;
+        this.achievementPoints = achievementPoints;
     }
     
     @Override
@@ -29,6 +34,7 @@ public class FriendInformations extends AbstractContactInformations {
         super.serialize(writer);
         writer.writeByte(playerState);
         writer.writeInt(lastConnection);
+        writer.writeInt(achievementPoints);
     }
     
     @Override
@@ -40,6 +46,7 @@ public class FriendInformations extends AbstractContactInformations {
         lastConnection = reader.readInt();
         if (lastConnection < 0)
             throw new RuntimeException("Forbidden value on lastConnection = " + lastConnection + ", it doesn't respect the following condition : lastConnection < 0");
+        achievementPoints = reader.readInt();
     }
     
 }

@@ -1,8 +1,12 @@
 
 
-// Generated on 11/11/2012 20:41:36
+// Generated on 12/14/2012 18:44:16
 package org.mambo.protocol.client.messages;
 
+import java.util.*;
+import org.mambo.protocol.client.types.*;
+import org.mambo.protocol.client.enums.*;
+import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
 public class ExchangeKamaModifiedMessage extends ExchangeObjectMessage {

@@ -1,32 +1,33 @@
 
 
-// Generated on 11/11/2012 20:41:39
+// Generated on 12/14/2012 18:44:21
 package org.mambo.protocol.client.types;
 
+import java.util.*;
+import org.mambo.protocol.client.enums.*;
 import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
-public class CharacterToRecolorInformation implements SerializerInterface, DeserializerInterface {
+public class CharacterToRecolorInformation extends AbstractCharacterInformation {
     public static final short TYPE_ID = 212;
     
-    
+    @Override
     public short getTypeId() {
         return TYPE_ID;
     }
     
-    public int id;
     public int[] colors;
     
     public CharacterToRecolorInformation() { }
     
     public CharacterToRecolorInformation(int id, int[] colors) {
-        this.id = id;
+        super(id);
         this.colors = colors;
     }
     
     @Override
     public void serialize(DataWriterInterface writer) {
-        writer.writeInt(id);
+        super.serialize(writer);
         writer.writeUnsignedShort(colors.length);
         for (int entry : colors) {
             writer.writeInt(entry);
@@ -35,9 +36,7 @@ public class CharacterToRecolorInformation implements SerializerInterface, Deser
     
     @Override
     public void deserialize(DataReaderInterface reader) {
-        id = reader.readInt();
-        if (id < 0)
-            throw new RuntimeException("Forbidden value on id = " + id + ", it doesn't respect the following condition : id < 0");
+        super.deserialize(reader);
         int limit = reader.readUnsignedShort();
         colors = new int[limit];
         for (int i = 0; i < limit; i++) {

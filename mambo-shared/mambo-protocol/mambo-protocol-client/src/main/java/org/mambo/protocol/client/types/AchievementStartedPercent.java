@@ -1,8 +1,11 @@
 
 
-// Generated on 11/11/2012 20:41:38
+// Generated on 12/14/2012 18:44:21
 package org.mambo.protocol.client.types;
 
+import java.util.*;
+import org.mambo.protocol.client.enums.*;
+import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
 public class AchievementStartedPercent extends Achievement {
@@ -17,8 +20,8 @@ public class AchievementStartedPercent extends Achievement {
     
     public AchievementStartedPercent() { }
     
-    public AchievementStartedPercent(short id, byte completionPercent) {
-        super(id);
+    public AchievementStartedPercent(short id, AchievementObjective[] finishedObjective, AchievementStartedObjective[] startedObjectives, byte completionPercent) {
+        super(id, finishedObjective, startedObjectives);
         this.completionPercent = completionPercent;
     }
     

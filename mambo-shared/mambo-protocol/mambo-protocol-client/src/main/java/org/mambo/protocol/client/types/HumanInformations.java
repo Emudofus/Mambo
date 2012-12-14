@@ -1,8 +1,10 @@
 
 
-// Generated on 11/11/2012 20:41:40
+// Generated on 12/14/2012 18:44:22
 package org.mambo.protocol.client.types;
 
+import java.util.*;
+import org.mambo.protocol.client.enums.*;
 import org.mambo.protocol.client.*;
 import org.mambo.core.io.*;
 
@@ -14,53 +16,40 @@ public class HumanInformations implements SerializerInterface, DeserializerInter
         return TYPE_ID;
     }
     
-    public EntityLook[] followingCharactersLook;
-    public byte emoteId;
-    public double emoteStartTime;
     public ActorRestrictionsInformations restrictions;
-    public short titleId;
-    public String titleParam;
+    public boolean sex;
+    public HumanOption[] options;
     
     public HumanInformations() { }
     
-    public HumanInformations(EntityLook[] followingCharactersLook, byte emoteId, double emoteStartTime, ActorRestrictionsInformations restrictions, short titleId, String titleParam) {
-        this.followingCharactersLook = followingCharactersLook;
-        this.emoteId = emoteId;
-        this.emoteStartTime = emoteStartTime;
+    public HumanInformations(ActorRestrictionsInformations restrictions, boolean sex, HumanOption[] options) {
         this.restrictions = restrictions;
-        this.titleId = titleId;
-        this.titleParam = titleParam;
+        this.sex = sex;
+        this.options = options;
     }
     
     @Override
     public void serialize(DataWriterInterface writer) {
-        writer.writeUnsignedShort(followingCharactersLook.length);
-        for (EntityLook entry : followingCharactersLook) {
+        restrictions.serialize(writer);
+        writer.writeBoolean(sex);
+        writer.writeUnsignedShort(options.length);
+        for (HumanOption entry : options) {
+            writer.writeShort(entry.getTypeId());
             entry.serialize(writer);
         }
-        writer.writeByte(emoteId);
-        writer.writeDouble(emoteStartTime);
-        restrictions.serialize(writer);
-        writer.writeShort(titleId);
-        writer.writeString(titleParam);
     }
     
     @Override
     public void deserialize(DataReaderInterface reader) {
-        int limit = reader.readUnsignedShort();
-        followingCharactersLook = new EntityLook[limit];
-        for (int i = 0; i < limit; i++) {
-            followingCharactersLook[i] = new EntityLook();
-            followingCharactersLook[i].deserialize(reader);
-        }
-        emoteId = reader.readByte();
-        emoteStartTime = reader.readDouble();
         restrictions = new ActorRestrictionsInformations();
         restrictions.deserialize(reader);
-        titleId = reader.readShort();
-        if (titleId < 0)
-            throw new RuntimeException("Forbidden value on titleId = " + titleId + ", it doesn't respect the following condition : titleId < 0");
-        titleParam = reader.readString();
+        sex = reader.readBoolean();
+        int limit = reader.readUnsignedShort();
+        options = new HumanOption[limit];
+        for (int i = 0; i < limit; i++) {
+            options[i] = ProtocolTypeManager.getInstance().build(reader.readShort(), HumanOption.class);
+            options[i].deserialize(reader);
+        }
     }
     
 }

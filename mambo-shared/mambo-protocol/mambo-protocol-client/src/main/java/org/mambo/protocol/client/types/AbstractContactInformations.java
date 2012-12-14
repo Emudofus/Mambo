@@ -1,12 +1,12 @@
 
 
-// Generated on 11/11/2012 20:41:40
+// Generated on 12/14/2012 18:44:22
 package org.mambo.protocol.client.types;
 
-import org.mambo.protocol.client.DeserializerInterface;
-import org.mambo.protocol.client.SerializerInterface;
-import org.mambo.core.io.DataReaderInterface;
-import org.mambo.core.io.DataWriterInterface;
+import java.util.*;
+import org.mambo.protocol.client.enums.*;
+import org.mambo.protocol.client.*;
+import org.mambo.core.io.*;
 
 public class AbstractContactInformations implements SerializerInterface, DeserializerInterface {
     public static final short TYPE_ID = 380;
