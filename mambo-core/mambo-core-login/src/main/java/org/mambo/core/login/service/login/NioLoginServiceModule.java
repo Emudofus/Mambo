@@ -9,6 +9,7 @@ import org.mambo.core.network.NetworkProtocol;
 import org.mambo.core.network.base.ReflectiveNetworkHandlerManager;
 import org.mambo.protocol.client.DofusProtocol;
 import org.mambo.protocol.client.MessageReceiver;
+import org.mambo.protocol.client.ProtocolTypeManager;
 
 import javax.inject.Singleton;
 import java.util.Set;
@@ -24,6 +25,7 @@ public class NioLoginServiceModule extends PrivateModule {
     protected void configure() {
         bind(LoginService.class).to(NioLoginService.class).in(Singleton.class);
         bind(MessageReceiver.class).toInstance(MessageReceiver.getInstance());
+        bind(ProtocolTypeManager.class).toInstance(ProtocolTypeManager.getInstance());
 
         expose(LoginService.class);
     }
