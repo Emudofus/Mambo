@@ -2,6 +2,7 @@ package org.mambo.core.login.service.login;
 
 import org.jetbrains.annotations.NotNull;
 import org.mambo.core.network.NetworkSession;
+import org.mambo.core.rand.RandomString;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -19,7 +20,7 @@ public class DefaultLoginClient implements LoginClient {
     public DefaultLoginClient(@NotNull LoginService service, @NotNull NetworkSession session) {
         this.service = checkNotNull(service);
         this.session = checkNotNull(session);
-        this.ticket = "has to be generated"; // TODO
+        this.ticket = RandomString.generate(32);
     }
 
     @NotNull
