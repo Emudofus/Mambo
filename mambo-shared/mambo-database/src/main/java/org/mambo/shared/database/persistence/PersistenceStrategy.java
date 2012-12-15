@@ -22,7 +22,7 @@ public interface PersistenceStrategy {
      * @return loaded entities
      */
     @NotNull
-    <E extends Entity> Set<E> load(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata);
+    <E extends Entity> Set<E> load(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata);
 
     /**
      * insert entity's data
@@ -31,7 +31,7 @@ public interface PersistenceStrategy {
      * @param entity entity to insert
      * @param <E> entity's type
      */
-    <E extends Entity> void insert(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity);
+    <E extends Entity> void insert(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull E entity);
 
     /**
      * update entity's data
@@ -40,7 +40,7 @@ public interface PersistenceStrategy {
      * @param entity entity to update
      * @param <E> entity's type
      */
-    <E extends Entity> void update(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity);
+    <E extends Entity> void update(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull E entity);
 
     /**
      * delete entity
@@ -49,5 +49,5 @@ public interface PersistenceStrategy {
      * @param entity entity to delete
      * @param <E> entity's type
      */
-    <E extends Entity> void delete(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity);
+    <E extends Entity> void delete(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull E entity);
 }

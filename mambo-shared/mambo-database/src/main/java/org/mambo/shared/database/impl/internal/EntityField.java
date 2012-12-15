@@ -5,7 +5,6 @@ import com.googlecode.cqengine.attribute.Attribute;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.ColumnConverter;
 import org.mambo.shared.database.Entity;
-import org.mambo.shared.database.MutableEntity;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -19,7 +18,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Date: 08/12/12
  * Time: 23:48
  */
-public final class EntityField {
+public final class EntityField<E extends Entity> {
     public static Method getter(Field field) {
         Class<?> clazz = field.getDeclaringClass();
         String fieldName = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, field.getName());
@@ -54,24 +53,26 @@ public final class EntityField {
         return null;
     }
 
-    private final EntityMetadata owner;
+    private final EntityMetadata<E> owner;
     private final Field field;
     private final String columnName;
     private final Method getter, setter;
 
     private ColumnConverter converter;
 
-    EntityField(@NotNull EntityMetadata owner, @NotNull Field field, @NotNull String columnName) {
+    EntityField(@NotNull EntityMetadata<E> owner, @NotNull Field field, @NotNull String columnName) {
         this.owner = checkNotNull(owner);
         this.field = checkNotNull(field);
         this.columnName = checkNotNull(columnName);
 
         this.getter = checkNotNull(getter(field), "%s is not a valid JavaBean : can't find getter for field %s", owner.getEntityClass().getName(), field.getName());
-        this.setter = MutableEntity.class.isAssignableFrom(owner.getEntityClass()) ? setter(field) : null;
+        this.setter = owner.isMutable()
+                ? checkNotNull(setter(field), "%s is not a valid JavaBean : can't find setter for field %s", owner.getEntityClass().getName(), field.getName())
+                : null;
     }
 
     @NotNull
-    public EntityMetadata getOwner() {
+    public EntityMetadata<E> getOwner() {
         return owner;
     }
 
@@ -90,30 +91,40 @@ public final class EntityField {
     }
 
     /**
-     * @param instance entity instance
+     * @param entity entity instance
      * @return entity's property value
      */
-    public Object get(Object instance) {
+    public Object get(E entity) {
         try {
-            return getter.invoke(instance);
+            return getter.invoke(entity);
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
     }
 
+    @Deprecated
+    Object unsafeGet(Object entity) {
+        return get(owner.getEntityClass().cast(entity));
+    }
+
     /**
-     * @param instance entity instance
+     * @param entity entity instance
      * @param obj entity's new property value
      */
-    public void set(Object instance, Object obj) {
+    public void set(E entity, Object obj) {
         if (setter == null) {
-            throw new UnsupportedOperationException("you can't set a property, you should implements MutableEntity");
+            throw new UnsupportedOperationException(owner.getEntityClass() + " is immutable");
         }
         try {
-            setter.invoke(instance, obj);
+            setter.invoke(entity, obj);
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
+    }
+
+    @Deprecated
+    void unsafeSet(Object entity, Object obj) {
+        set(owner.getEntityClass().cast(entity), obj);
     }
 
     public String getColumnName() {
@@ -133,7 +144,7 @@ public final class EntityField {
     }
 
     @NotNull
-    public <E extends Entity> Attribute<E, Object> asAttribute() {
+    public Attribute<E, Object> asAttribute() {
         return new EntityAttribute<E>(this);
     }
 }

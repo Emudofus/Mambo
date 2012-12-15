@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class SimpleRepository<E extends Entity> implements Repository<E> {
     private final DatabaseContext ctx;
-    private final EntityMetadata metadata;
+    private final EntityMetadata<E> metadata;
     private final IndexedCollection<E> entities;
 
     public SimpleRepository(@NotNull DatabaseContext ctx, @NotNull Class<E> entityClass) {
@@ -39,7 +39,7 @@ public class SimpleRepository<E extends Entity> implements Repository<E> {
 
     @Override
     public void load() {
-        entities.addIndex(UniqueIndex.onAttribute(metadata.getPrimaryKeyField().<E>asAttribute()));
+        entities.addIndex(UniqueIndex.onAttribute(metadata.getPrimaryKeyField().asAttribute()));
 
         Set<E> loaded = ctx.getPersistenceStrategy().load(ctx, metadata);
         entities.addAll(loaded);
@@ -57,13 +57,13 @@ public class SimpleRepository<E extends Entity> implements Repository<E> {
 
     @NotNull
     @Override
-    public EntityMetadata getEntityMetadata() {
+    public EntityMetadata<E> getEntityMetadata() {
         return metadata;
     }
 
     @NotNull
-    protected ResultSet<E> find(@NotNull EntityField field, Object value) {
-        return entities.retrieve(QueryFactory.equal(field.<E>asAttribute(), value));
+    protected ResultSet<E> find(@NotNull EntityField<E> field, Object value) {
+        return entities.retrieve(QueryFactory.equal(field.asAttribute(), value));
     }
 
     @NotNull
@@ -75,7 +75,7 @@ public class SimpleRepository<E extends Entity> implements Repository<E> {
     @NotNull
     @Override
     public E find(@NotNull String property, Object value) {
-        EntityField field = metadata.getField(property);
+        EntityField<E> field = metadata.getField(property);
         if (field == null) {
             throw new IllegalArgumentException("unknown property \"" + property + "\"");
         }
@@ -86,7 +86,7 @@ public class SimpleRepository<E extends Entity> implements Repository<E> {
     @NotNull
     @Override
     public List<E> findAll(@NotNull String property, Object value) {
-        EntityField field = metadata.getField(property);
+        EntityField<E> field = metadata.getField(property);
         if (field == null) {
             throw new IllegalArgumentException("unknown property \"" + property + "\"");
         }

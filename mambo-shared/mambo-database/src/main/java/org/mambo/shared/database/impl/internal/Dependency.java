@@ -3,6 +3,7 @@ package org.mambo.shared.database.impl.internal;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.ColumnConverter;
 import org.mambo.shared.database.DatabaseContext;
+import org.mambo.shared.database.Entity;
 import org.mambo.shared.database.Repository;
 
 import java.sql.ResultSet;
@@ -17,19 +18,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Date: 09/12/12
  * Time: 17:36
  */
-public final class Dependency implements ColumnConverter {
+public final class Dependency<E extends Entity> implements ColumnConverter {
     public static enum Type {
         ONE_TO_MANY,
         MANY_TO_ONE,
         //MANY_TO_MANY,
     }
 
-    private final EntityMetadata from, to;
-    private final EntityField field;
+    private final EntityMetadata<E> from;
+    private final EntityMetadata<?> to;
+    private final EntityField<E> field;
     private final String triggerProperty;
     private final Type type;
 
-    public Dependency(@NotNull EntityMetadata from, @NotNull EntityMetadata to, @NotNull EntityField field, @NotNull String triggerProperty, @NotNull Type type) {
+    public Dependency(@NotNull EntityMetadata<E> from, @NotNull EntityMetadata<?> to, @NotNull EntityField<E> field, @NotNull String triggerProperty, @NotNull Type type) {
         this.from = checkNotNull(from);
         this.to = checkNotNull(to);
         this.field = checkNotNull(field);
@@ -38,17 +40,17 @@ public final class Dependency implements ColumnConverter {
     }
 
     @NotNull
-    public EntityMetadata getFrom() {
+    public EntityMetadata<E> getFrom() {
         return from;
     }
 
     @NotNull
-    public EntityMetadata getTo() {
+    public EntityMetadata<?> getTo() {
         return to;
     }
 
     @NotNull
-    public EntityField getField() {
+    public EntityField<E> getField() {
         return field;
     }
 
@@ -65,7 +67,7 @@ public final class Dependency implements ColumnConverter {
     @Override
     public Object extract(@NotNull DatabaseContext ctx, @NotNull ResultSet rset) throws SQLException {
         Repository<?> repository = ctx.get(to.getEntityClass());
-        EntityField trigger = to.getField(triggerProperty);
+        EntityField<?> trigger = to.getField(triggerProperty);
 
         switch (type) {
         case MANY_TO_ONE:
@@ -77,7 +79,7 @@ public final class Dependency implements ColumnConverter {
             if (!(trigger.getConverter() instanceof Dependency)) {
                 throw new RuntimeException("invalid trigger \"" + trigger.getColumnName() + "\"");
             }
-            Dependency triggerDependency = (Dependency) trigger.getConverter();
+            Dependency<?> triggerDependency = (Dependency<?>) trigger.getConverter();
 
             String targetPropertyName = triggerDependency.triggerProperty;
             Object value = rset.getObject(targetPropertyName);
@@ -91,12 +93,12 @@ public final class Dependency implements ColumnConverter {
 
     @Override
     public void export(@NotNull DatabaseContext ctx, @NotNull Object obj, @NotNull Map<String, Object> values) {
-        EntityField trigger = to.getField(triggerProperty);
+        EntityField<?> trigger = to.getField(triggerProperty);
 
         switch (type) {
         case MANY_TO_ONE:
             String columnName = field.getColumnName() + "_" + trigger.getColumnName();
-            Object value = trigger.get(field.get(obj));
+            Object value = trigger.unsafeGet(field.unsafeGet(obj));
             values.put(columnName, value);
             break;
 

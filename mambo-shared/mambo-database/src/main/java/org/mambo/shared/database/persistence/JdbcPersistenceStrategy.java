@@ -31,7 +31,7 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
 
     @NotNull
     @Override
-    public <E extends Entity> Set<E> load(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata) {
+    public <E extends Entity> Set<E> load(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata) {
         Connection connection = provider.get();
         Statement statement = null;
         try {
@@ -50,7 +50,7 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
     }
 
     @Override
-    public <E extends Entity> void insert(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity) {
+    public <E extends Entity> void insert(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull E entity) {
         Connection connection = provider.get();
         Statement statement = null;
         try {
@@ -68,7 +68,7 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
     }
 
     @Override
-    public <E extends Entity> void update(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity) {
+    public <E extends Entity> void update(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull E entity) {
         Connection connection = provider.get();
         Statement statement = null;
         try {
@@ -86,7 +86,7 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
     }
 
     @Override
-    public <E extends Entity> void delete(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity) {
+    public <E extends Entity> void delete(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull E entity) {
         Connection connection = provider.get();
         Statement statement = null;
         try {
@@ -104,9 +104,9 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
     }
 
     @NotNull
-    public static Map<String, Object> exportValues(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull Entity entity) {
+    public static <E extends Entity> Map<String, Object> exportValues(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull E entity) {
         Map<String, Object> values = Maps.newHashMap();
-        for (EntityField field : metadata.getFields().values()) {
+        for (EntityField<E> field : metadata.getFields().values()) {
             if (field.getConverter() != null) {
                 field.getConverter().export(ctx, entity, values);
             } else {
@@ -117,12 +117,12 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
     }
 
     @NotNull
-    public static String getLoadQuery(@NotNull EntityMetadata metadata) {
+    public static <E extends Entity> String getLoadQuery(@NotNull EntityMetadata<E> metadata) {
         return "select * from `" + metadata.getTableName() + "`;"; // TODO dependencies
     }
 
     @NotNull
-    public static String getInsertQuery(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull Entity entity) {
+    public static <E extends Entity> String getInsertQuery(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull E entity) {
         Map<String, Object> values = exportValues(ctx, metadata, entity);
         StringBuilder query = new StringBuilder();
         boolean first;
@@ -151,7 +151,7 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
     }
 
     @NotNull
-    public static String getUpdateQuery(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull Entity entity) {
+    public static <E extends Entity> String getUpdateQuery(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull E entity) {
         Map<String, Object> values = exportValues(ctx, metadata, entity);
         StringBuilder query = new StringBuilder();
         boolean first;
@@ -174,13 +174,13 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
     }
 
     @NotNull
-    public static String getDeleteQuery(@NotNull EntityMetadata metadata, @NotNull Entity entity) {
+    public static <E extends Entity> String getDeleteQuery(@NotNull EntityMetadata<E> metadata, @NotNull E entity) {
         return "delete from `" + metadata.getTableName() + "` " +
                 "where `" + metadata.getPrimaryKeyField().getColumnName() + "` = '" + entity.getId() + "';";
     }
 
     @NotNull
-    public static <E extends Entity> Set<E> load(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull ResultSet rset)
+    public static <E extends Entity> Set<E> load(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull ResultSet rset)
             throws SQLException
     {
         Set<E> result = Sets.newHashSet();
@@ -188,13 +188,13 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
         while (rset.next()) {
             E instance = metadata.createEmpty();
 
-            for (EntityField field : metadata.getFields().values()) {
+            for (EntityField<E> field : metadata.getFields().values()) {
                 if (field.getConverter() != null) continue;
                 Object value = rset.getObject(field.getColumnName());
                 field.set(instance, value);
             }
 
-            for (EntityField field : metadata.getFields().values()) {
+            for (EntityField<E> field : metadata.getFields().values()) {
                 if (field.getConverter() == null) continue;
                 Object value = field.getConverter().extract(ctx, rset);
                 field.set(instance, value);

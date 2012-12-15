@@ -76,26 +76,26 @@ public class RepositoryTest {
 
         @NotNull
         @Override
-        public <E extends Entity> Set<E> load(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata) {
+        public <E extends Entity> Set<E> load(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata) {
             log.debug("load data");
             loaded = true;
             return Collections.singleton((E) instance);
         }
 
         @Override
-        public <E extends Entity> void insert(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity) {
+        public <E extends Entity> void insert(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull E entity) {
             log.debug("insert data");
             inserted = true;
         }
 
         @Override
-        public <E extends Entity> void update(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity) {
+        public <E extends Entity> void update(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull E entity) {
             log.debug("update data");
             updated = true;
         }
 
         @Override
-        public <E extends Entity> void delete(@NotNull DatabaseContext ctx, @NotNull EntityMetadata metadata, @NotNull E entity) {
+        public <E extends Entity> void delete(@NotNull DatabaseContext ctx, @NotNull EntityMetadata<E> metadata, @NotNull E entity) {
             log.debug("delete data");
             deleted = true;
         }

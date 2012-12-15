@@ -6,6 +6,7 @@ import com.google.common.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.ColumnConverter;
 import org.mambo.shared.database.Entity;
+import org.mambo.shared.database.MutableEntity;
 import org.mambo.shared.database.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,50 +26,63 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Date: 08/12/12
  * Time: 23:37
  */
-public final class EntityMetadata {
+public final class EntityMetadata<E extends Entity> {
     private static final Logger log = LoggerFactory.getLogger(EntityMetadata.class);
     private static final Map<Class<?>, EntityMetadata> cache = Maps.newHashMap();
 
-    public static EntityMetadata of(Class<? extends Entity> clazz) {
-        EntityMetadata metadata = cache.get(clazz);
+    public static <E extends Entity> EntityMetadata<E> of(Class<E> clazz) {
+        @SuppressWarnings("unchecked")
+        EntityMetadata<E> metadata = (EntityMetadata<E>) cache.get(clazz);
+
         if (metadata == null) {
-            metadata = new EntityMetadata(clazz);
+            metadata = new EntityMetadata<E>(clazz);
             cache.put(clazz, metadata);
             metadata.load();
         }
+
         return metadata;
     }
 
     @SuppressWarnings("unchecked")
-    public static EntityMetadata of(TypeToken<? extends Entity> typeToken) {
-        return of((Class<? extends Entity>) typeToken.getRawType());
+    public static <E extends Entity> EntityMetadata<E> of(TypeToken<E> typeToken) {
+        return of((Class) typeToken.getRawType());
     }
 
-    private final Class<? extends Entity> entityClass;
+    private final Class<E> entityClass;
+    private final boolean mutable;
 
     private String tableName;
-    private EntityField primaryKeyField;
-    private Map<String, EntityField> fields;
+    private EntityField<E> primaryKeyField;
+    private Map<String, EntityField<E>> fields;
 
-    private EntityMetadata(@NotNull Class<? extends Entity> entityClass) {
+    private EntityMetadata(@NotNull Class<E> entityClass) {
         this.entityClass = entityClass;
+        this.mutable = MutableEntity.class.isAssignableFrom(entityClass);
     }
 
     @NotNull
-    public Class<? extends Entity> getEntityClass() {
+    public Class<E> getEntityClass() {
         return entityClass;
     }
 
+    public boolean isMutable() {
+        return mutable;
+    }
+
     @NotNull
-    public EntityField getPrimaryKeyField() {
+    public EntityField<E> getPrimaryKeyField() {
         return primaryKeyField;
     }
 
     @SuppressWarnings("unchecked")
     @NotNull
-    public <E extends Entity> E createEmpty() {
+    public E createEmpty() {
+        if (!mutable) {
+            throw new UnsupportedOperationException(entityClass + " is immutable, instanciation are forbidden");
+        }
+
         try {
-            return (E) entityClass.newInstance();
+            return entityClass.newInstance();
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -80,15 +94,19 @@ public final class EntityMetadata {
     }
 
     @NotNull
-    public Map<String, EntityField> getFields() {
+    public Map<String, EntityField<E>> getFields() {
         return fields;
     }
 
-    public EntityField getField(@NotNull String name) {
+    public EntityField<E> getField(@NotNull String name) {
         return fields.get(checkNotNull(name));
     }
 
-    private EntityField load(Field field) {
+    private EntityField<E> load(Field field) {
+        if (!Entity.class.isAssignableFrom(entityClass)) {
+            throw new RuntimeException(entityClass.getName() + " must be implement " + Entity.class.getName());
+        }
+
         Column columnAnnotation = field.getAnnotation(Column.class);
         if (columnAnnotation == null) return null;
 
@@ -97,7 +115,7 @@ public final class EntityMetadata {
             name = field.getName();
         }
 
-        EntityField entityField = new EntityField(this, field, name);
+        EntityField<E> entityField = new EntityField<E>(this, field, name);
 
         if (field.isAnnotationPresent(ManyToOne.class)) {
             ManyToOne m2oAnnotation = field.getAnnotation(ManyToOne.class);
@@ -105,7 +123,7 @@ public final class EntityMetadata {
             @SuppressWarnings("unchecked")
             EntityMetadata to = of((Class<? extends Entity>) field.getType());
 
-            entityField.setConverter(new Dependency(
+            entityField.setConverter(new Dependency<E>(
                     this,
                     to,
                     entityField,
@@ -126,7 +144,7 @@ public final class EntityMetadata {
             @SuppressWarnings("unchecked")
             EntityMetadata to = of((Class) type.getActualTypeArguments()[0]);
 
-            entityField.setConverter(new Dependency(
+            entityField.setConverter(new Dependency<E>(
                     this,
                     to,
                     entityField,
@@ -161,7 +179,7 @@ public final class EntityMetadata {
 
         fields = Maps.newHashMap();
         for (Field field : entityClass.getDeclaredFields()) {
-            EntityField entityField = load(field);
+            EntityField<E> entityField = load(field);
 
             if (entityField != null) {
                 fields.put(entityField.getColumnName(), entityField);

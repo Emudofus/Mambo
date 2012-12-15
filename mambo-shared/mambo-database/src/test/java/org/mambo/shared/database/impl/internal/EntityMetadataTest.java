@@ -118,7 +118,7 @@ public class EntityMetadataTest {
         }
     }
 
-    private EntityMetadata metadata;
+    private EntityMetadata<MyModel> metadata;
 
     @Before
     public void createMetadata() {
@@ -148,40 +148,47 @@ public class EntityMetadataTest {
 
     @Test
     public void createEmpty() {
-        assertThat(metadata.createEmpty(), is(MyModel.class));
+        assertThat(metadata.createEmpty(), instanceOf(MyModel.class));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void setImmutableProperty() {
-        EntityMetadata metadata = EntityMetadata.of(MyParentModel.class);
+        EntityMetadata<MyParentModel> metadata = EntityMetadata.of(MyParentModel.class);
         MyParentModel model = new MyParentModel();
 
         metadata.getField("id").set(model, 1);
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void instantiateImmutableEntity() {
+        EntityMetadata<MyParentModel> metadata = EntityMetadata.of(MyParentModel.class);
+        metadata.createEmpty();
+    }
+
     @Test
     public void oneToMany() {
-        EntityMetadata parent = EntityMetadata.of(MyParentModel.class);
+        EntityMetadata<MyParentModel> parent = EntityMetadata.of(MyParentModel.class);
 
-        EntityField field = parent.getField("children");
+        EntityField<MyParentModel> field = parent.getField("children");
         assertThat(field, notNullValue());
         assertThat(field.getConverter(), is(Dependency.class));
 
-        Dependency dependency = (Dependency) field.getConverter();
+        @SuppressWarnings("unchecked")
+        Dependency<MyParentModel> dependency = (Dependency<MyParentModel>) field.getConverter();
         assertThat(dependency.getType(), is(Dependency.Type.ONE_TO_MANY));
-        assertThat(dependency.getTo(), is(metadata));
+        assertThat(dependency.getTo().getEntityClass(), sameInstance((Class) MyModel.class));
         assertThat(dependency.getTriggerProperty(), is("parent"));
     }
 
     @Test
     public void manyToOne() {
-        EntityField field = metadata.getField("parent");
+        EntityField<MyModel> field = metadata.getField("parent");
         assertThat(field, notNullValue());
         assertThat(field.getConverter(), is(Dependency.class));
 
         Dependency dependency = (Dependency) field.getConverter();
         assertThat(dependency.getType(), is(Dependency.Type.MANY_TO_ONE));
-        assertThat(dependency.getTo(), is(EntityMetadata.of(MyParentModel.class)));
+        assertThat((Class) dependency.getTo().getEntityClass(), sameInstance((Class) MyParentModel.class));
         assertThat(dependency.getTriggerProperty(), is("id"));
     }
 }
