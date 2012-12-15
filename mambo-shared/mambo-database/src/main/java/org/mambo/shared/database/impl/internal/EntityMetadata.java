@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
-import org.mambo.shared.database.ColumnConverter;
 import org.mambo.shared.database.Entity;
 import org.mambo.shared.database.MutableEntity;
 import org.mambo.shared.database.annotations.*;
@@ -12,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
@@ -53,7 +50,7 @@ public final class EntityMetadata<E extends Entity> {
 
     private String tableName;
     private EntityField<E> primaryKeyField;
-    private Map<String, EntityField<E>> fields;
+    private final Map<String, EntityField<E>> fields = Maps.newHashMap();
 
     private EntityMetadata(@NotNull Class<E> entityClass) {
         this.entityClass = entityClass;
@@ -102,70 +99,12 @@ public final class EntityMetadata<E extends Entity> {
         return fields.get(checkNotNull(name));
     }
 
-    private EntityField<E> load(Field field) {
-        if (!Entity.class.isAssignableFrom(entityClass)) {
-            throw new RuntimeException(entityClass.getName() + " must be implement " + Entity.class.getName());
-        }
-
-        Column columnAnnotation = field.getAnnotation(Column.class);
-        if (columnAnnotation == null) return null;
-
-        String name = columnAnnotation.name();
-        if (Strings.isNullOrEmpty(name)) {
-            name = field.getName();
-        }
-
-        EntityField<E> entityField = new EntityField<E>(this, field, name);
-
-        if (field.isAnnotationPresent(ManyToOne.class)) {
-            ManyToOne m2oAnnotation = field.getAnnotation(ManyToOne.class);
-
-            @SuppressWarnings("unchecked")
-            EntityMetadata to = of((Class<? extends Entity>) field.getType());
-
-            entityField.setConverter(new Dependency<E>(
-                    this,
-                    to,
-                    entityField,
-                    m2oAnnotation.targetField(),
-                    Dependency.Type.MANY_TO_ONE
-            ));
-        } else if (field.isAnnotationPresent(OneToMany.class)) {
-            OneToMany o2mAnnotation = field.getAnnotation(OneToMany.class);
-
-            if (field.getType() != List.class) {
-                throw new RuntimeException("OneToMany dependency has to be a java.util.List");
-            }
-            if (!(field.getGenericType() instanceof ParameterizedType)) {
-                throw new RuntimeException(field.getName() + " is not parameterized");
-            }
-
-            ParameterizedType type = (ParameterizedType) field.getGenericType();
-            @SuppressWarnings("unchecked")
-            EntityMetadata to = of((Class) type.getActualTypeArguments()[0]);
-
-            entityField.setConverter(new Dependency<E>(
-                    this,
-                    to,
-                    entityField,
-                    o2mAnnotation.mappedBy(),
-                    Dependency.Type.ONE_TO_MANY
-            ));
-        } else {
-            Class<?> clazzConverter = columnAnnotation.converter();
-            if (clazzConverter != Column.DEFAULT_CONVERTER.class && ColumnConverter.class.isAssignableFrom(clazzConverter)) {
-                try {
-                    entityField.setConverter((ColumnConverter) clazzConverter.newInstance());
-                } catch (Throwable t) {
-                    log.error(String.format("can't create converter of field %s in %s", field.getName(), entityClass.getName()), t);
-                }
-            }
-        }
-
-        return entityField;
+    private void load() {
+        loadTableName();
+        loadFields();
     }
 
-    private void load() {
+    private void loadTableName() {
         Table tableAnnotation = entityClass.getAnnotation(Table.class);
         if (tableAnnotation == null) {
             throw new RuntimeException("entity \"" + entityClass.getName() + "\" must be annotated with @Table");
@@ -176,13 +115,54 @@ public final class EntityMetadata<E extends Entity> {
         } else {
             tableName = UPPER_CAMEL.to(LOWER_UNDERSCORE, entityClass.getSimpleName().toLowerCase()) + "s";
         }
+    }
 
-        fields = Maps.newHashMap();
-        for (Field field : entityClass.getDeclaredFields()) {
-            EntityField<E> entityField = load(field);
+    private static void getOverrides(Map<String, Column> result, Class<?> clazz) {
+        ColumnOverrides overrides = clazz.getAnnotation(ColumnOverrides.class);
+        if (overrides != null) {
+            for (ColumnOverride override : overrides.value()) {
+                result.put(override.name(), override.by());
+            }
+        } else {
+            ColumnOverride override = clazz.getAnnotation(ColumnOverride.class);
+            if (override != null) {
+                result.put(override.name(), override.by());
+            }
+        }
+    }
 
-            if (entityField != null) {
-                fields.put(entityField.getColumnName(), entityField);
+    private EntityField<E> loadField(Field field, Map<String, Column> overrides) {
+        Column columnAnnotation = field.getAnnotation(Column.class);
+        if (columnAnnotation == null) return null;
+
+        String name = columnAnnotation.name();
+        if (Strings.isNullOrEmpty(name)) {
+            name = field.getName();
+        }
+
+        Column overrideColumnAnnotation = overrides.get(name);
+        if (overrideColumnAnnotation != null) {
+            columnAnnotation = overrideColumnAnnotation;
+
+            if (!Strings.isNullOrEmpty(overrideColumnAnnotation.name())) {
+                name = overrideColumnAnnotation.name();
+            }
+        }
+
+        return new EntityField<E>(this, field, name, columnAnnotation);
+    }
+
+    private void loadFields() {
+        Map<String, Column> overrides = Maps.newHashMap();
+        Class<?> clazz = entityClass;
+        do {
+            getOverrides(overrides, clazz);
+
+            for (Field field : clazz.getDeclaredFields()) {
+                EntityField<E> entityField = loadField(field, overrides);
+                if (entityField != null) {
+                    fields.put(entityField.getColumnName(), entityField);
+                }
 
                 if (field.isAnnotationPresent(Id.class)) {
                     if (primaryKeyField != null) {
@@ -191,7 +171,7 @@ public final class EntityMetadata<E extends Entity> {
                     primaryKeyField = entityField;
                 }
             }
-        }
+        } while ((clazz = clazz.getSuperclass()) != null);
 
         checkNotNull(primaryKeyField, "%s must have a primary key", entityClass);
     }

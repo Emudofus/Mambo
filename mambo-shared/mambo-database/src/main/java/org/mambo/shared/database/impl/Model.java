@@ -5,6 +5,7 @@ import org.joda.time.Instant;
 import org.mambo.shared.database.MutableEntity;
 import org.mambo.shared.database.MutableRepository;
 import org.mambo.shared.database.Timestampable;
+import org.mambo.shared.database.annotations.Column;
 
 import javax.inject.Inject;
 
@@ -22,12 +23,13 @@ public abstract class Model<E extends Model<E>> implements MutableEntity, Timest
     @Inject
     private MutableRepository<E> repository;
 
-    private final Instant createdAt;
-    private Instant persistedAt, deletedAt;
+    @Column(name = "created_at")
+    private Instant createdAt = Instant.now();
 
-    protected Model() {
-        createdAt = Instant.now();
-    }
+    @Column(name = "persisted_at")
+    private Instant persistedAt;
+
+    private Instant deletedAt;
 
     @SuppressWarnings("unchecked")
     protected E that() {
@@ -61,6 +63,10 @@ public abstract class Model<E extends Model<E>> implements MutableEntity, Timest
         return createdAt;
     }
 
+    public void setCreatedAt(@NotNull Instant createdAt) {
+        this.createdAt = checkNotNull(createdAt);
+    }
+
     @Override
     public Instant getPersistedAt() {
         return persistedAt;
@@ -69,7 +75,7 @@ public abstract class Model<E extends Model<E>> implements MutableEntity, Timest
     /**
      * @param persistedAt nullable
      */
-    protected void setPersistedAt(Instant persistedAt) {
+    public void setPersistedAt(Instant persistedAt) {
         this.persistedAt = persistedAt;
     }
 

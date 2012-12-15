@@ -5,10 +5,14 @@ import com.googlecode.cqengine.attribute.Attribute;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.ColumnConverter;
 import org.mambo.shared.database.Entity;
+import org.mambo.shared.database.annotations.Column;
+import org.mambo.shared.database.annotations.ManyToOne;
+import org.mambo.shared.database.annotations.OneToMany;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -55,32 +59,29 @@ public final class EntityField<E extends Entity> {
 
     private final EntityMetadata<E> owner;
     private final Field field;
+    private final Column definition;
     private final String columnName;
     private final Method getter, setter;
 
     private ColumnConverter converter;
 
-    EntityField(@NotNull EntityMetadata<E> owner, @NotNull Field field, @NotNull String columnName) {
+    EntityField(@NotNull EntityMetadata<E> owner, @NotNull Field field, @NotNull String columnName, @NotNull Column definition) {
         this.owner = checkNotNull(owner);
         this.field = checkNotNull(field);
+        this.definition = checkNotNull(definition);
         this.columnName = checkNotNull(columnName);
 
         this.getter = checkNotNull(getter(field), "%s is not a valid JavaBean : can't find getter for field %s", owner.getEntityClass().getName(), field.getName());
         this.setter = owner.isMutable()
                 ? checkNotNull(setter(field), "%s is not a valid JavaBean : can't find setter for field %s", owner.getEntityClass().getName(), field.getName())
                 : null;
+
+        load();
     }
 
     @NotNull
     public EntityMetadata<E> getOwner() {
         return owner;
-    }
-
-    /**
-     * @return class's field
-     */
-    public Field getField() {
-        return field;
     }
 
     /**
@@ -135,16 +136,55 @@ public final class EntityField<E extends Entity> {
         return converter;
     }
 
-    public void setConverter(ColumnConverter converter) {
-        this.converter = converter;
-    }
-
-    public <T extends Annotation> T getAnnotation(Class<T> clazz) {
-        return field.getAnnotation(clazz);
-    }
-
     @NotNull
     public Attribute<E, Object> asAttribute() {
         return new EntityAttribute<E>(this);
+    }
+
+    private void load() {
+        if (field.isAnnotationPresent(ManyToOne.class)) {
+            ManyToOne m2oAnnotation = field.getAnnotation(ManyToOne.class);
+
+            @SuppressWarnings("unchecked")
+            EntityMetadata to = EntityMetadata.of((Class<? extends Entity>) field.getType());
+
+            converter = new Dependency<E>(
+                    owner,
+                    to,
+                    this,
+                    m2oAnnotation.targetField(),
+                    Dependency.Type.MANY_TO_ONE
+            );
+        } else if (field.isAnnotationPresent(OneToMany.class)) {
+            OneToMany o2mAnnotation = field.getAnnotation(OneToMany.class);
+
+            if (field.getType() != List.class) {
+                throw new RuntimeException("OneToMany dependency has to be a java.util.List");
+            }
+            if (!(field.getGenericType() instanceof ParameterizedType)) {
+                throw new RuntimeException(field.getName() + " is not parameterized");
+            }
+
+            ParameterizedType type = (ParameterizedType) field.getGenericType();
+            @SuppressWarnings("unchecked")
+            EntityMetadata to = EntityMetadata.of((Class) type.getActualTypeArguments()[0]);
+
+            converter = new Dependency<E>(
+                    owner,
+                    to,
+                    this,
+                    o2mAnnotation.mappedBy(),
+                    Dependency.Type.ONE_TO_MANY
+            );
+        } else {
+            Class<?> clazzConverter = definition.converter();
+            if (clazzConverter != Column.DEFAULT_CONVERTER.class && ColumnConverter.class.isAssignableFrom(clazzConverter)) {
+                try {
+                    converter = (ColumnConverter) clazzConverter.newInstance();
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
+            }
+        }
     }
 }

@@ -62,11 +62,6 @@ public class RepositoryTest {
         public void setRepository(@NotNull MutableRepository<MyModel> repository) {
             super.setRepository(repository);
         }
-
-        @Override
-        public void setPersistedAt(Instant persistedAt) {
-            super.setPersistedAt(persistedAt);
-        }
     }
 
     class FakePersistenceStrategy implements PersistenceStrategy {

@@ -66,6 +66,9 @@ public class EntityMetadataTest {
 
     @SuppressWarnings("unused")
     @Table
+    @ColumnOverrides({
+            @ColumnOverride(name = "persisted_at", by = @Column(name = "updated_at"))
+    })
     static class MyModel extends Model<MyModel> {
         @Column
         @Id
@@ -143,7 +146,9 @@ public class EntityMetadataTest {
         assertThat(metadata.getField("complex_data"), notNullValue());
         assertThat(metadata.getField("complex_data").getConverter(), is(ComplexDataConverter.class));
         assertThat(metadata.getField("parent"), notNullValue());
-        assertThat(metadata.getFields().size(), is(4));
+        assertThat(metadata.getField("created_at"), notNullValue());
+        assertThat(metadata.getField("updated_at"), notNullValue());
+        assertThat(metadata.getFields().size(), is(6));
     }
 
     @Test
