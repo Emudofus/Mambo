@@ -25,7 +25,7 @@ public interface Repository<E extends Entity> {
      * @return non-null {@link EntityMetadata}
      */
     @NotNull
-    EntityMetadata getEntityMetadata();
+    EntityMetadata<E> getEntityMetadata();
 
     /**
      * returns a persisted entity by its id

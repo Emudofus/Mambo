@@ -27,12 +27,12 @@ import static org.junit.Assert.assertThat;
 public class EntityMetadataTest {
     static class ComplexDataConverter implements ColumnConverter {
         @Override
-        public Object extract(@NotNull DatabaseContext ctx, @NotNull ResultSet rset) throws SQLException {
+        public Object extract(@NotNull DatabaseContext ctx, @NotNull EntityField<?> field, @NotNull ResultSet rset) throws SQLException {
             return new ComplexData();
         }
 
         @Override
-        public void export(@NotNull DatabaseContext ctx, @NotNull Object obj, @NotNull Map<String, Object> values) {
+        public void export(@NotNull DatabaseContext ctx, @NotNull EntityField<?> field, @NotNull Object obj, @NotNull Map<String, Object> values) {
 
         }
     }

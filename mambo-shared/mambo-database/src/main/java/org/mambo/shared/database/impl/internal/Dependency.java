@@ -65,13 +65,13 @@ public final class Dependency<E extends Entity> implements ColumnConverter {
     }
 
     @Override
-    public Object extract(@NotNull DatabaseContext ctx, @NotNull ResultSet rset) throws SQLException {
+    public Object extract(@NotNull DatabaseContext ctx, @NotNull EntityField<?> field, @NotNull ResultSet rset) throws SQLException {
         Repository<?> repository = ctx.get(to.getEntityClass());
         EntityField<?> trigger = to.getField(triggerProperty);
 
         switch (type) {
         case MANY_TO_ONE:
-            String columnName = field.getColumnName() + "_" + trigger.getColumnName();
+            String columnName = this.field.getColumnName() + "_" + trigger.getColumnName();
             Object id = rset.getObject(columnName);
             return References.create(repository, id);
 
@@ -92,13 +92,13 @@ public final class Dependency<E extends Entity> implements ColumnConverter {
     }
 
     @Override
-    public void export(@NotNull DatabaseContext ctx, @NotNull Object obj, @NotNull Map<String, Object> values) {
+    public void export(@NotNull DatabaseContext ctx, @NotNull EntityField<?> field, @NotNull Object obj, @NotNull Map<String, Object> values) {
         EntityField<?> trigger = to.getField(triggerProperty);
 
         switch (type) {
         case MANY_TO_ONE:
-            String columnName = field.getColumnName() + "_" + trigger.getColumnName();
-            Object value = trigger.unsafeGet(field.unsafeGet(obj));
+            String columnName = this.field.getColumnName() + "_" + trigger.getColumnName();
+            Object value = trigger.unsafeGet(this.field.unsafeGet(obj));
             values.put(columnName, value);
             break;
 

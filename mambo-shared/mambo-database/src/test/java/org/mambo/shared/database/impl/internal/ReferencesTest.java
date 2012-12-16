@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 public class ReferencesTest {
     static class FakeRepository<E extends Entity> implements Repository<E> {
         final E instance;
-        final EntityMetadata metadata;
+        final EntityMetadata<E> metadata;
 
         @SuppressWarnings("unchecked")
         FakeRepository(E instance) {
@@ -42,7 +42,7 @@ public class ReferencesTest {
 
         @NotNull
         @Override
-        public EntityMetadata getEntityMetadata() {
+        public EntityMetadata<E> getEntityMetadata() {
             return metadata;
         }
 

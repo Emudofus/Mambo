@@ -1,7 +1,6 @@
 package org.mambo.shared.database.impl.internal;
 
 import com.google.common.base.CaseFormat;
-import com.googlecode.cqengine.attribute.Attribute;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.shared.database.ColumnConverter;
 import org.mambo.shared.database.Entity;
@@ -62,6 +61,7 @@ public final class EntityField<E extends Entity> {
     private final Column definition;
     private final String columnName;
     private final Method getter, setter;
+    private final EntityAttribute<E> attribute;
 
     private ColumnConverter converter;
 
@@ -75,6 +75,8 @@ public final class EntityField<E extends Entity> {
         this.setter = owner.isMutable()
                 ? checkNotNull(setter(field), "%s is not a valid JavaBean : can't find setter for field %s", owner.getEntityClass().getName(), field.getName())
                 : null;
+
+        this.attribute = new EntityAttribute<E>(this);
 
         load();
     }
@@ -137,8 +139,8 @@ public final class EntityField<E extends Entity> {
     }
 
     @NotNull
-    public Attribute<E, Object> asAttribute() {
-        return new EntityAttribute<E>(this);
+    public EntityAttribute<E> asAttribute() {
+        return attribute;
     }
 
     private void load() {

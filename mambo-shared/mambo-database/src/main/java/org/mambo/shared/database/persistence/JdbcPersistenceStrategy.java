@@ -57,7 +57,7 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
             statement = connection.createStatement();
             statement.execute(getInsertQuery(ctx, metadata, entity));
         } catch (SQLException e) {
-            throw new RuntimeException("can't insert data in table \"" + metadata.getTableName() + "\"");
+            throw new RuntimeException("can't insert data in table \"" + metadata.getTableName() + "\"", e);
         } finally {
             if (statement != null) {
                 try {
@@ -108,7 +108,7 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
         Map<String, Object> values = Maps.newHashMap();
         for (EntityField<E> field : metadata.getFields().values()) {
             if (field.getConverter() != null) {
-                field.getConverter().export(ctx, entity, values);
+                field.getConverter().export(ctx, field, field.get(entity), values);
             } else {
                 values.put(field.getColumnName(), field.get(entity));
             }
@@ -196,7 +196,7 @@ public class JdbcPersistenceStrategy implements PersistenceStrategy {
 
             for (EntityField<E> field : metadata.getFields().values()) {
                 if (field.getConverter() == null) continue;
-                Object value = field.getConverter().extract(ctx, rset);
+                Object value = field.getConverter().extract(ctx, field, rset);
                 field.set(instance, value);
             }
 

@@ -6,6 +6,7 @@ import org.mambo.shared.database.MutableEntity;
 import org.mambo.shared.database.MutableRepository;
 import org.mambo.shared.database.Timestampable;
 import org.mambo.shared.database.annotations.Column;
+import org.mambo.shared.database.impl.converter.SqlTimestampToJodaInstant;
 
 import javax.inject.Inject;
 
@@ -23,10 +24,10 @@ public abstract class Model<E extends Model<E>> implements MutableEntity, Timest
     @Inject
     private MutableRepository<E> repository;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", converter = SqlTimestampToJodaInstant.class)
     private Instant createdAt = Instant.now();
 
-    @Column(name = "persisted_at")
+    @Column(name = "persisted_at", converter = SqlTimestampToJodaInstant.class)
     private Instant persistedAt;
 
     private Instant deletedAt;
