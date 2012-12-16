@@ -13,6 +13,6 @@
 
     <config key="database">
         <config key="driver" type="String" value="com.mysql.jdbc.Driver" />
-        <config key="url" type="String" value="jdbc:mysql://localhost/mambo" />
+        <config key="url" type="String" value="jdbc:mysql://localhost/mambo?user=root" />
     </config>
 </config>

@@ -48,6 +48,15 @@ public class NioLoginService extends NioService<LoginClient> implements LoginSer
 
         log.debug("{} types loaded", protocolTypeManager.load());
         log.debug("{} messages loaded", messageReceiver.load());
+
+        log.info("started");
+    }
+
+    @Override
+    protected void shutDown() throws Exception {
+        super.shutDown();
+
+        log.info("stopped");
     }
 
     @NotNull

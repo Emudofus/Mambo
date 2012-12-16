@@ -1,12 +1,11 @@
 package org.mambo.core.login.service.login.handler;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import org.mambo.core.login.service.login.LoginClient;
 import org.mambo.core.network.NetworkHandler;
-
-import javax.inject.Singleton;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,6 +18,6 @@ public class LoginHandlerModule extends AbstractModule {
     protected void configure() {
         Multibinder<NetworkHandler<LoginClient>> handlers = Multibinder.newSetBinder(binder(), new TypeLiteral<NetworkHandler<LoginClient>>(){});
 
-        handlers.addBinding().to(AuthenticationHandler.class).in(Singleton.class);
+        handlers.addBinding().to(AuthenticationHandler.class).in(Scopes.SINGLETON);
     }
 }

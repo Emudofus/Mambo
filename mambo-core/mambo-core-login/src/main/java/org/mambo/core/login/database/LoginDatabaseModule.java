@@ -2,7 +2,7 @@ package org.mambo.core.login.database;
 
 import com.google.inject.Provider;
 import com.google.inject.Provides;
-import org.mambo.core.configuration.ConfigurationProvider;
+import com.google.inject.Scopes;
 import org.mambo.core.login.database.model.User;
 import org.mambo.shared.database.DatabaseModule;
 import org.mambo.shared.database.persistence.JdbcPersistenceStrategy;
@@ -10,7 +10,6 @@ import org.mambo.shared.database.persistence.PersistenceStrategy;
 
 import javax.inject.Singleton;
 import java.sql.Connection;
-import java.sql.DriverManager;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,20 +19,14 @@ import java.sql.DriverManager;
  */
 public class LoginDatabaseModule extends DatabaseModule {
     @Override
-    protected void configureRepositories() {
-        bindMutableRepository(User.class);
+    protected void configure() {
+        bind(Connection.class).toProvider(LoginConnectionProvider.class).in(Scopes.SINGLETON);
+        super.configure();
     }
 
-    @Provides
-    @Singleton
-    Connection provideConnection(ConfigurationProvider config) {
-        try {
-            Class.forName(config.getString("database.driver"));
-            return DriverManager.getConnection(config.getString("database.url"));
-        } catch (Throwable t) {
-            addError(t);
-            return null;
-        }
+    @Override
+    protected void configureRepositories() {
+        bindMutableRepository(User.class);
     }
 
     @Provides
