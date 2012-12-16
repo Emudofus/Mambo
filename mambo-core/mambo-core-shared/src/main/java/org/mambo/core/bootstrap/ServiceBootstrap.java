@@ -1,10 +1,10 @@
 package org.mambo.core.bootstrap;
 
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Service;
+import org.mambo.core.collect.SortedList;
 
 import java.util.Comparator;
-import java.util.Set;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -21,17 +21,17 @@ public class ServiceBootstrap {
             ServicePriority annotation;
 
             if ((annotation = first.getClass().getAnnotation(ServicePriority.class)) != null) {
-                result += annotation.value().value();
+                result -= annotation.value().ordinal();
             }
             if ((annotation = second.getClass().getAnnotation(ServicePriority.class)) != null) {
-                result -= annotation.value().value();
+                result += annotation.value().ordinal();
             }
 
             return result;
         }
     };
 
-    private final Set<Service> services = Sets.newTreeSet(SERVICE_COMPARATOR);
+    private final List<Service> services = SortedList.create(SERVICE_COMPARATOR);
 
     public void register(Service service) {
         services.add(service);
