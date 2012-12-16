@@ -39,6 +39,7 @@ public class ConfigurationProviderModule extends AbstractModule {
                     InjectConfig annotation = field.getAnnotation(InjectConfig.class);
                     if (annotation == null) continue;
 
+                    field.setAccessible(true);
                     entries.add(new FieldToConfigKey(field, annotation));
                 }
                 if (entries.size() <= 0) return;

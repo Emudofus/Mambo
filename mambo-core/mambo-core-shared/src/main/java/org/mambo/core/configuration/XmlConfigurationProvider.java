@@ -1,10 +1,10 @@
 package org.mambo.core.configuration;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.filter.ElementFilter;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.SAXEngine;
 import org.jetbrains.annotations.NotNull;
@@ -55,8 +55,7 @@ public class XmlConfigurationProvider extends BaseConfigurationProvider {
             throw new ConfigurationLoadException("can't load configuration", e);
         }
 
-        Iterable<Element> elements = document.getDescendants(new ElementFilter(ELEMENT_NAME));
-        load("", elements);
+        loadChildren(null, document.getRootElement());
     }
 
     private void loadChildren(String parentKey, Element element) {
@@ -72,9 +71,13 @@ public class XmlConfigurationProvider extends BaseConfigurationProvider {
                       typeAttr  = element.getAttribute(ATTR_TYPE),
                       valueAttr = element.getAttribute(ATTR_VALUE);
 
-            String key = keyAttr == null ? parentKey : combine(parentKey, keyAttr.getValue());
+            String key = keyAttr == null
+                    ? parentKey
+                    : Strings.isNullOrEmpty(parentKey)
+                        ? keyAttr.getValue()
+                        : combine(parentKey, keyAttr.getValue());
 
-            if (typeAttr != null && valueAttr != null) {
+            if (!Strings.isNullOrEmpty(key) && typeAttr != null && valueAttr != null) {
                 load(key, typeAttr.getValue(), valueAttr.getValue());
             }
 
