@@ -123,7 +123,7 @@ public abstract class NioService<T extends NetworkClient> extends AbstractExecut
         while (running) {
             try {
                 selector.select();
-                Iterator<SelectionKey> it = selector.keys().iterator();
+                Iterator<SelectionKey> it = selector.selectedKeys().iterator();
                 while (it.hasNext()) {
                     SelectionKey key = it.next();
                     it.remove();
@@ -171,6 +171,7 @@ public abstract class NioService<T extends NetworkClient> extends AbstractExecut
         key.attach(null);
         session.getChannel().close();
 
+        log.debug("client disconnected from {}", session.getRemoteAddress());
         handlerManager.dispatchDisconnected(attachement.client);
     }
 
@@ -195,6 +196,7 @@ public abstract class NioService<T extends NetworkClient> extends AbstractExecut
 
     private void accept() throws IOException {
         SocketChannel channel = server.accept();
+        channel.configureBlocking(false);
         SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
 
         NioSession session = new NioSession(this, channel, channel.getRemoteAddress());
@@ -203,6 +205,8 @@ public abstract class NioService<T extends NetworkClient> extends AbstractExecut
         key.attach(new Attachement(session, client));
 
         addClient(client);
+
+        log.debug("new client from {}", session.getRemoteAddress());
         handlerManager.dispatchConnected(client);
     }
 
@@ -227,6 +231,8 @@ public abstract class NioService<T extends NetworkClient> extends AbstractExecut
                 } else {
                     buffer.position(reader.getOffset());
 
+                    log.debug("receive {} from {}", message, session.getRemoteAddress());
+
                     handlerManager.dispatchMessage(attachement.client, message);
                 }
             }
@@ -244,6 +250,8 @@ public abstract class NioService<T extends NetworkClient> extends AbstractExecut
         try {
             while (!writeRequests.isEmpty()) {
                 WriteRequest request = writeRequests.poll();
+
+                log.debug("send {} to {}", request.message, session.getRemoteAddress());
 
                 DataWriterInterface writer = protocol.getEncoder().encode(request.message); // TODO performance improvement
                 session.getChannel().write(ByteBuffer.wrap(writer.getData()));
