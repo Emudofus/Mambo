@@ -1,4 +1,4 @@
-package org.mambo.core.login.service.login;
+package org.mambo.core.login.service.login.network;
 
 import org.jetbrains.annotations.NotNull;
 import org.mambo.core.network.NetworkSession;

@@ -1,10 +1,10 @@
-package org.mambo.core.login.service.login.handler;
+package org.mambo.core.login.service.login.network.handler;
 
 import org.mambo.core.configuration.InjectConfig;
 import org.mambo.core.event.EventHandler;
 import org.mambo.core.event.Event;
 import org.mambo.core.login.database.model.User;
-import org.mambo.core.login.service.login.LoginClient;
+import org.mambo.core.login.service.login.network.LoginClient;
 import org.mambo.core.network.base.event.NetworkClientConnectionEvent;
 import org.mambo.core.network.base.event.NetworkClientDisconnectionEvent;
 import org.mambo.core.network.base.event.NetworkClientMessageEvent;

@@ -1,4 +1,4 @@
-package org.mambo.core.login.service.login;
+package org.mambo.core.login.service.login.network;
 
 import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.NotNull;

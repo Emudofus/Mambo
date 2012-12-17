@@ -1,4 +1,4 @@
-package org.mambo.core.login.service.login;
+package org.mambo.core.login.service.login.network;
 
 import com.google.inject.PrivateModule;
 import com.google.inject.Provides;
@@ -20,7 +20,7 @@ import java.util.Set;
  * Date: 08/12/12
  * Time: 19:23
  */
-public class NioLoginServiceModule extends PrivateModule {
+public class NetworkLoginServiceModule extends PrivateModule {
     @Override
     protected void configure() {
         bind(LoginService.class).to(NioLoginService.class).in(Singleton.class);
