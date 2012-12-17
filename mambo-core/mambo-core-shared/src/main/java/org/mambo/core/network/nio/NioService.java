@@ -3,10 +3,10 @@ package org.mambo.core.network.nio;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.AbstractExecutionThreadService;
-import com.google.common.util.concurrent.SettableFuture;
+import com.google.common.util.concurrent.AbstractIdleService;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.Instant;
+import org.mambo.core.concurrent.Worker;
 import org.mambo.core.io.DataReaderInterface;
 import org.mambo.core.io.DataWriterInterface;
 import org.mambo.core.network.*;
@@ -22,8 +22,6 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -35,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Date: 02/12/12
  * Time: 10:52
  */
-public abstract class NioService<T extends NetworkClient> extends AbstractExecutionThreadService implements NetworkService {
+public abstract class NioService<T extends NetworkClient> extends AbstractIdleService implements NetworkService {
     private final Set<T> clients = Sets.newHashSet();
     private final Logger log;
     private final int port, initialCapacity;
@@ -46,8 +44,8 @@ public abstract class NioService<T extends NetworkClient> extends AbstractExecut
     private Instant startupInstant;
     private boolean running;
 
-    private ServerSocketChannel server;
-    private Selector selector;
+    private InputWorker inputWorker;
+    private OutputWorker outputWorker;
 
     public NioService(@NotNull Logger log, int port, int initialCapacity, @NotNull NetworkProtocol protocol, @NotNull NetworkHandlerManager<T> handlerManager) {
         this.log = checkNotNull(log);
@@ -87,96 +85,22 @@ public abstract class NioService<T extends NetworkClient> extends AbstractExecut
 
     @Override
     protected void startUp() throws Exception {
-        server = ServerSocketChannel.open();
-        selector = Selector.open();
+        inputWorker = new InputWorker();
+        outputWorker = new OutputWorker();
 
-        server.configureBlocking(false);
-        server.register(selector, SelectionKey.OP_ACCEPT);
-        server.bind(new InetSocketAddress(port));
+        inputWorker.start();
+        outputWorker.start();
 
-        startupInstant = Instant.now();
         running = true;
-    }
-
-    @Override
-    protected void triggerShutdown() {
-        running = false;
+        startupInstant = Instant.now();
     }
 
     @Override
     protected void shutDown() throws Exception {
-        if (selector != null) {
-            selector.close();
-        }
-        if (server != null) {
-            server.socket().close();
-            server.close();
-        }
-    }
+        running = false;
 
-    private void forceShutDown() {
-        throw new RuntimeException("forced shutdown");
-    }
-
-    @Override
-    protected void run() throws Exception {
-        while (running) {
-            try {
-                selector.select();
-                Iterator<SelectionKey> it = selector.selectedKeys().iterator();
-                while (it.hasNext()) {
-                    SelectionKey key = it.next();
-                    it.remove();
-
-                    if (key.isAcceptable()) {
-                        accept();
-                    } else if (key.isReadable()) {
-                        read(key);
-                    } else if (key.isWritable()) {
-                        write(key);
-                    }
-                }
-            } catch (IOException ioe) {
-                log.error("Unhandled IOException catched, shutting down the server", ioe);
-                triggerShutdown();
-            } catch (Throwable t) {
-                exception(t);
-            }
-        }
-
-        forceShutDown();
-    }
-
-    void write(NioSession session, Object message, SettableFuture<NioSession> future) {
-        SelectionKey key = session.getChannel().keyFor(selector);
-        @SuppressWarnings("unchecked")
-        Attachement attachement = (Attachement) key.attachment();
-
-        key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-
-        attachement.writeRequestsLock.lock();
-        try {
-            attachement.writeRequests.offer(new WriteRequest(message, future));
-        } finally {
-            attachement.writeRequestsLock.unlock();
-        }
-    }
-
-    void close(NioSession session) throws IOException {
-        SelectionKey key = session.getChannel().keyFor(selector);
-        @SuppressWarnings("unchecked")
-        Attachement attachement = (Attachement) key.attachment();
-
-        key.cancel();
-        key.attach(null);
-        session.getChannel().close();
-
-        log.debug("client disconnected from {}", session.getRemoteAddress());
-        handlerManager.dispatchDisconnected(attachement.client);
-    }
-
-    void exception(Throwable t) {
-        log.error("Unhandled exception catched", t);
+        outputWorker.shutdown();
+        inputWorker.shutdown();
     }
 
     /**
@@ -194,96 +118,228 @@ public abstract class NioService<T extends NetworkClient> extends AbstractExecut
         }
     }
 
-    private void accept() throws IOException {
-        SocketChannel channel = server.accept();
-        channel.configureBlocking(false);
-        SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
-
-        NioSession session = new NioSession(this, channel, channel.getRemoteAddress());
-        T client = newClient(session);
-
-        key.attach(new Attachement(session, client));
-
-        addClient(client);
-
-        log.debug("new client from {}", session.getRemoteAddress());
-        handlerManager.dispatchConnected(client);
+    private void removeClient(T client) {
+        clients.remove(client);
     }
 
-    private void read(SelectionKey key) throws IOException {
-        @SuppressWarnings("unchecked")
-        Attachement attachement = (Attachement) key.attachment();
-
-        NioSession session = attachement.session;
-        ByteBuffer buffer = attachement.buffer;
-
-        int read = session.getChannel().read(buffer);
-
-        if (read < 0) {
-            close(session);
-        } else {
-            while (buffer.hasRemaining()) {
-                DataReaderInterface reader = protocol.newReader(buffer.array(), buffer.position());
-                Object message = protocol.getDecoder().decode(reader);
-
-                if (message == null) {
-                    break;
-                } else {
-                    buffer.position(reader.getOffset());
-
-                    log.debug("receive {} from {}", message, session.getRemoteAddress());
-
-                    handlerManager.dispatchMessage(attachement.client, message);
-                }
-            }
-        }
+    void addRequest(Request request) {
+        outputWorker.requests.add(request);
     }
 
-    private void write(SelectionKey key) throws IOException {
-        @SuppressWarnings("unchecked")
-        Attachement attachement = (Attachement) key.attachment();
-
-        Queue<WriteRequest> writeRequests = attachement.writeRequests;
-        NioSession session = attachement.session;
-
-        attachement.writeRequestsLock.lock();
-        try {
-            while (!writeRequests.isEmpty()) {
-                WriteRequest request = writeRequests.poll();
-
-                log.debug("send {} to {}", request.message, session.getRemoteAddress());
-
-                DataWriterInterface writer = protocol.getEncoder().encode(request.message); // TODO performance improvement
-                session.getChannel().write(ByteBuffer.wrap(writer.getData()));
-
-                request.future.set(session);
-            }
-        } finally {
-            attachement.writeRequestsLock.unlock();
-            key.interestOps(SelectionKey.OP_READ);
-        }
+    void handleException(Throwable t) {
+        log.error("unhandled exception catched", t);
     }
 
-    private final class Attachement {
+    private class Token {
         final NioSession session;
         final T client;
         final ByteBuffer buffer = ByteBuffer.allocate(initialCapacity);
-        final Queue<WriteRequest> writeRequests = Queues.newArrayDeque();
-        final Lock writeRequestsLock = new ReentrantLock();
 
-        private Attachement(NioSession session, T client) {
+        Token(NioSession session, T client) {
             this.session = session;
             this.client = client;
         }
     }
 
-    private final class WriteRequest {
-        final Object message;
-        final SettableFuture<NioSession> future;
+    private class InputWorker extends Worker {
+        ServerSocketChannel server;
+        Selector selector;
 
-        private WriteRequest(Object message, SettableFuture<NioSession> future) {
-            this.message = message;
-            this.future = future;
+        void accept() throws IOException {
+            SocketChannel accepted = server.accept();
+            NioSession session = new NioSession(NioService.this, accepted, accepted.getRemoteAddress());
+            T client = newClient(session);
+
+            accepted.configureBlocking(false);
+            SelectionKey key = accepted.register(selector, SelectionKey.OP_READ);
+            key.attach(new Token(session, client));
+
+            addClient(client);
+            log.debug("client {} is connected", session.getRemoteAddress());
+            handlerManager.dispatchConnected(client);
+        }
+
+        void read(SelectionKey key) throws IOException {
+            Token token = getToken(key);
+
+            ByteBuffer buffer = token.buffer;
+            int read = token.session.getChannel().read(buffer);
+
+            if (read < 0) {
+                addRequest(Request.close(token.session));
+            } else {
+                while (buffer.hasRemaining()) {
+                    DataReaderInterface reader = protocol.newReader(buffer.array(), buffer.position());
+
+                    Object message = protocol.getDecoder().decode(reader);
+                    if (message == null) {
+                        break;
+                    }
+                    buffer.position(reader.getOffset());
+
+                    log.debug("receive {} from {}", message, token.session.getRemoteAddress());
+                    handlerManager.dispatchMessage(token.client, message);
+                }
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        Token getToken(SelectionKey key) {
+            return (Token) key.attachment();
+        }
+
+        SelectionKey getSelectionKey(SocketChannel channel) {
+            return channel.keyFor(selector);
+        }
+
+        @Override
+        protected void run() {
+            log.debug("input worker started");
+            while (running) {
+                try {
+                    selector.select();
+
+                    Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+                    while (it.hasNext()) {
+                        SelectionKey key = it.next();
+                        it.remove();
+
+                        if (key.isAcceptable()) {
+                            accept();
+                        } else if (key.isReadable()) {
+                            read(key);
+                        }
+                    }
+                } catch (IOException ioe) {
+                    log.error("I/O exception, shutting down");
+                    triggerShutdown();
+                } catch (Throwable t) {
+                    handleException(t);
+                }
+            }
+        }
+
+        @Override
+        protected void triggerShutdown() {
+            running = false;
+        }
+
+        @Override
+        protected void setUp() {
+            try {
+                server = ServerSocketChannel.open();
+                selector = Selector.open();
+
+                server.configureBlocking(false);
+                server.register(selector, SelectionKey.OP_ACCEPT);
+                server.bind(new InetSocketAddress(port));
+            } catch (IOException e) {
+                throw new RuntimeException("can't open server or selector");
+            }
+        }
+
+        @Override
+        protected void tearDown() {
+            if (selector != null) {
+                try {
+                    selector.close();
+                } catch (Throwable ignored) { }
+
+                selector = null;
+            }
+
+            if (server != null) {
+                try {
+                    server.socket().close();
+                    server.close();
+                } catch (Throwable ignored) {}
+
+                server = null;
+            }
+        }
+    }
+
+    private class OutputWorker extends Worker {
+        Queue<Request> requests;
+
+        void waitForRequests() {
+            try {
+                while (requests.isEmpty()) {
+                    Thread.sleep(1);
+                }
+            } catch (InterruptedException ignored) {}
+        }
+
+        void write(Request.Write request) throws IOException {
+            if (!protocol.canHandle(request.getMessage())) {
+                log.warn("can't handle message \"" + request.getMessage() + "\"");
+                return;
+            }
+
+            DataWriterInterface writer = protocol.getEncoder().encode(request.getMessage());
+            ByteBuffer buffer = ByteBuffer.wrap(writer.getData());
+
+            SocketChannel channel = request.getSession().getChannel();
+            channel.write(buffer);
+
+            log.debug("send {} to {}", request.getMessage(), request.getSession().getRemoteAddress());
+            request.getFuture().set(request.getSession());
+        }
+
+        void close(Request.Close request) throws IOException {
+            SelectionKey key = inputWorker.getSelectionKey(request.getSession().getChannel());
+            Token token = inputWorker.getToken(key);
+
+            key.cancel();
+            key.attach(null);
+            token.session.getChannel().close();
+            request.getFuture().set(token.session);
+
+            removeClient(token.client);
+            log.debug("client {} is disconnected", token.session.getRemoteAddress());
+            handlerManager.dispatchDisconnected(token.client);
+        }
+
+        @Override
+        protected void run() {
+            log.debug("output worker started");
+            while (running) {
+                waitForRequests();
+
+                for (Request request : requests) {
+                    try {
+                        if (request instanceof Request.Write) {
+                            write((Request.Write) request);
+                        } else if (request instanceof Request.Close) {
+                            close((Request.Close) request);
+                        }
+                    } catch (IOException ioe) {
+                        log.error("I/O exception, shutting down");
+                        triggerShutdown();
+                        break;
+                    } catch (Throwable t) {
+                        handleException(t);
+                    }
+                }
+
+                requests.clear();
+            }
+        }
+
+        @Override
+        protected void triggerShutdown() {
+            running = false;
+        }
+
+        @Override
+        protected void setUp() {
+            requests = Queues.newConcurrentLinkedQueue();
+        }
+
+        @Override
+        protected void tearDown() {
+            requests.clear();
+            requests = null;
         }
     }
 }

@@ -1,11 +1,10 @@
 package org.mambo.core.network.nio;
 
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.core.network.NetworkSession;
 
-import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
 
@@ -34,32 +33,22 @@ class NioSession implements NetworkSession {
     @NotNull
     @Override
     public ListenableFuture<NioSession> write(@NotNull Object msg) {
-        SettableFuture<NioSession> future = SettableFuture.create();
-        service.write(this, msg, future);
-        return future;
+        Request request = Request.write(this, msg);
+        service.addRequest(request);
+        return request.getFuture();
     }
 
     @NotNull
     @Override
     public ListenableFuture<NioSession> close() {
-        SettableFuture<NioSession> future = SettableFuture.create();
-        try {
-            service.close(this);
-            future.set(this);
-        } catch (IOException e) {
-            future.setException(e);
-        }
-        return future;
+        Request request = Request.close(this);
+        service.addRequest(request);
+        return request.getFuture();
     }
 
     @Override
     public void closeAndWait() {
-        try {
-            ListenableFuture<NioSession> future = close();
-            future.get();
-        } catch (Throwable t) {
-            service.exception(t);
-        }
+        Futures.getUnchecked(close());
     }
 
     @NotNull
