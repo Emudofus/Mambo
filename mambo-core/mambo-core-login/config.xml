@@ -1,5 +1,7 @@
 <config>
     <config key="services">
+        <config key="community" type="Integer" value="0" /> <!-- french community -->
+
         <config key="login">
             <config key="port" type="Integer" value="5555" />
             <config key="required_version" type="Integer" value="1464" />

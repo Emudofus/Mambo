@@ -8,10 +8,9 @@ import org.mambo.core.login.service.login.network.LoginClient;
 import org.mambo.core.network.NetworkHandler;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Blackrush
- * Date: 24/11/12
- * Time: 20:20
+ * default login service's handlers
+ *
+ * @author Blackrush
  */
 public class NetworkLoginServiceHandlerModule extends AbstractModule {
     @Override

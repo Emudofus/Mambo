@@ -1,19 +1,28 @@
 package org.mambo.core.login.database.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.joda.time.Instant;
 import org.mambo.shared.database.annotations.Column;
 import org.mambo.shared.database.annotations.Id;
 import org.mambo.shared.database.annotations.Table;
 import org.mambo.shared.database.impl.Model;
+import org.mambo.shared.database.impl.converter.SqlTimestampToJodaInstant;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Blackrush
- * Date: 09/12/12
- * Time: 00:09
+ * @author Blackrush
  */
 @Table("users")
 public class User extends Model<User> {
+    public static enum Right {
+        GOD,
+        SUPER_ADMIN,
+        ADMIN,
+        GAME_MASTER,
+        MODERATOR,
+        USER,
+        BANNED
+    }
+
     @Id
     @Column
     private Long id = 0L;
@@ -32,6 +41,18 @@ public class User extends Model<User> {
 
     @Column
     private String email = "";
+
+    @Column
+    private Right right = Right.USER;
+
+    @Column(name = "secret_question")
+    private String secretQuestion = "";
+
+    @Column(name = "secret_answer")
+    private String secretAnswer = "";
+
+    @Column(name = "subscription_end", converter = SqlTimestampToJodaInstant.class)
+    private Instant subscriptionEnd;
 
     @NotNull
     @Override
@@ -87,5 +108,48 @@ public class User extends Model<User> {
 
     public void setEmail(@NotNull String email) {
         this.email = email;
+    }
+
+    @NotNull
+    public Right getRight() {
+        return right;
+    }
+
+    public boolean isBanned() {
+        return right == Right.BANNED;
+    }
+
+    public boolean hasRights() {
+        return right.ordinal() > Right.USER.ordinal();
+    }
+
+    public void setRight(@NotNull Right right) {
+        this.right = right;
+    }
+
+    @NotNull
+    public String getSecretQuestion() {
+        return secretQuestion;
+    }
+
+    public void setSecretQuestion(@NotNull String secretQuestion) {
+        this.secretQuestion = secretQuestion;
+    }
+
+    @NotNull
+    public String getSecretAnswer() {
+        return secretAnswer;
+    }
+
+    public void setSecretAnswer(@NotNull String secretAnswer) {
+        this.secretAnswer = secretAnswer;
+    }
+
+    public Instant getSubscriptionEnd() {
+        return subscriptionEnd;
+    }
+
+    public void setSubscriptionEnd(Instant subscriptionEnd) {
+        this.subscriptionEnd = subscriptionEnd;
     }
 }

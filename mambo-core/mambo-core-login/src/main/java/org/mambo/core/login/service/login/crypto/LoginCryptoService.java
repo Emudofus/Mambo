@@ -6,6 +6,8 @@ import org.mambo.core.login.database.model.User;
 import java.security.PublicKey;
 
 /**
+ * handles crypto and client's auth
+ *
  * @author Blackrush
  *         Mambo
  */
@@ -14,11 +16,11 @@ public interface LoginCryptoService {
     PublicKey getPublicKey();
 
     /**
-     * decrypt credentials and get user
-     * @param bytes crypted credentials
+     * decrypt credentials and return a valid user
+     * @param credentials crypted credentials
      * @return found user
-     * @throws BadCredentialsException
+     * @throws AuthenticationException
      */
     @NotNull
-    User find(byte[] bytes);
+    User authenticate(byte[] credentials);
 }
