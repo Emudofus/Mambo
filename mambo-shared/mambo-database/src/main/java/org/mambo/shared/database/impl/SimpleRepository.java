@@ -66,13 +66,15 @@ public class SimpleRepository<E extends Entity> implements Repository<E> {
         return entities.retrieve(QueryFactory.equal(field.asAttribute(), value));
     }
 
-    @NotNull
     @Override
     public E find(@NotNull Object id) {
-        return find(metadata.getPrimaryKeyField(), id).uniqueResult();
+        try {
+            return find(metadata.getPrimaryKeyField(), id).uniqueResult();
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
-    @NotNull
     @Override
     public E find(@NotNull String property, Object value) {
         EntityField<E> field = metadata.getField(property);
@@ -80,7 +82,11 @@ public class SimpleRepository<E extends Entity> implements Repository<E> {
             throw new IllegalArgumentException("unknown property \"" + property + "\"");
         }
 
-        return find(field, value).uniqueResult();
+        try {
+            return find(field, value).uniqueResult();
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     @NotNull
