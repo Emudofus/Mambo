@@ -45,8 +45,8 @@ public class ReflectiveNetworkHandlerManager<T extends NetworkClient> extends Ba
         for (NetworkHandler<T> handler : this) {
             Class<?> handlerClass = handler.getClass();
 
-            for (Method method : handlerClass.getDeclaredMethods()) {
-                if (!handlerClass.isAnnotationPresent(NetworkHandler.Handler.class)) continue;
+            for (Method method : handlerClass.getMethods()) {
+                if (!method.isAnnotationPresent(NetworkHandler.Handler.class)) continue;
 
                 Class<?>[] handlerParameters = method.getParameterTypes();
                 if (handlerParameters.length != 2) {

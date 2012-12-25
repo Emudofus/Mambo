@@ -22,6 +22,8 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -123,7 +125,7 @@ public abstract class NioService<T extends NetworkClient> extends AbstractIdleSe
     }
 
     void addRequest(Request request) {
-        outputWorker.requests.add(request);
+        outputWorker.addRequest(request);
     }
 
     void handleException(Throwable t) {
@@ -166,8 +168,9 @@ public abstract class NioService<T extends NetworkClient> extends AbstractIdleSe
             int read = token.session.getChannel().read(buffer);
 
             if (read < 0) {
-                addRequest(Request.close(token.session));
+                token.session.close();
             } else {
+                buffer.flip();
                 while (buffer.hasRemaining()) {
                     DataReaderInterface reader = protocol.newReader(buffer.array(), buffer.position());
 
@@ -180,6 +183,7 @@ public abstract class NioService<T extends NetworkClient> extends AbstractIdleSe
                     log.debug("receive {} from {}", message, token.session.getRemoteAddress());
                     handlerManager.dispatchMessage(token.client, message);
                 }
+                buffer.flip();
             }
         }
 
@@ -261,6 +265,16 @@ public abstract class NioService<T extends NetworkClient> extends AbstractIdleSe
 
     private class OutputWorker extends Worker {
         Queue<Request> requests;
+        Lock lock = new ReentrantLock();
+
+        void addRequest(Request request) {
+            lock.lock();
+            try {
+                requests.offer(request);
+            } finally {
+                lock.unlock();
+            }
+        }
 
         void waitForRequests() {
             try {
@@ -287,6 +301,8 @@ public abstract class NioService<T extends NetworkClient> extends AbstractIdleSe
         }
 
         void close(Request.Close request) throws IOException {
+            if (request.getSession().getCloseFuture().isDone()) return;
+
             SelectionKey key = inputWorker.getSelectionKey(request.getSession().getChannel());
             Token token = inputWorker.getToken(key);
 
@@ -306,23 +322,24 @@ public abstract class NioService<T extends NetworkClient> extends AbstractIdleSe
             while (running) {
                 waitForRequests();
 
-                for (Request request : requests) {
-                    try {
+                lock.lock();
+                try {
+                    while (!requests.isEmpty()) {
+                        Request request = requests.poll();
                         if (request instanceof Request.Write) {
                             write((Request.Write) request);
                         } else if (request instanceof Request.Close) {
                             close((Request.Close) request);
                         }
-                    } catch (IOException ioe) {
-                        log.error("I/O exception, shutting down");
-                        triggerShutdown();
-                        break;
-                    } catch (Throwable t) {
-                        handleException(t);
                     }
+                } catch (IOException e) {
+                    log.error("unhandled I/O exception, try to shutdown", e);
+                    triggerShutdown();
+                } catch (Throwable t) {
+                    handleException(t);
+                } finally {
+                    lock.unlock();
                 }
-
-                requests.clear();
             }
         }
 
@@ -333,7 +350,7 @@ public abstract class NioService<T extends NetworkClient> extends AbstractIdleSe
 
         @Override
         protected void setUp() {
-            requests = Queues.newConcurrentLinkedQueue();
+            requests = Queues.newArrayDeque();
         }
 
         @Override

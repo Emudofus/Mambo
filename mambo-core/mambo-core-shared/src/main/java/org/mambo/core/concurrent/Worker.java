@@ -11,9 +11,8 @@ public abstract class Worker {
         public void run() {
             try {
                 Worker.this.run();
-            } catch (Throwable t) {
+            } finally {
                 tearDown();
-                throw new RuntimeException(t);
             }
         }
     };
@@ -36,7 +35,6 @@ public abstract class Worker {
         started = false;
 
         triggerShutdown();
-        tearDown();
         try {
             thread.join();
         } catch (InterruptedException e) {

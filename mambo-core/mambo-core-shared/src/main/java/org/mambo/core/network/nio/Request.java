@@ -11,10 +11,11 @@ import org.jetbrains.annotations.NotNull;
  */
 abstract class Request {
     private final NioSession session;
-    private final SettableFuture<NioSession> future = SettableFuture.create();
+    private final SettableFuture<NioSession> future;
 
-    private Request(@NotNull NioSession session) {
+    private Request(@NotNull NioSession session, @NotNull SettableFuture<NioSession> future) {
         this.session = session;
+        this.future = future;
     }
 
     @NotNull
@@ -30,8 +31,8 @@ abstract class Request {
     static class Write extends Request {
         private final Object message;
 
-        private Write(@NotNull NioSession session, @NotNull Object message) {
-            super(session);
+        private Write(@NotNull NioSession session, @NotNull SettableFuture<NioSession> future, Object message) {
+            super(session, future);
             this.message = message;
         }
 
@@ -42,16 +43,24 @@ abstract class Request {
     }
 
     static class Close extends Request {
-        private Close(@NotNull NioSession session) {
-            super(session);
+        Close(@NotNull NioSession session, @NotNull SettableFuture<NioSession> future) {
+            super(session, future);
         }
     }
 
+    static Write write(@NotNull NioSession session, @NotNull SettableFuture<NioSession> future, @NotNull Object message) {
+        return new Write(session, future, message);
+    }
+
     static Write write(@NotNull NioSession session, @NotNull Object message) {
-        return new Write(session, message);
+        return write(session, SettableFuture.<NioSession>create(), message);
+    }
+
+    static Close close(@NotNull NioSession session, @NotNull SettableFuture<NioSession> future) {
+        return new Close(session, future);
     }
 
     static Close close(@NotNull NioSession session) {
-        return new Close(session);
+        return close(session, SettableFuture.<NioSession>create());
     }
 }

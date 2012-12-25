@@ -2,6 +2,7 @@ package org.mambo.core.network.nio;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.core.network.NetworkSession;
 
@@ -18,6 +19,8 @@ class NioSession implements NetworkSession {
     private final NioService<?> service;
     private final SocketChannel channel;
     private final SocketAddress address;
+    private final SettableFuture<NioSession> closeFuture = SettableFuture.create();
+    private volatile boolean closeRequested;
 
     NioSession(NioService<?> service, SocketChannel channel, SocketAddress address) {
         this.service = service;
@@ -31,6 +34,11 @@ class NioSession implements NetworkSession {
     }
 
     @NotNull
+    ListenableFuture<NioSession> getCloseFuture() {
+        return closeFuture;
+    }
+
+    @NotNull
     @Override
     public ListenableFuture<NioSession> write(@NotNull Object msg) {
         Request request = Request.write(this, msg);
@@ -41,9 +49,11 @@ class NioSession implements NetworkSession {
     @NotNull
     @Override
     public ListenableFuture<NioSession> close() {
-        Request request = Request.close(this);
-        service.addRequest(request);
-        return request.getFuture();
+        if (!closeRequested) {
+            service.addRequest(Request.close(this, closeFuture));
+            closeRequested = true;
+        }
+        return closeFuture;
     }
 
     @Override
