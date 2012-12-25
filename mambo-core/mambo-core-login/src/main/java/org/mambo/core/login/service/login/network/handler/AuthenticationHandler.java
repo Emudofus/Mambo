@@ -3,6 +3,7 @@ package org.mambo.core.login.service.login.network.handler;
 import org.jetbrains.annotations.NotNull;
 import org.mambo.core.configuration.InjectConfig;
 import org.mambo.core.login.database.model.User;
+import org.mambo.core.login.service.login.crypto.BadCredentialsException;
 import org.mambo.core.login.service.login.crypto.LoginCryptoService;
 import org.mambo.core.login.service.login.network.LoginClient;
 import org.mambo.core.network.NetworkSession;
@@ -25,23 +26,18 @@ public class AuthenticationHandler extends BaseNetworkHandler<LoginClient> {
     private static final Logger log = LoggerFactory.getLogger(AuthenticationHandler.class);
 
     public static final byte WRONG_CREDENTIALS = (byte) IdentificationFailureReasonEnum.WRONG_CREDENTIALS.value();
-    public static final byte IN_MAINTENANCE = (byte) IdentificationFailureReasonEnum.IN_MAINTENANCE.value();
 
     @InjectConfig("services.login.required_version") int requiredVersion;
     @InjectConfig("services.login.current_version") int currentVersion;
     @Inject Repository<User> users;
     @Inject LoginCryptoService crypto;
 
-    private static String getUsername(IdentificationMessage message) {
-        return "foo"; // TODO read message.credentials
-    }
-
     @Handler
     public void identificationAction(LoginClient client, final IdentificationMessage msg) {
         try {
             User user = crypto.find(msg.credentials);
-            client.getSession().close();
-        } catch (Throwable t) {
+            // TODO do other stuff with found user
+        } catch (BadCredentialsException e) {
             client.getSession().write(new IdentificationFailedMessage(WRONG_CREDENTIALS));
         }
     }

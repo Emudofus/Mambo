@@ -13,6 +13,12 @@ public interface LoginCryptoService {
     @NotNull
     PublicKey getPublicKey();
 
+    /**
+     * decrypt credentials and get user
+     * @param bytes crypted credentials
+     * @return found user
+     * @throws BadCredentialsException
+     */
     @NotNull
     User find(byte[] bytes);
 }

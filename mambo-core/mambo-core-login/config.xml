@@ -10,7 +10,8 @@
             </config>
 
             <config key="crypto">
-                <config key="keysize" type="Integer" value="2048" />
+                <config key="keysize" type="Integer" value="1024" />
+                <config key="digest" type="String" value="SHA1" />
             </config>
         </config>
     </config>

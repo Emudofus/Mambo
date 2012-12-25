@@ -4,6 +4,8 @@ import org.mambo.core.configuration.InjectConfig;
 import org.mambo.core.event.EventHandler;
 import org.mambo.core.event.Event;
 import org.mambo.core.login.database.model.User;
+import org.mambo.core.login.service.login.crypto.BadCredentialsException;
+import org.mambo.core.login.service.login.crypto.LoginCryptoService;
 import org.mambo.core.login.service.login.network.LoginClient;
 import org.mambo.core.network.base.event.NetworkClientConnectionEvent;
 import org.mambo.core.network.base.event.NetworkClientDisconnectionEvent;
@@ -26,38 +28,35 @@ import javax.inject.Inject;
 public class AuthenticationHandler2 {
     private static final Logger log = LoggerFactory.getLogger(AuthenticationHandler2.class);
 
-    public static final byte IN_MAINTENANCE = (byte) IdentificationFailureReasonEnum.IN_MAINTENANCE.value();
+    public static final byte WRONG_CREDENTIALS = (byte) IdentificationFailureReasonEnum.WRONG_CREDENTIALS.value();
 
     @InjectConfig("services.login.required_version") int requiredVersion;
     @InjectConfig("services.login.current_version") int currentVersion;
     @Inject Repository<User> users;
-
-    private static String getUsername(IdentificationMessage message) {
-        return "foo"; // TODO read message.credentials
-    }
+    @Inject LoginCryptoService crypto;
 
     @EventHandler
     public void onIdentificationmessage(Event<NetworkClientMessageEvent<LoginClient>> event) {
         if (!(event.get().getMessage() instanceof IdentificationMessage)) return;
-        IdentificationMessage message = (IdentificationMessage) event.get().getMessage();
+        IdentificationMessage msg = (IdentificationMessage) event.get().getMessage();
 
-        User user = users.find("username", getUsername(message));
-        event.reply(new IdentificationFailedMessage(IN_MAINTENANCE));
-
-        log.debug("{} tried to connect", user.getNickname());
+        try {
+            User user = crypto.find(msg.credentials);
+            // TODO do other stuff with found user
+        } catch (BadCredentialsException e) {
+            event.reply(new IdentificationFailedMessage(WRONG_CREDENTIALS));
+        }
     }
 
     @EventHandler
     public void onConnected(Event<NetworkClientConnectionEvent<LoginClient>> event) {
         LoginClient client = event.get().getClient();
         event.reply(new ProtocolRequired(requiredVersion, currentVersion));
-        event.reply(new HelloConnectMessage(client.getTicket(), new byte[0])); // TODO get rsa public key from LoginService
-
-        log.debug("new incoming login client");
+        event.reply(new HelloConnectMessage(client.getTicket(), crypto.getPublicKey().getEncoded()));
     }
 
     @EventHandler
     public void onDisconnected(NetworkClientDisconnectionEvent<LoginClient> event) {
-        log.debug("client has been disconnected");
+        // just an example
     }
 }

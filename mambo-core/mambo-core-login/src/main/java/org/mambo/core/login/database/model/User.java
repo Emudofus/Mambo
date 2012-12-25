@@ -25,6 +25,9 @@ public class User extends Model<User> {
     private String passwordHash = "";
 
     @Column
+    private String salt = "";
+
+    @Column
     private String nickname = "";
 
     @Column
@@ -57,6 +60,15 @@ public class User extends Model<User> {
 
     public void setPasswordHash(@NotNull String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    @NotNull
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(@NotNull String salt) {
+        this.salt = salt;
     }
 
     @NotNull
