@@ -105,7 +105,7 @@ public class JdbcPersistenceStrategyTest {
     public void setUp() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
 
-        connection = DriverManager.getConnection("jdbc:mysql://localhost");
+        connection = DriverManager.getConnection("jdbc:mysql://localhost?user=root");
         createSchema();
         createTablesAndInsertData();
 
