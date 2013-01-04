@@ -1,6 +1,6 @@
 
 
-// Generated on 12/14/2012 18:44:07
+// Generated on 01/04/2013 14:54:25
 package org.mambo.protocol.client.messages;
 
 import java.util.*;

@@ -1,6 +1,6 @@
 
 
-// Generated on 12/14/2012 18:33:50
+// Generated on 01/04/2013 14:54:50
 package org.mambo.protocol.client.enums;
 
 public enum ClientInstallTypeEnum {
