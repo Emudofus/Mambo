@@ -17,9 +17,9 @@
 
     <modules>
         <module>mambo-shared</module>
-    <module>mambo-login</module>
-    <module>mambo-game</module>
-  </modules>
+        <module>mambo-login</module>
+        <module>mambo-game</module>
+    </modules>
 
     <properties>
     </properties>
