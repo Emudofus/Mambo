@@ -1,4 +1,4 @@
-package org.mambo.core
+package org.mambo.core.collection
 
 import collection.mutable
 import annotation.tailrec
