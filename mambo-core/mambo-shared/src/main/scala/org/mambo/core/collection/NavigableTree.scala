@@ -31,15 +31,10 @@ object NavigableTree {
   def empty[K, V] = new NavigableTreeRoot[K, V]
 }
 
-class NavigableTreeRoot[K, V] extends NavigableTree[K, V] {
+abstract class NavigableTreeBase[K, V] extends NavigableTree[K, V] {
   private type Child = NavigableTreeChild[K, V]
 
   protected val children = mutable.Map.empty[K, Child]
-
-  val value: Option[V] = None
-
-  def isRoot = true
-  def path = Seq.empty[K]
 
   def get(key: K) = children.get(key) match {
     case Some(child) => child.value
@@ -58,7 +53,7 @@ class NavigableTreeRoot[K, V] extends NavigableTree[K, V] {
     val it = keys.iterator
 
     @tailrec
-    def rec(current: NavigableTreeRoot[K, V]): Option[V] =
+    def rec(current: NavigableTreeBase[K, V]): Option[V] =
       if (!it.hasNext)
         current.value
       else
@@ -77,7 +72,7 @@ class NavigableTreeRoot[K, V] extends NavigableTree[K, V] {
       throw new IllegalArgumentException("keys must have at least one element")
 
     @tailrec
-    def rec(current: NavigableTreeRoot[K, V]): NavigableTree[K, V] = {
+    def rec(current: NavigableTreeBase[K, V]): NavigableTree[K, V] = {
       val key = it.next()
       if (!it.hasNext)
         current.put(key, value)
@@ -95,7 +90,7 @@ class NavigableTreeRoot[K, V] extends NavigableTree[K, V] {
       throw new IllegalArgumentException("keys must have at least one element")
 
     @tailrec
-    def rec(current: NavigableTreeRoot[K, V]): Option[NavigableTree[K, V]] = {
+    def rec(current: NavigableTreeBase[K, V]): Option[NavigableTree[K, V]] = {
       val key = it.next()
       if (!it.hasNext)
         current.remove(key)
@@ -110,9 +105,13 @@ class NavigableTreeRoot[K, V] extends NavigableTree[K, V] {
   }
 }
 
-class NavigableTreeChild[K, V](val key: K, override val value: Option[V] = None, val parent: NavigableTree[K, V]) extends NavigableTreeRoot[K, V] {
-  private type This = NavigableTreeChild[K, V]
+class NavigableTreeRoot[K, V] extends NavigableTreeBase[K, V] {
+  val value: Option[V] = None
+  def isRoot = true
+  def path = Seq.empty[K]
+}
 
-  override def isRoot = false
-  override def path = parent.path :+ key
+class NavigableTreeChild[K, V](val key: K, val value: Option[V] = None, val parent: NavigableTree[K, V]) extends NavigableTreeBase[K, V] {
+  def isRoot = false
+  def path = parent.path :+ key
 }
