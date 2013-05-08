@@ -2,6 +2,7 @@ package org.mambo.core.io
 
 import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers
+import java.math.BigInteger
 
 /**
  * @author Blackrush
@@ -177,12 +178,12 @@ class BigEndianBufferTest extends WordSpec with ShouldMatchers {
 
     "read an unsigned long" in {
       val buffer = sample(-1, -1, -1, -1, -1, -1, -1, -1)
-      buffer.readULong() should be(BigInt("18446744073709551615"))
+      buffer.readULong() should be(new BigInteger("18446744073709551615"))
     }
 
     "write an unsigned long" in {
       val buffer = sample(8)
-      buffer.writeULong(BigInt("18446744073709551615"))
+      buffer.writeULong(new BigInteger("18446744073709551615"))
       buffer.remaining should be(0)
 
       val data = buffer.rawData

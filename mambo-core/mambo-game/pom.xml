@@ -8,6 +8,7 @@
         <relativePath>../</relativePath>
     </parent>
 
+    <groupId>org.mambo.core</groupId>
     <artifactId>mambo-game</artifactId>
     <name>mambo-game</name>
 
@@ -20,22 +21,12 @@
             <artifactId>scala-library</artifactId>
             <version>${scala-std.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-actor_${scala.version}</artifactId>
-            <version>${akka.version}</version>
-        </dependency>
 
         <!-- Test -->
         <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest_${scala.version}</artifactId>
             <version>${scalatest.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-testkit_${scala.version}</artifactId>
-            <version>${akka.version}</version>
         </dependency>
     </dependencies>
 

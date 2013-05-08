@@ -12,6 +12,7 @@
 
     <modules>
         <module>mambo-core</module>
+        <module>mambo-protocol</module>
     </modules>
 
     <properties>
@@ -22,7 +23,8 @@
 
         <scala.version>2.10</scala.version>
         <scala-std.version>${scala.version}.0</scala-std.version>
-        <akka.version>2.1.1</akka.version>
         <scalatest.version>1.9.1</scalatest.version>
+        <squeryl.version>0.9.5-6</squeryl.version>
+        <guava.version>14.0.1</guava.version>
     </properties>
 </project>

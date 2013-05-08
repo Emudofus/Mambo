@@ -2,12 +2,15 @@ package org.mambo.core.io
 
 import java.nio.charset.Charset
 import java.nio.{CharBuffer, ByteBuffer}
+import java.math.BigInteger
 
 /**
  * @author Blackrush
  */
 class BigEndianBuffer(private var buf: Array[Byte], var offset: Int = 0) extends Buffer {
   import BigEndianBuffer._
+
+  def setOffset(offset: Int) = this.offset = offset
 
   private def grow(n: Int) {
     val newBuf = Array.ofDim[Byte](buf.length + n * 2)
@@ -30,6 +33,8 @@ class BigEndianBuffer(private var buf: Array[Byte], var offset: Int = 0) extends
   def rawData = buf
 
   def remaining = buf.length - offset
+
+  def toByteBuffer = ByteBuffer.wrap(data)
 
   def compact() = {
     val newBuf = Array.ofDim[Byte](offset + 1)
@@ -134,9 +139,9 @@ class BigEndianBuffer(private var buf: Array[Byte], var offset: Int = 0) extends
     append((int       & 0xFF).toByte)
   }
 
-  def readUInt() = readUShort().toLong << 16 | readUShort()
+  def readUInt(): Long = readUShort().toLong << 16 | readUShort()
 
-  def writeUInt(uint: UInt) {
+  def writeUInt(uint: Long) {
     ensure(4)
     append((uint >> 24       ).toByte)
     append((uint >> 16 & 0xFF).toByte)
@@ -158,18 +163,18 @@ class BigEndianBuffer(private var buf: Array[Byte], var offset: Int = 0) extends
     append((long       & 0xFF).toByte)
   }
 
-  def readULong() = BigInt(readUInt()) << 32 | BigInt(readUInt())
+  def readULong() = BigInteger.valueOf(readUInt()).shiftLeft(32).or(BigInteger.valueOf(readUInt()))
 
-  def writeULong(ulong: ULong) {
+  def writeULong(ulong: BigInteger) {
     ensure(8)
-    append((ulong >> 56 & 0xFF).toByte)
-    append((ulong >> 48 & 0xFF).toByte)
-    append((ulong >> 40 & 0xFF).toByte)
-    append((ulong >> 32 & 0xFF).toByte)
-    append((ulong >> 24 & 0xFF).toByte)
-    append((ulong >> 16 & 0xFF).toByte)
-    append((ulong >> 8  & 0xFF).toByte)
-    append((ulong       & 0xFF).toByte)
+    append((ulong.shiftRight(56).byteValue() & 0xFF).toByte)
+    append((ulong.shiftRight(48).byteValue() & 0xFF).toByte)
+    append((ulong.shiftRight(40).byteValue() & 0xFF).toByte)
+    append((ulong.shiftRight(32).byteValue() & 0xFF).toByte)
+    append((ulong.shiftRight(24).byteValue() & 0xFF).toByte)
+    append((ulong.shiftRight(16).byteValue() & 0xFF).toByte)
+    append((ulong.shiftRight(8) .byteValue() & 0xFF).toByte)
+    append((ulong               .byteValue() & 0xFF).toByte)
   }
 
   def readFloat() = java.lang.Float.intBitsToFloat(readInt())
